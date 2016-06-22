@@ -4,7 +4,7 @@ from flask import Flask, render_template
 
 from shop import public, user
 from shop.assets import assets
-from shop.extensions import bcrypt, cache, csrf_protect, debug_toolbar, fulfil, login_manager
+from shop.extensions import cache, csrf_protect, debug_toolbar, fulfil, login_manager
 from shop.settings import ProdConfig
 
 
@@ -27,7 +27,6 @@ def create_app(config_object=ProdConfig):
 def register_extensions(app):
     """Register Flask extensions."""
     assets.init_app(app)
-    bcrypt.init_app(app)
     cache.init_app(app)
     csrf_protect.init_app(app)
     login_manager.init_app(app)
