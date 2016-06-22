@@ -8,7 +8,10 @@ python:
   - 3.5
 install: 
   - pip install -r requirements/dev.txt
-  - apt-get install bower
   - bower install
 before_script: python manage.py lint
 script: python manage.py test
+addons:
+  apt:
+    packages:
+    - bower
