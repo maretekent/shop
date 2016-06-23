@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
-from flask import Flask, render_template
+from flask import Flask
 
 from shop import public, user
+from shop.utils import render_theme_template as render_template
 from shop.assets import assets
 from shop.extensions import (
     cache, csrf_protect, debug_toolbar, fulfil, login_manager, themes
