@@ -6,6 +6,9 @@ python:
   - 3.3
   - 3.4
   - 3.5
-install: pip install -r requirements/dev.txt
+install: 
+  - pip install -r requirements/dev.txt
+  - npm install -g bower
+  - bower install
 before_script: python manage.py lint
 script: python manage.py test

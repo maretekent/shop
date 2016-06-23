@@ -1,3 +1,6 @@
+shop/static/css/common.css
+shop/static/js/common.js
+
 *.py[cod]
 
 # C extensions
@@ -48,3 +51,6 @@ env/
 
 # Bower managed libs
 shop/static/libs/
+
+# OSX
+.DS_Store
