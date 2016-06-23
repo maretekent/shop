@@ -31,8 +31,8 @@ Flask-Cache>=0.13.1
 # Debug toolbar
 Flask-DebugToolbar==0.10.0
 
-# Model validation
-schematics
+# Themes
+Flask-Themes2
 
 # Fulfil
 Flask-Fulfil
