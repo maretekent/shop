@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, request, url_for
 from flask_login import login_required, login_user, logout_user
 
 from shop.extensions import login_manager
 from shop.public.forms import LoginForm
 from shop.user.forms import RegisterForm
 from shop.user.models import User
-from shop.utils import flash_errors
+from shop.utils import flash_errors, render_theme_template as render_template
 
 blueprint = Blueprint('public', __name__, static_folder='../static')
 

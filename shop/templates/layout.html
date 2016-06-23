@@ -50,19 +50,19 @@
             </div>
             <div class="right-block pull-right">
               <div class="search">
-                {% include "partials/search-box.html" %}
+                {% include theme("partials/search-box.html") %}
               </div>
               <div class="mini-cart">
-                {% include "partials/mini-cart.html" %}
+                {% include theme("partials/mini-cart.html") %}
               </div>
               <div class="my-account-menu">
-                {% include "partials/my-account-menu.html" %}
+                {% include theme("partials/my-account-menu.html") %}
               </div>
             </div>
           </div>
           <div class="row row-2">
             {% with form=form  %}
-            {% include "partials/nav.html" %}
+            {% include theme("partials/nav.html") %}
             {% endwith %}
           </div>
         </div>
@@ -96,7 +96,7 @@
 
 </div><!-- end container -->
 
-{% include "footer.html" %}
+{% include theme("footer.html") %}
 
 <!-- JavaScript at the bottom for fast page loading -->
 {% assets "js_all" %}

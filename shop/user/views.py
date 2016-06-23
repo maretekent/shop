@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """User views."""
-from flask import Blueprint, render_template
+from flask import Blueprint
+from shop.utils import flash_errors, render_theme_template as render_template
 from flask_login import login_required
 
 blueprint = Blueprint(
