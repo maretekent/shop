@@ -48,3 +48,6 @@ env/
 
 # Bower managed libs
 shop/static/libs/
+
+# OSX
+.DS_Store
