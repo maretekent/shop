@@ -19,7 +19,7 @@ def get_current_theme():
     """
     Return the identifier of the current theme.
     """
-    ident = current_app.config.get('DEFAULT_THEME', 'no-theme')
+    ident = current_app.config.get('THEME', 'default')
     return get_theme(ident)
 
 
