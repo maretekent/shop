@@ -21,4 +21,4 @@ WORKDIR /opt/shop/
 RUN pip install -r requirements/dev.txt
 RUN bower install --allow-root
 ENTRYPOINT ["gunicorn"]
-CMD ["shop.app:create_app()", "-b", "0.0.0.0:5000", "-w",  "3"]
+CMD ["shop.app:create_app()", "-b", "0.0.0.0:5000", "-w",  "3", "--access-logfile", "-", "--error-logfile", "-"]
