@@ -9,7 +9,7 @@ html {
 }
 
 body {
-  padding-top: 60px;
+  padding-top: 40px;
 }
 
 section {
@@ -49,7 +49,7 @@ textarea {
 
 /* footer */
 
-footer {
+/*footer {
   margin-top: 45px;
   padding-top: 5px;
   border-top: 1px solid #eaeaea;
@@ -83,23 +83,213 @@ footer .footer-nav {
   float: right;
   margin-right: 25px;
   list-style: none;
-}
+}*/
 
 .navigation > .row-1 {
-    width: 100%;
-    border-bottom: 1px solid #e5e5e5;
-    padding-bottom: 5px;
-    display: table;
+  width: 100%;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 5px;
+  display: table;
 }
 .table-layout {
-    display: table;
+  display: table;
 }
 .right-block > .search {
-    display: table-cell;
+  display: table-cell;
 }
 .right-block > .mini-cart {
-    display: table-cell;
+  display: table-cell;
 }
 .right-block > .my-account-menu {
-    display: table-cell;
+  display: table-cell;
+}
+
+/**/
+.main-logo {
+  max-width: 220px;
+  top: 5px;
+  position: relative;
+}
+
+.navigation {
+  float: right;
+}
+
+.navigation .slogan {
+  display: inline-block;
+  font-family: 'Loved by the King', cursive;
+  font-size: 25px;
+  text-shadow: 0px 0px 0px #000;
+}
+
+.navigation .search,
+.navigation .mini-cart, 
+.navigation .cart-link, 
+.navigation .cartCost, 
+.navigation .my-account-menu {
+  display: inline-block;
+}
+
+.navigation .search {
+  border: none;
+  outline: none;
+  color: #444;
+}
+
+.navigation .search::placeholder {
+  color: #444;
+}
+
+.navigation .button-search {
+  background: none;
+  border: none;
+  outline: none;
+}
+
+.navigation .search-box {
+  border-right: 1px solid #aaa;
+  padding: 3px 15px;
+  margin-right: 15px;
+}
+
+.mini-cart .cart-link {
+  position: relative;
+  color: #222;
+  text-decoration: none;
+}
+
+.mini-cart .cart-link .fa-shopping-cart {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.cartCount {
+  position: absolute;
+  background: #3693ec;
+  color: white;
+  width: 17px;
+  height: 17px;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: bold;
+  padding-top: 2px;
+  top: -10px;
+  left: 10px;
+}
+
+.mini-cart .cartCost {
+  font-family: "MOntserrat", sans-serif;
+  margin-right: 15px;
+}
+
+.my-account-menu {
+  font-size: 20px;
+}
+
+.navigation>.row-1 {
+  padding-bottom: 15px;
+}
+
+.navigation>.row-2 {
+  padding-top: 20px;
+}
+
+.main-menu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.main-menu li.menu-item {
+  display: inline-block;
+  margin-right: 30px;
+  font-size: 13px;
+  font-family: "Montserrat";
+  text-transform: uppercase;
+  cursor: hand;
+}
+
+.main-menu li.menu-item a {
+  color: #222;
+}
+
+.main-menu li.menu-item a:hover {
+  color: #3693ec;
+  text-decoration: none;
+}
+
+/* Footer Styles */
+footer {
+  background: #111;
+}
+
+footer ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+footer ul li a {
+  color: #555;
+}
+
+footer ul li a:hover {
+  text-decoration: none;
+}
+
+footer .footer-top {
+  padding: 60px 0;
+  border-bottom: 1px solid #222;
+}
+
+footer .footer-bottom {
+  padding: 15px 0;
+}
+
+.footer-top .left-column {
+  width: 75%;
+  float: left;
+}
+
+.footer-top .right-column {
+  width: 25%;
+  float: right;
+}
+
+.footer-top ul.link-lists {
+  float: left;
+  margin-right: 40px;
+  font-weight: bold;
+}
+
+.footer-top li.link {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.footer-top li.title {
+  font-family: "Montserrat";
+  color: #999;
+  margin-bottom: 9px;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.footer-top .social .social-link {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.footer-bottom .footer-nav {
+  float: right;
+}
+
+.footer-bottom .company {
+  float: left;
+}
+
+.footer-bottom .footer-nav li {
+  display: inline-block;
+  margin-right: 5px;
 }

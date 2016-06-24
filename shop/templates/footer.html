@@ -1,14 +1,81 @@
 <footer>
-  <small>
-  <ul class="company">
-    <li>© Fulfil.IO Inc.</li>
-  </ul>
+	<div class="footer-top clearfix">
+		<div class="container">
+			<div class="left-column">
+				<ul class="link-lists">
+					<li class="title">Important links</li>
+					<li class="link"><a href="#">Link #1</a></li>
+					<li class="link"><a href="#">Link #2</a></li>
+					<li class="link"><a href="#">Link #3</a></li>
+					<li class="link"><a href="#">Link #4</a></li>
+				</ul>
+				<ul class="link-lists">
+					<li class="title">Important links</li>
+					<li class="link"><a href="#">Link #1</a></li>
+					<li class="link"><a href="#">Link #2</a></li>
+					<li class="link"><a href="#">Link #3</a></li>
+					<li class="link"><a href="#">Link #4</a></li>
+				</ul>
+				<ul class="link-lists">
+					<li class="title">Important links</li>
+					<li class="link"><a href="#">Link #1</a></li>
+					<li class="link"><a href="#">Link #2</a></li>
+					<li class="link"><a href="#">Link #3</a></li>
+					<li class="link"><a href="#">Link #4</a></li>
+				</ul>
+				<ul class="link-lists">
+					<li class="title">Important links</li>
+					<li class="link"><a href="#">Link #1</a></li>
+					<li class="link"><a href="#">Link #2</a></li>
+					<li class="link"><a href="#">Link #3</a></li>
+				</ul>									
+			</div>
+			<div class="right-column">
+				<div class="social">
+					<ul>
+						<li class="social-link">
+							<a href="#">
+								<span class="fa-stack fa-lg">
+									<i class="fa fa-circle fa-stack-2x"></i>
+									<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+								</span>
+							</a>
+						</li>
+						<li class="social-link">
+							<a href="#">
+								<span class="fa-stack fa-lg">
+									<i class="fa fa-circle fa-stack-2x"></i>
+									<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+								</span>
+							</a>
+						</li>
+						<li class="social-link">
+							<a href="#">
+								<span class="fa-stack fa-lg">
+									<i class="fa fa-circle fa-stack-2x"></i>
+									<i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+								</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>			
+		</div>
+	</div>
 
-    <ul class="footer-nav">
+	<div class="footer-bottom">
+		<div class="container">
+			<small>
+				<ul class="company">
+					<li>© Fulfil.IO Inc.</li>
+				</ul>
 
-      <li><a href="{{ url_for('public.about') }}">About</a></li>
+				<ul class="footer-nav">
+					<li><a href="{{ url_for('public.about') }}">About</a></li>
+					<li><a href="mailto:hello@fulfil.io">Contact</a></li>
+				</ul>
+			</small>
+		</div>
+	</div>
 
-      <li><a href="mailto:hello@fulfil.io">Contact</a></li>
-    </ul>
-  </small>
 </footer>
