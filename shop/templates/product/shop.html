@@ -1,0 +1,32 @@
+{% extends theme("layout.html") %}
+
+{% block content %}
+<section id="collections">
+  <h2>Collections</h2>
+  <ul>
+    {% for collection in collections %}
+    <li>
+      <a href="">
+        <img class="img" src="{{ collection.image }}"/>
+        <h4>{{ collection.name }}</h4>
+        <h5>{{ collection.item_count }}</h5>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>  
+</section>
+<section id="new-sellers">
+  <h2>New Sellers</h2>
+  <ul>
+    {% for product in new_arrivals %}
+    <li>
+      <a href="">
+        <img class="img" src="{{ product.image }}"/>
+        <h4>{{ product.name }}</h4>
+        <h5>{{ product.price }}</h5>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}
