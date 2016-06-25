@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Product views."""
+import random
+
 from flask import Blueprint
 
 from shop.node.models import TreeNode
