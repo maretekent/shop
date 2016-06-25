@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Product models."""
-from shop.fulfilio import Model
+from shop.fulfilio import Model, StringType, CurrencyType
 
 
 class ProductTemplate(Model):
@@ -11,3 +11,7 @@ class ProductTemplate(Model):
 class Product(Model):
 
     __model_name__ = 'product.product'
+
+    name = StringType()
+    price = CurrencyType()
+    image = StringType()

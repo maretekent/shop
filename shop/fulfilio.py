@@ -63,6 +63,10 @@ class StringType(BaseType):
         super(StringType, self).__init__(*args, **kwargs)
 
 
+class CurrencyType(StringType):
+    pass
+
+
 class ModelType(IntType):
     def __init__(self, model, *args, **kwargs):
         self.model = model
