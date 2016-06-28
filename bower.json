@@ -2,7 +2,8 @@
   "name": "shop",
   "dependencies": {
     "jquery": "^3.0.0",
-    "bootstrap": "^3.3.6"
+    "bootstrap": "^3.3.6",
+    "jquery-ui": "^1.11.4"
   },
   "resolutions": {
     "jquery": "1.9.1 - 2"

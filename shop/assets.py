@@ -5,12 +5,14 @@ from flask_assets import Bundle, Environment
 css = Bundle(
     'libs/bootstrap/dist/css/bootstrap.css',
     'css/style.css',
+    'css/animate.css',
     filters='cssmin',
     output='public/css/common.css'
 )
 
 js = Bundle(
     'libs/jquery/dist/jquery.js',
+    'libs/jquery-ui/jquery-ui.js',
     'libs/bootstrap/dist/js/bootstrap.js',
     'js/plugins.js',
     filters='jsmin',
