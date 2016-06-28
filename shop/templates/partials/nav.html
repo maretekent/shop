@@ -1,13 +1,13 @@
 <ul class="main-menu">
   {% for menu in ['Home', 'Category 1', 'Category 2', 'Category 3', 'BLOG', 'CONTACT'] %}
-  <li class="menu-item">
+  <li class="menu-item has-sub-menu">
     <a href="">{{ menu }}</a>
-    <!-- <span class="arow"></span>
+    <span class="arrow"></span>
     <ul class="sub-menu">
       {% for submenu in [1, 2, 3] %}
-        <li><a href="/">Submenu {{ submenu }}</a></li>
+        <li class="sub-menu-item"><a href="/">Submenu {{ submenu }}</a></li>
       {% endfor %}
-    </ul> -->
+    </ul>
   </li>
   {% endfor %}
 </ul>

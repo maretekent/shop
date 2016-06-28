@@ -37,7 +37,7 @@
   <div class="container">
     <div class="row">
       {% block logo %}
-        <div class="col-md-3 col-sm-12">
+        <div class="col-md-3 col-sm-12 logo">
           <div class="main-logo">
             <a href="{{ url_for('public.home') }}">
               <img class="img-responsive" src="{{ company and company.logo or url_for('static', filename='images/fulfil-logo.png') }}">
@@ -45,11 +45,27 @@
           </div>
         </div>
       {% endblock logo %}
+
       {% block navigation %}
         <div class="col-md-9 col-sm-12 navigation">
-          <div class="row row-1">
+          <div class="row row-1 slogan-search-row">
+            <div class="mobile-menu-wrapper">
+              <div id="mobile-menu-controller" class="mobile-menu-controller"><i class="fa fa-bars"></i></div>
+              <div class="mobile-menu-outer" id="mobile-menu-outer">
+                <ul class="mobile-menu" id="mobile-menu" >
+                  <span class="close-mobile-menu" id="close-mobile-menu"><i class="fa fa-close"></i></span>
+                  <li class="menu-item"><a href="">Home</a></li>
+                  <li class="menu-item"><a href="">Category 1</a></li>
+                  <li class="menu-item"><a href="">Category 2</a></li>
+                  <li class="menu-item"><a href="">Category 3</a></li>
+                  <li class="menu-item"><a href="">BLOG</a></li>
+                  <li class="menu-item"><a href="">CONTACT</a></li>
+                </ul>
+              </div>
+            </div>       
+
             <div class="slogan">
-              {% block slogan %}"Slogan Here"{% endblock slogan %}
+              <span>{% block slogan %}"Slogan Here"{% endblock slogan %}</span>
             </div>
             <div class="right-block pull-right">
               <div class="search search-box">
@@ -63,7 +79,7 @@
               </div>
             </div>
           </div>
-          <div class="row row-2">
+          <div class="row row-2 menu-row">
             {% with form=form  %}
             {% include theme("partials/nav.html") %}
             {% endwith %}
@@ -108,6 +124,26 @@
 {% block js %}{% endblock %}
 <!-- end scripts -->
 {% endblock %}
+
+<!-- Mobile menu controller scripts -->
+<script>
+  $(function() {
+    var mobile_menu = $("#mobile-menu");
+    var mobile_menu_outer = $("#mobile-menu-outer");
+
+    $("#mobile-menu-controller").on("click", function(){
+      // mobile_menu.show('slide', {direction: 'left'}, 200);
+      mobile_menu_outer.addClass("open");
+    });
+
+    $("#close-mobile-menu").on("click", function(){
+      // mobile_menu.hide('slide', {direction: 'left'}, 200);
+      mobile_menu_outer.removeClass("open");
+    });
+
+
+  });
+</script>
 </body>
 </html>
 

@@ -12,10 +12,6 @@ body {
   padding-top: 40px;
 }
 
-section {
-  overflow: auto;
-}
-
 textarea {
   resize: vertical;
 }
@@ -46,44 +42,6 @@ textarea {
      -moz-box-sizing: border-box;
           box-sizing: border-box;
 }
-
-/* footer */
-
-/*footer {
-  margin-top: 45px;
-  padding-top: 5px;
-  border-top: 1px solid #eaeaea;
-  color: #999999;
-}
-
-footer a {
-  color: #999999;
-}
-
-footer p {
-  float: right;
-  margin-right: 25px;
-}
-
-footer ul {
-  list-style: none;
-}
-
-footer ul li {
-  float: left;
-  margin-left: 10px;
-}
-
-footer .company {
-  float: left;
-  margin-left: 25px;
-}
-
-footer .footer-nav {
-  float: right;
-  margin-right: 25px;
-  list-style: none;
-}*/
 
 .navigation > .row-1 {
   width: 100%;
@@ -116,6 +74,7 @@ footer .footer-nav {
 }
 
 .navigation .slogan {
+  float: left;
   display: inline-block;
   font-family: 'Loved by the King', cursive;
   font-size: 25px;
@@ -185,6 +144,79 @@ footer .footer-nav {
 
 .my-account-menu {
   font-size: 20px;
+  position: relative;
+}
+
+.my-account-sub-menu-wrapper {
+  z-index: 80;
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  transform: translateY(8px);
+  -webkit-transition: opacity .4s ease, transform .4s ease, visibility .4s ease;
+  transition: opacity .4s ease, transform .4s ease, visibility .4s ease;  
+}
+
+.my-account-sub-menu {
+  list-style: none;
+  background: white;
+  box-shadow: 0px 0px 3px #888;
+  padding: 20px 25px;
+  min-width: 270px;  
+}
+
+#my-account-menu-controller {
+  cursor: pointer;
+}
+
+.my-account-sub-menu-wrapper.open, .my-account-menu:hover .my-account-sub-menu-wrapper {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0px);
+}
+
+.my-account-sub-menu .select-currency {
+  padding-bottom: 5px;
+  border-bottom: 1px dotted #ddd;
+  margin-bottom: 15px;
+}
+
+.my-account-sub-menu .select-currency h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-family: "Montserrat";
+    margin-bottom: 5px;
+}
+
+.my-account-sub-menu .currencies {
+    padding: 0;
+}
+
+.my-account-sub-menu .currencies li {
+    display: inline-block;
+    background: #ddd;
+    line-height: 16px;
+}
+
+.my-account-sub-menu .currencies li a {
+    color: #333;
+    font-size: 12px;
+    line-height: 16px;
+    padding: 0 13px;
+}
+
+.my-account-sub-menu .setting-option ul {
+  padding-left: 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #555;
+}
+
+.my-account-sub-menu .setting-option ul a {
+  color: #555;
+  font-size: 14px;
 }
 
 .navigation>.row-1 {
@@ -192,7 +224,7 @@ footer .footer-nav {
 }
 
 .navigation>.row-2 {
-  padding-top: 20px;
+
 }
 
 .main-menu {
@@ -203,22 +235,189 @@ footer .footer-nav {
 
 .main-menu li.menu-item {
   display: inline-block;
-  margin-right: 30px;
   font-size: 13px;
   font-family: "Montserrat";
   text-transform: uppercase;
-  cursor: hand;
+  margin-right: 10px;
+  margin-top: 10px;
 }
 
-.main-menu li.menu-item a {
+.main-menu > li.menu-item > a {
+  display: inline-block;
   color: #222;
+  padding: 10px 0 20px;
+  padding-right: 20px;
 }
 
-.main-menu li.menu-item a:hover {
+.main-menu > li.menu-item > a:hover {
   color: #3693ec;
   text-decoration: none;
 }
 
+.main-menu .sub-menu {
+  z-index: 80;
+  opacity: 0;
+  position: absolute;
+  visibility: hidden;
+  list-style: none;
+  background: white;
+  box-shadow: 0px 0px 3px #888;
+  padding: 10px 25px;
+  min-width: 220px;
+  transform: translateY(8px);
+  -webkit-transition: opacity .4s ease, transform .4s ease, visibility .4s ease;
+  transition: opacity .4s ease, transform .4s ease, visibility .4s ease;
+}
+
+.main-menu li.has-sub-menu {
+  position: relative;
+}
+
+.main-menu li.has-sub-menu:hover .sub-menu {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+.sub-menu > li.sub-menu-item > a {
+  display: inline-block;
+  width: 100%;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  text-transform: none;
+  font-size: 14px;
+  color: #666;
+  padding: 8px 0;
+  border-bottom: 1px dashed #aaa;
+}
+
+.sub-menu > li.sub-menu-item:last-child a{
+  border-bottom: none;
+}
+
+.sub-menu > li.sub-menu-item > a:hover {
+  text-decoration: none;
+  color: #3693ec;
+}
+
+/* Shop Page Styles */
+section.products {} 
+
+section.products ul{
+  padding-left: 0;
+  list-style: none;
+}
+
+section.products .section-title {
+  text-align: center;
+  position: relative;
+  padding: 20px 0;
+  margin: 20px 0 10px;  
+}
+
+section.products .section-title:after {
+  content: "";
+  width: 100%;
+  display: inline-block;
+  position: absolute;
+  border-bottom: 2px solid #eee;
+  top: 49%;
+  left: 0%;
+  z-index: 0;
+}
+
+section.products h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: "MOntserrat";
+  text-transform: uppercase;
+  background: white;
+  display: inline-block;
+  z-index: 5;
+  position: relative;
+  padding: 0 25px;  
+}
+
+#products-collections li{
+  margin-bottom: 30px;
+}
+
+#products-collections li a{
+  display: block;
+  position: relative;
+}
+
+#products-collections li .content{
+  position: absolute;
+  top: 41%;
+  background: rgba(255,255,255,.90);
+  text-align: center;
+  width: 100%;
+}
+
+#products-collections li .content h4 {
+  font-family: "Montserrat";
+  font-size: 13px;
+  font-weight: bold;
+  color: #555;
+  text-transform: uppercase;
+  margin-bottom: 0px;
+}
+
+#products-collections li .content h5 {
+  color: #555;
+}
+
+#products-new-sellers li {
+  margin: 10px 0 20px;
+}
+
+#products-new-sellers li a {
+  display: block;
+  height: 250px;
+}
+
+#products-new-sellers li a:hover {
+  text-decoration: none;
+}
+
+#products-new-sellers li .img-wrapper {
+  height: 180px;
+  white-space: nowrap;
+  border: 1px solid #f2f2f2;
+  text-align: center;
+}
+
+#products-new-sellers li .img-wrapper:before {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+#products-new-sellers li .img-wrapper img{
+  display: inline-block;
+  vertical-align: middle;
+  max-height: 180px;
+  max-width: 100%;
+  margin-left: -4px;
+}
+
+#products-new-sellers li .content {
+  font-family: "Montserrat";
+  text-align: center;
+}
+
+#products-new-sellers li .content h4{
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 0;
+}
+
+#products-new-sellers li .content h5{
+  font-size: 13px;
+  color: #888;
+}
 /* Footer Styles */
 footer {
   background: #111;
@@ -292,4 +491,185 @@ footer .footer-bottom {
 .footer-bottom .footer-nav li {
   display: inline-block;
   margin-right: 5px;
+}
+
+/* Responsive styles */
+
+/* Large Screen Styles */
+@media only screen and (min-width: 992px){
+  .mobile-menu {
+    display: none;
+  }
+
+  .mobile-menu-controller {
+    display: none;
+  } 
+
+  .menu-row {
+    display: block;
+  }
+
+}
+
+/* Mobile and table combined styles */
+@media only screen and (max-width: 991px) {
+	.mobile-menu-wrapper {
+		float: left;
+    margin-right: 20px;
+	}
+
+	.mobile-menu-controller {
+		display: block;
+		font-size: 25px;
+	} 
+
+  .mobile-menu-outer {
+    position: fixed;
+    width: 90%;
+    height: 100%;
+    max-height: 750px;
+    left: -100%;
+    top: 0%;
+    z-index: 99;
+    background: rgba(0,0,0,0.93);
+    transition: all .3s ease;
+  }
+
+  .mobile-menu-outer.open {
+    left: 0%;
+  }
+
+	.mobile-menu {
+/*		display: none;
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 90%;
+    background: rgba(0,0,0,0.93); */
+    z-index: 100;
+    padding: 55px 25px 50px;
+    list-style: none; 
+	}
+
+  ul.mobile-menu > li.menu-item {
+    font-size: 15px;
+    font-family: "Montserrat";
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 15px 0;
+    border-bottom: 1px solid #666;
+    padding-bottom: 15px;
+  }
+
+  ul.mobile-menu > li.menu-item > a {
+    color: #ccc;
+  }
+
+  span.close-mobile-menu {
+    position: absolute;
+    font-size: 22px;
+    color: #ddd;
+    right: 20px;
+    top: 20px;
+    border: 1px solid #ddd;
+    padding: 2px 9px;
+  }
+
+	.menu-row {
+		display: none;
+	}
+
+  .navigation {
+    float: none;
+    clear: both;
+    position: initial;
+  }
+
+  .navigation > .row-1 {
+    margin-left: 0px;
+  }
+  
+  footer .footer-top {
+    padding-bottom: 50px;
+  }
+
+  .footer-top .left-column {
+    width: 100%;
+    float: none;
+    margin-bottom: 15px;
+  }
+
+  .footer-top .right-column {
+    width: 100%;
+    float: none;
+  }
+}
+
+/* Tablet styles */
+@media only screen and (min-width: 767px) and (max-width: 991px) {
+  body {
+    padding-top: 10px;
+  }  
+
+  .main-logo {
+    width: 60%;
+    margin: 20px auto;
+  }
+
+  .mobile-menu-controller {
+    position: inherit;
+  } 
+}
+
+/* Mobile phone */
+@media only screen and (max-width: 767px) {
+    body {
+        padding-top: 0px;
+    }
+
+    .main-logo {
+      width: 60%;
+      margin: 20px auto;
+    }
+
+    .navigation .slogan {
+      display: none;
+    }
+
+    .navigation .mini-cart .cartCost {
+      display: none;
+    }
+
+    .mobile-menu-wrapper {
+      margin-right: 10px;
+    }
+
+    .navigation .right-block {
+      width: 90%;
+    }
+
+    .navigation .search-box {
+      padding: 3px 5px;
+      margin-right: 5px;
+      width: 80%;
+    }
+
+    .navigation input.search {
+      width: 85%;
+    }
+}
+
+/* Smaller Screen Mobile phone */
+@media only screen and (max-width: 359px) {
+  .navigation .right-block {
+    width: 85%;
+  }
+
+  .navigation .search-box {
+    width: 70%;
+  }
+
+  .navigation input.search{
+    width: 80%;
+  }
 }
