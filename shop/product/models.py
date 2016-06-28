@@ -7,6 +7,8 @@ class ProductTemplate(Model):
 
     __model_name__ = 'product.template'
 
+    name = StringType()
+
 
 class Product(Model):
 

@@ -1,0 +1,18 @@
+{% extends theme("layout.html") %}
+
+{% block content %}
+<section id="collections">
+  <h2>Collections</h2>
+  <ul>
+    {% for node in nodes %}
+    <li>
+      <a href="">
+        <img class="img" src="{{ node.image }}"/>
+        <h4>{{ node.name }}</h4>
+        <h5>{{ node.item_count }}</h5>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>  
+</section>
+{% endblock %}

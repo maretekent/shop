@@ -1,0 +1,42 @@
+{% extends theme("layout.html") %}
+
+{% block content %}
+<section id="collections">
+  <h2>{{ node.name }}</h2>
+</section>
+
+{% if node.has_children %}
+<section id="children">
+  <ul>
+    {% for child in node.children %}
+    <li>
+      <a href="{{ url_for('node.node', handle=child.slug, id=child.id) }}">
+        <img class="img" src="{{ child.image }}"/>
+        <h4>{{ child.name }}</h4>
+        <h5>{{ child.item_count }}</h5>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>  
+</section>
+{% endif %}
+
+{% if node.products %}
+<section id="products">
+  <div class="separator">
+  </div>
+  <ul>
+    {% for product in node.products %}
+    <li>
+      <a href="{{ url_for('product.product', id=product.id) }}">
+        <img class="img" src="{{ product.image }}"/>
+        <h4>{{ product.name }}</h4>
+        <h5>{{ product.price }}</h5>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% endblock %}

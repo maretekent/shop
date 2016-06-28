@@ -61,12 +61,12 @@ def products():
         new_arrivals=new_arrivals,
     )
 
+
 @blueprint.route('/<handle>')
 def product(handle):
     """
     Display a specific product with given URI
     """
-    # TODO
     return __doc__
 
 
