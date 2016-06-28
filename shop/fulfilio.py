@@ -17,6 +17,8 @@ class BaseType(object):
     """
     A django field like object that implements a descriptor.
     """
+    # Eager load this field
+    eager = True
 
     def __init__(self, cast, required=False, default=None):
         # this will be auto discovered by a meta class
@@ -83,11 +85,23 @@ class NamedDescriptorResolverMetaClass(type):
                 '__model_name__' not in class_dict:
             raise Exception('__name__ not defined for model')
 
-        # Iterate through the new class' __dict__ and update all
-        # recognised NamedDescriptor member names
+        fields = class_dict.get('_fields', set([]))
+        eager_fields = class_dict.get('_eager_fields', set([]))
+
+        # Iterate through the new class' __dict__ to:
+        #
+        # * update all recognised NamedDescriptor member names
+        # * find lazy loaded fields
+        # * find eager_loaded fields
         for name, attr in class_dict.iteritems():
             if isinstance(attr, BaseType):
                 attr.name = name
+                fields.add(name)
+                if attr.eager:
+                    eager_fields.add(name)
+
+        class_dict['_eager_fields'] = tuple(eager_fields)
+        class_dict['_fields'] = tuple(fields | eager_fields)
 
         # Call super and continue class creation
         return type.__new__(cls, classname, bases, class_dict)
@@ -165,6 +179,10 @@ class Query(object):
         self._order_by = None
         self.active_only = True
 
+    @property
+    def fields(self):
+        return self.instance_class and self.instance_class._fields or None
+
     def __copy__(self):
         """
         Change the copy behavior of query.
@@ -201,6 +219,7 @@ class Query(object):
         "Return the results represented by this Query as a list."
         return self.rpc_model.search_read(
             self.domain, self._limit, self._offset, self._order_by,
+            self.fields,
             context=self.context
         )
 
@@ -254,7 +273,8 @@ class Query(object):
         doesn't contain any row.
         """
         results = self.rpc_model.search_read(
-            self.domain, None, 1, self._order_by, context=self.context
+            self.domain, None, 1, self._order_by, self.fields,
+            context=self.context
         )
         return results and results[0] or None
 
@@ -269,7 +289,9 @@ class Query(object):
         ctx = self.context.copy()
         ctx['active_test'] = False
         results = self.rpc_model.search_read(
-            [('id', '=', id)], context=ctx
+            [('id', '=', id)],
+            None, None, None, self.fields,
+            context=ctx
         )
         return results and results[0] or None
 
@@ -299,7 +321,8 @@ class Query(object):
         found.
         """
         results = self.rpc_model.search_read(
-            self.domain, 2, None, self._order_by, context=self.context
+            self.domain, 2, None, self._order_by, self.fields,
+            context=self.context
         )
         if not results:
             raise fulfil_client.exc.NoResultFound
@@ -376,6 +399,13 @@ class Model(object):
         # Now create a modification tracking dictionary
         self._values = ModificationTrackingDict(values)
 
+    @classmethod
+    def from_ids(cls, ids):
+        """
+        Create multiple active resources at once
+        """
+        return map(cls, cls.rpc.read(ids, cls._eager_fields))
+
     @property
     def changes(self):
         """
@@ -413,7 +443,7 @@ class Model(object):
     @classmethod
     def get_by_id(cls, id):
         "Given an integer ID, fetch the record from fulfil.io"
-        return cls(values=cls.rpc.read([id])[0])
+        return cls(values=cls.rpc.read([id], cls._eager_fields)[0])
 
     def refresh(self):
         """
@@ -422,7 +452,7 @@ class Model(object):
         """
         assert self.id, "Cannot refresh unsaved record"
         self._values = ModificationTrackingDict(
-            self.rpc.read([self.id])[0]
+            self.rpc.read([self.id], self._fields)[0]
         )
 
     def save(self):
