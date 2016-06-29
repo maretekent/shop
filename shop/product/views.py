@@ -20,16 +20,7 @@ def products():
     List All Root Tree Nodes
     """
     img = "https://cdn.shopify.com/s/files/1/0151/2251/products/001_grande.jpg"
-    collections = [
-        TreeNode(name='Collection 1', item_count=7, image=img),
-        TreeNode(name='Very Long Name Collection', item_count=7, image=img),
-        TreeNode(name='T-Shirts', item_count=7, image=img),
-        TreeNode(name='Colection 4', item_count=7, image=img),
-        TreeNode(name='Collection 5', item_count=7, image=img),
-        TreeNode(name='Collection 6', item_count=7, image=img),
-        TreeNode(name='Collection 7', item_count=7, image=img),
-        TreeNode(name='Collection 8', item_count=7, image=img),
-    ]
+    collections = TreeNode.get_root_nodes()
     p_images = [
         "https://cdn.shopify.com/s/files/1/0533/3153/products/1-1_large.jpg?v=1404837242",
         "https://dzhj8173mkary.cloudfront.net/static-file-transform/2405/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
@@ -63,7 +54,8 @@ def products():
 
 
 @blueprint.route('/<handle>')
-def product(handle):
+@blueprint.route('/<int:id>')
+def product(handle=None, id=None):
     """
     Display a specific product with given URI
     """

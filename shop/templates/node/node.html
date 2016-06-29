@@ -1,19 +1,21 @@
 {% extends theme("layout.html") %}
 
 {% block content %}
-<section id="collections">
-  <h2>{{ node.name }}</h2>
-</section>
+<div class="section-title"><h2>{{ node.name }}</h2></div>
 
 {% if node.has_children %}
-<section id="children">
-  <ul>
+<section class="products" id="children">
+  <ul class="clearfix">
     {% for child in node.children %}
-    <li>
+    <li class="col-xs-12 col-sm-6 col-md-3">
       <a href="{{ url_for('node.node', handle=child.slug, id=child.id) }}">
-        <img class="img" src="{{ child.image }}"/>
-        <h4>{{ child.name }}</h4>
-        <h5>{{ child.item_count }}</h5>
+        <div class="img-wrapper">
+          <img class="img img-responsive" src="{{ child.image }}"/>  
+        </div>
+        <div class="content">
+          <h4>{{ child.name }}</h4>
+          <h5>{{ child.item_count }}</h5>
+        </div>
       </a>
     </li>
     {% endfor %}
@@ -21,17 +23,20 @@
 </section>
 {% endif %}
 
-{% if node.products %}
-<section id="products">
-  <div class="separator">
-  </div>
-  <ul>
-    {% for product in node.products %}
-    <li>
-      <a href="{{ url_for('product.product', id=product.id) }}">
-        <img class="img" src="{{ product.image }}"/>
-        <h4>{{ product.name }}</h4>
-        <h5>{{ product.price }}</h5>
+{% if products %}
+<section class="products" id="products-new-sellers">
+  <div class="section-title"><h2>Products</h2></div>
+  <ul class="clearfix">
+    {% for product in products %}
+    <li class="col-xs-6 col-sm-3 col-md-2">
+      <a href="{{ url_for('product.product') }}">
+        <div class="img-wrapper">
+          <img class="img img-responsive" src="{{ product.image }}"/>        
+        </div>
+        <div class="content">
+          <h4>{{ product.name }}</h4>
+          <h5>{{ product.price }}</h5>
+        </div>
       </a>
     </li>
     {% endfor %}

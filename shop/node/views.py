@@ -3,7 +3,7 @@
 from flask import Blueprint, abort
 
 from shop.node.models import TreeNode
-from shop.utils import render_theme_template as render_template
+from shop.utils import render_theme_template as render_template, dummy_products
 
 blueprint = Blueprint(
     'node', __name__,
@@ -16,31 +16,63 @@ def nodes():
     """
     List All Root Tree Nodes
     """
-    nodes = TreeNode.query.filter_by_domain(
-        [('parent', '=', None)]
-    ).all()
+    nodes = TreeNode.get_root_nodes()
     return render_template('node/nodes.html', nodes=nodes)
+
+
+# TODO: Cache
+@dummy_products
+def get_products_in_node(node_id, page, per_page):
+    """
+    Return products in a page for the node
+    """
+    return []
+
+
+# TODO: Cache for a day
+@dummy_products
+def get_top_sellers_in_node(node_id):
+    """
+    Return the top sellers in the node
+    """
 
 
 @blueprint.route('/<int:id>')
 @blueprint.route('/<int:id>/<handle>')                  # Legacy
 @blueprint.route('/<int:id>/<handle>/page-<int:page>')  # Legacy
-def node(handle=None, id=None):
+def node(handle=None, id=None, page=1):
     """
     Display a specific node with given URI.
 
     Shows both the sub nodes and products under it.
     """
+    per_page = 10
+
     if id:
         node = TreeNode.query.get(id)
     else:
         node = TreeNode.query.filter_by_domain([
             ('slug', '=', handle)
         ]).first()
+
     if not node:
         abort(404)
 
-    return render_template('node/node.html', node=node)
+    products = get_products_in_node(node.id, page, per_page)
+
+    top_sellers = []
+    if not products:
+        # no direct products under the category.
+        # Find top sellers
+        top_sellers = get_top_sellers_in_node(node.id)
+
+    return render_template(
+        'node/node.html',
+        node=node,
+        products=products,
+        top_sellers=top_sellers,
+        page=page
+    )
 
 
 @blueprint.route('/sitemap-index.xml')

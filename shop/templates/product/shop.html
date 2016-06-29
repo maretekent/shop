@@ -7,7 +7,7 @@
     {% for collection in collections %}
   
     <li class="col-xs-12 col-sm-6 col-md-3">
-      <a href="">
+      <a href="{{ url_for('node.node', handle=collection.slug, id=collection.id) }}">
         <div class="img-wrapper">
           <img class="img img-responsive" src="{{ collection.image }}"/>  
         </div>

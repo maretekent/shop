@@ -33,3 +33,12 @@ class TreeNode(Model):
         Return active resources for the child nodes
         """
         return type(self).from_ids(self._values['children'])
+
+    @classmethod
+    def get_root_nodes(cls):
+        """
+        Get the root nodes (without parents)
+        """
+        return cls.query.filter_by_domain(
+            [('parent', '=', None)]
+        ).all()

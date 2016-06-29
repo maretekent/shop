@@ -19,6 +19,7 @@ def mtd():
     return ModificationTrackingDict({
         'a': 'apple',
         'b': 'box',
+        'l': [1, 2, 3],
     })
 
 
