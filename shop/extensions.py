@@ -6,6 +6,7 @@ from flask_fulfil import Fulfil
 from flask_login import LoginManager
 from flask_wtf.csrf import CsrfProtect
 from flask.ext.themes2 import Themes
+from raven.contrib.flask import Sentry
 
 csrf_protect = CsrfProtect()
 login_manager = LoginManager()
@@ -13,3 +14,4 @@ cache = Cache()
 debug_toolbar = DebugToolbarExtension()
 fulfil = Fulfil()
 themes = Themes()
+sentry = Sentry()

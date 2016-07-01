@@ -69,6 +69,28 @@
     <div class="product-description">
       {{ (product.long_description or product.description)|safe }}
     </div>
+
+    <div class="social-sharing">
+
+      <a target="_blank" href="//www.facebook.com/sharer.php?u={{ request.url }}" 
+          class="share-facebook">
+        <span class="icon icon-facebook" aria-hidden="true"></span>
+        <span class="share-title">Share</span>
+        <span class="share-count is-loaded">1</span>
+      </a>
+    
+      <a target="_blank" href="//twitter.com/share?text={{ product.name }}&amp;url={{ request.url }}" class="share-twitter">
+        <span class="icon icon-twitter" aria-hidden="true"></span>
+        <span class="share-title">Tweet</span>
+      </a>
+  
+      <a target="_blank" href="//pinterest.com/pin/create/button/?url={{ request.url }}&amp;media={{ product.image }}&amp;description={{ product.description }}" class="share-pinterest">
+        <span class="icon icon-pinterest" aria-hidden="true"></span>
+        <span class="share-title">Pin it</span>
+      </a>
+    
+    </div>
+
   </div>
 </section>
 

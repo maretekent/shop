@@ -25,7 +25,6 @@ class Product(Model):
 
     @property
     def image(self):
-        # TODO: A default image?
         return self._values.get('default_image.url')
 
     @property

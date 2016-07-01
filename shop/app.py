@@ -6,7 +6,7 @@ from shop import public, user, product, node
 from shop.utils import render_theme_template as render_template
 from shop.assets import assets
 from shop.extensions import (
-    cache, csrf_protect, debug_toolbar, fulfil, login_manager, themes
+    cache, csrf_protect, debug_toolbar, fulfil, login_manager, themes, sentry
 )
 from shop.settings import ProdConfig
 
@@ -35,6 +35,7 @@ def register_extensions(app):
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     fulfil.init_app(app)
+    sentry.init_app(app)
     themes.init_themes(app, app_identifier='fulfil-shop')
     return None
 

@@ -36,3 +36,6 @@ Flask-Themes2
 
 # Fulfil
 Flask-Fulfil
+
+# Sentry
+raven[flask]
