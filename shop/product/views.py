@@ -2,11 +2,11 @@
 """Product views."""
 import random
 
-from flask import Blueprint
+from flask import Blueprint, abort, request
 
 from shop.node.models import TreeNode
 from shop.product.models import Product
-from shop.utils import render_theme_template as render_template
+from shop.utils import render_theme_template as render_template, get_random_product
 
 blueprint = Blueprint(
     'products', __name__,
@@ -19,32 +19,9 @@ def products():
     """
     List All Root Tree Nodes
     """
-    img = "https://cdn.shopify.com/s/files/1/0151/2251/products/001_grande.jpg"
     collections = TreeNode.get_root_nodes()
-    p_images = [
-        "https://cdn.shopify.com/s/files/1/0533/3153/products/1-1_large.jpg?v=1404837242",
-        "https://dzhj8173mkary.cloudfront.net/static-file-transform/2405/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
-        "https://dzhj8173mkary.cloudfront.net/static-file-transform/682/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
-        "https://dzhj8173mkary.cloudfront.net/static-file-transform/2357/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
-        "https://dzhj8173mkary.cloudfront.net/static-file-transform/2356/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
-        "https://dzhj8173mkary.cloudfront.net/static-file-transform/386/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
-        "https://dzhj8173mkary.cloudfront.net/static-file-transform/388/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
-    ]
     new_arrivals = [
-        Product(name='Product 1', price="$1,040.00", image=random.choice(p_images)),
-        Product(name='Product 2', price="$40.00", image=random.choice(p_images)),
-        Product(name='Product long one 3', price="$1,040.00", image=random.choice(p_images)),
-        Product(name='Product 4', price="$140.00", image=random.choice(p_images)),
-        Product(name='Product 5', price="$10,040.00", image=random.choice(p_images)),
-        Product(name='Product 6', price="$1,040.00", image=random.choice(p_images)),
-        Product(name='Product longer longer 7', price="$1,040.00", image=random.choice(p_images)),
-        Product(name='Product 8', price="$1,040.00", image=random.choice(p_images)),
-        Product(name='Product 9', price="$1,040.00", image=random.choice(p_images)),
-        Product(name='Product 10', price="$1,040.00", image=random.choice(p_images)),
-        Product(name='Product 11', price="$1,040.00", image=random.choice(p_images)),
-        Product(name='Product 12', price="$1,040.00", image=random.choice(p_images)),
-        Product(name='Product 13', price="$1,040.00", image=random.choice(p_images)),
-        Product(name='Product 14', price="$1,040.00", image=random.choice(p_images)),
+        get_random_product() for c in range(10)
     ]
     return render_template(
         'product/shop.html',
@@ -59,7 +36,27 @@ def product(handle=None, id=None):
     """
     Display a specific product with given URI
     """
-    return __doc__
+    if id:
+        product = Product.query.get_or_404(id)
+    elif handle:
+        product = Product.query.filter_by_domain([
+            ('uri', 'ilike', handle),
+        ]).first()
+    else:
+        abort(404)
+
+    print product._values
+
+    if 'node' in request.args:
+        node = TreeNode.query.get(request.args.get('node', type=int))
+    else:
+        node = None
+
+    return render_template(
+        'product/product.html',
+        product=product,
+        node=node,
+    )
 
 
 @blueprint.route('/sitemaps/product-index.xml')

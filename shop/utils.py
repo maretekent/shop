@@ -30,8 +30,7 @@ def render_theme_template(*args, **kwargs):
     return rtt(get_current_theme(), *args, **kwargs)
 
 
-def dummy_products(func):
-    def wrapper(*args, **kwargs):
+def get_random_product():
         import random
         from shop.product.models import Product
         p_images = [
@@ -42,22 +41,30 @@ def dummy_products(func):
             "https://dzhj8173mkary.cloudfront.net/static-file-transform/2356/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
             "https://dzhj8173mkary.cloudfront.net/static-file-transform/386/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
             "https://dzhj8173mkary.cloudfront.net/static-file-transform/388/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
-        ]
+        ]        
         dummy_products = [
-            Product(name='Product 1', price="$1,040.00", image=random.choice(p_images)),
-            Product(name='Product 2', price="$40.00", image=random.choice(p_images)),
-            Product(name='Product long one 3', price="$1,040.00", image=random.choice(p_images)),
-            Product(name='Product 4', price="$140.00", image=random.choice(p_images)),
-            Product(name='Product 5', price="$10,040.00", image=random.choice(p_images)),
-            Product(name='Product 6', price="$1,040.00", image=random.choice(p_images)),
-            Product(name='Product longer longer 7', price="$1,040.00", image=random.choice(p_images)),
-            Product(name='Product 8', price="$1,040.00", image=random.choice(p_images)),
-            Product(name='Product 9', price="$1,040.00", image=random.choice(p_images)),
-            Product(name='Product 10', price="$1,040.00", image=random.choice(p_images)),
-            Product(name='Product 11', price="$1,040.00", image=random.choice(p_images)),
-            Product(name='Product 12', price="$1,040.00", image=random.choice(p_images)),
-            Product(name='Product 13', price="$1,040.00", image=random.choice(p_images)),
-            Product(name='Product 14', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 1', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 2', price="$40.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product long one 3', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 4', price="$140.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 5', price="$10,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 6', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product longer longer 7', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 8', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 9', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 10', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 11', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 12', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 13', price="$1,040.00", image=random.choice(p_images)),
+            Product(uri='tp1', name='Product 14', price="$1,040.00", image=random.choice(p_images)),
+        ]
+        return random.choice(dummy_products)
+
+
+def dummy_products(func):
+    def wrapper(*args, **kwargs):
+        dummy_products = [
+            get_random_product() for c in range(15)
         ]
         return dummy_products
     return wrapper

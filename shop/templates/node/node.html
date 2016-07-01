@@ -29,7 +29,7 @@
   <ul class="clearfix">
     {% for product in products %}
     <li class="col-xs-6 col-sm-3 col-md-2">
-      <a href="{{ url_for('product.product') }}">
+      <a href="{{ url_for('products.product', id=product.id, handle=product.uri) }}">
         <div class="img-wrapper">
           <img class="img img-responsive" src="{{ product.image }}"/>        
         </div>
