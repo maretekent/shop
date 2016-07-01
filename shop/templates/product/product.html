@@ -3,8 +3,15 @@
 {% block content %}
 
 <section id="breadcrumb">
-  {% if node %}
-  {% endif %}
+
+  <ul class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="/clothing" type="mc">Clothing</a></li>
+    <li><a href="/men-clothing" type="g-mc">Men Clothing</a></li>
+    <li><a href="/tshirts" type="cat">Tshirts</a></li>
+    <li><a href="/u.s.-polo-assn.-tshirts" type="b-cat">U.S. Polo Assn. Tshirts</a></li>
+  </ul>
+
   <h4 class="product-code">Product Code: {{ product.code }}</h4>
 </section>
 
@@ -23,10 +30,19 @@
     <div class="row" id="product-varying-attrs">
       <div class="col-md-12">
 
+        <div class="color">
+          <label class="guide">Select a color</label>
+          <div class="size-left"></div>
+          <div class="size-cont">
+            {% for color in ['blue', 'green'] %}
+              <button data-sku="9643697" data-count="3" data-availableinwarehouse="36,28" data-leadtime="0" data-supplytype="ON_HAND" class="size pdp-size-btn available">{{ button }}</button>
+            {% endfor %}
+          </div>
+        </div>
+
         <div class="sizes">
           <label class="guide">Select a size</label>
           <div class="size-left"></div>
-          <div class="sizing-help-link">Not sure? <a href="" data-styleid="1190700"><span class="pdp-sprite icon-scale"></span>See Size Chart</a></div>
           <div class="size-cont">
             {% for button in range(6, 13) %}
               <button data-sku="9643697" data-count="3" data-availableinwarehouse="36,28" data-leadtime="0" data-supplytype="ON_HAND" class="size pdp-size-btn available">{{ button }}</button>
