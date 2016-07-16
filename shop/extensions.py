@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """Extensions module. Each extension is initialized in the app factory located in app.py."""
 from flask.ext.themes2 import Themes
-from flask_cache import Cache
 from flask_babel import Babel
-from flask_redis import FlaskRedis
+from flask_cache import Cache
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_fulfil import Fulfil
 from flask_login import LoginManager
+from flask_redis import FlaskRedis
 from flask_wtf.csrf import CsrfProtect
 from raven.contrib.flask import Sentry
 from redis import StrictRedis

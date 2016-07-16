@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Product models."""
+from flask import current_app
+
 from shop.fulfilio import CurrencyType, Model, StringType
 from shop.utils import get_random_product
 

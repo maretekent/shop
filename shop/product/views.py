@@ -4,8 +4,7 @@ import random
 
 from flask import Blueprint, abort, request
 
-from shop.node.models import TreeNode
-from shop.product.models import Product
+from shop.product.models import ChannelListing, Product
 from shop.utils import render_theme_template as render_template
 from shop.utils import get_random_product
 
@@ -20,6 +19,8 @@ def products():
     """
     List All Root Tree Nodes
     """
+    from shop.node.models import TreeNode
+
     collections = TreeNode.get_root_nodes()
     new_arrivals = [
         get_random_product() for c in range(10)

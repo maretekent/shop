@@ -4,7 +4,8 @@ from flask import Flask
 
 from shop import node, product, public, user
 from shop.assets import assets
-from shop.extensions import cache, csrf_protect, debug_toolbar, fulfil, login_manager, sentry, themes, babel, redis_store
+from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil, login_manager, redis_store, sentry,
+                             themes)
 from shop.settings import ProdConfig
 from shop.utils import render_theme_template as render_template
 
