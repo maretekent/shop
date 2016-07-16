@@ -11,6 +11,7 @@ from flask_script.commands import Clean, ShowUrls
 from shop.app import create_app
 from shop.settings import DevConfig, ProdConfig
 from shop.user.models import User
+from shop.extensions import redis_store
 
 CONFIG = ProdConfig if os.environ.get('SHOP_ENV') == 'prod' else DevConfig
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -31,6 +32,12 @@ def test():
     import pytest
     exit_code = pytest.main([TEST_PATH, '--verbose'])
     return exit_code
+
+
+@manager.command
+def clear_redis():
+    "Clear redis cache"
+    redis_store.flushall()
 
 
 class Lint(Command):
