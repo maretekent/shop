@@ -86,13 +86,11 @@ class ChannelListing(Model):
 
     @property
     def template(self):
-        return ProductTemplate.from_cache(
-            id=self._values['product.template'], refresh=True
-        )
+        return ProductTemplate.from_cache(self._values['product.template'])
 
     @property
     def product(self):
-        return Product.from_cache(id=self._values['product'])
+        return Product.from_cache(self._values['product'])
 
     @property
     def unit_price(self):
