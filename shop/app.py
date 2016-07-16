@@ -19,6 +19,10 @@ def create_app(config_object=ProdConfig):
     """
     app = Flask(__name__)
     app.config.from_object(config_object)
+
+    # explicitly assign a few config vars that are needed
+    app.channel = int(app.config['FULFIL_CHANNEL'])
+
     register_extensions(app)
     register_blueprints(app)
     register_errorhandlers(app)
