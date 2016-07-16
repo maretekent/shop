@@ -32,7 +32,9 @@ class Product(Model):
 
     __model_name__ = 'product.product'
 
-    _eager_fields = set(['variant_name', 'media', 'default_image.url'])
+    _eager_fields = set([
+        'template', 'variant_name', 'media', 'default_image.url'
+    ])
 
     code = StringType()
     list_price = CurrencyType()
@@ -46,7 +48,11 @@ class Product(Model):
 
     @property
     def name(self):
-        return self._values['variant_name']
+        return self._values['variant_name'] or self.template.name
+
+    @property
+    def template(self):
+        return ProductTemplate.from_cache(self._values['template'])
 
     def get_related_products(self):
         """
