@@ -1,8 +1,8 @@
 {% extends theme("layout.html") %}
-
+{% block body_class %}single-product-page{% endblock %}
 {% block content %}
 
-<section id="breadcrumb">
+<section id="breadcrumb" class="clearfix">
 
   <ul class="breadcrumb">
     <li><a href="/">Home</a></li>
@@ -15,18 +15,19 @@
   <h4 class="product-code">Product Code: {{ product.code }}</h4>
 </section>
 
-<section id="summary">
+<section id="summary" class="clearfix">
   <div class="col-md-6 col-sm-6 col-xs-12" id="product-media">
     <img src="{{ product.image }}" class="img-responsive"/>
   </div>
 
   <div class="col-md-6 col-sm-6 col-xs-12" id="product-details">
-    <h1>{{ product.name }}</h1>
+    <h1 class="product-name">{{ product.name }}</h1>
     <div data-price="1899" data-discountedprice="759" class="price">
       <span class="strike">Rs. 1,899</span>
       <span class="discount">(60% OFF)</span><br>
       <span class="final">Rs. 759</span>
     </div>
+
     <div class="row" id="product-varying-attrs">
       <div class="col-md-12">
 
@@ -35,34 +36,43 @@
           <div class="size-left"></div>
           <div class="size-cont">
             {% for color in ['blue', 'green'] %}
-              <button data-sku="9643697" data-count="3" data-availableinwarehouse="36,28" data-leadtime="0" data-supplytype="ON_HAND" class="size pdp-size-btn available">{{ button }}</button>
+              <button class="size pdp-size-btn available {{ color }}">{{ button }}</button>
             {% endfor %}
           </div>
         </div>
 
-        <div class="sizes">
+        <div class="sizes mar-top">
           <label class="guide">Select a size</label>
           <div class="size-left"></div>
           <div class="size-cont">
             {% for button in range(6, 13) %}
-              <button data-sku="9643697" data-count="3" data-availableinwarehouse="36,28" data-leadtime="0" data-supplytype="ON_HAND" class="size pdp-size-btn available">{{ button }}</button>
+              <button class="size pdp-size-btn available">{{ button }}</button>
             {% endfor %}
           </div>
         </div>
 
-        <div class="form-group"> Select Frog: <br>
-          <select class="form-control select-sort attribute input-lg" data-attr-id="4073">
+        <div class="form-group"> <label>Select Frog:</label> 
+          <select class="form-control select-sort attribute" data-attr-id="4073">
             <option value="239" selected="">45 Degree Standard Angle</option>
             <option value="240">50 Degree High Angle</option>
             <option value="241">55 Degree High Angle</option>
           </select>
         </div>
-        <div class="form-group"> Select Material: <br>
-          <select class="form-control select-sort attribute input-lg" data-attr-id="4074">
+        <div class="form-group"><label>Select Material:</label>
+          <select class="form-control select-sort attribute" data-attr-id="4074">
             <option value="258">Iron</option>
             <option value="257" selected="">Bronze</option>
           </select>
         </div>
+
+        <div class="buy"><button class="button big buy-now-btn">Add to cart</button></div>
+        <div class="wishlist big-tip-cont">
+          <button class="tool-tip link">Save to wishlist</button>
+          <div class="big-tooltip top">
+            <div class="arrow arrow-bottom"></div>
+            <div class="big-tooltip-contents">Log in to save to wishlist</div></div>
+            <span style="display:none;" class="saved"></span>
+          </div>
       </div>
     </div>
 
@@ -74,19 +84,16 @@
 
       <a target="_blank" href="//www.facebook.com/sharer.php?u={{ request.url }}" 
           class="share-facebook">
-        <span class="icon icon-facebook" aria-hidden="true"></span>
-        <span class="share-title">Share</span>
+        <span class="fa fa-facebook-official"></span>
         <span class="share-count is-loaded">1</span>
       </a>
     
       <a target="_blank" href="//twitter.com/share?text={{ product.name }}&amp;url={{ request.url }}" class="share-twitter">
-        <span class="icon icon-twitter" aria-hidden="true"></span>
-        <span class="share-title">Tweet</span>
+		<span class="fa fa-twitter"></span>
       </a>
   
       <a target="_blank" href="//pinterest.com/pin/create/button/?url={{ request.url }}&amp;media={{ product.image }}&amp;description={{ product.description }}" class="share-pinterest">
-        <span class="icon icon-pinterest" aria-hidden="true"></span>
-        <span class="share-title">Pin it</span>
+        <span class="fa fa-pinterest"></span>
       </a>
     
     </div>

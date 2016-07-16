@@ -418,6 +418,138 @@ section.products h2 {
   font-size: 13px;
   color: #888;
 }
+
+
+/* Single Product page styling */
+.single-product-page #breadcrumb {
+  margin-top: 15px;
+}
+
+.single-product-page .breadcrumb {
+  float: left;
+  background: none;
+  font-size: 13px;
+  padding: 0;
+}
+
+.single-product-page .breadcrumb>li+li:before {
+  padding: 0 2px;
+  color: #666;
+}
+
+.single-product-page .breadcrumb li a {
+  color: #666;
+}
+
+.single-product-page .product-code {
+  float: right;
+  margin: 0;
+  font-size: 13px;
+  font-weight: bold;
+  color: #555;  
+}
+
+.single-product-page #product-media {
+  padding: 30px 60px 30px 0; 
+}
+
+.single-product-page .product-name {
+  font-size: 20px; 
+}
+
+.single-product-page .price {
+  font-size: 15px;
+  color: #555;
+}
+
+.single-product-page span.strike {
+  text-decoration: line-through;
+}
+
+.single-product-page span.discount {
+  color: #EE5F73;
+  margin-left: 3px;
+}
+
+.single-product-page span.final {
+  margin-top: 3px;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.single-product-page .color {
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+  padding-top: 15px;
+}
+
+.single-product-page .size-cont button {
+  width: 30px;
+  height: 25px;
+  outline: none;
+  border: none;
+  margin-right: 2px;
+  cursor: pointer;
+}
+
+.single-product-page .size-cont button.blue {
+  background: #3693EC;
+}
+
+.single-product-page .mar-top {
+  margin-top: 5px;
+}
+
+.single-product-page .material-frog {
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+  padding-top: 15px; 
+}
+
+.single-product-page .material-frog select.form-control {
+  max-width: 300px;
+  padding: 5px;
+  height: 30px;
+  font-size: 14px;
+  border-radius: 0;
+  box-shadow: none;
+  border: 1px solid #ddd;
+}
+
+.single-product-page .product-description {
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+  padding-top: 5px;  
+}
+
+.single-product-page .product-description h3{
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.single-product-page .social-sharing {
+  margin-top: 15px;
+}
+
+.single-product-page .social-sharing a {
+  position: relative;
+  font-size: 20px;
+  color: #444;
+}
+
+.single-product-page .social-sharing a:hover {
+  text-decoration: none;
+}
+
+.single-product-page .share-count {
+  font-size: 18px;
+}
+
+.single-product-page #summary {
+  margin-bottom: 100px;
+}
 /* Footer Styles */
 footer {
   background: #111;
