@@ -17,6 +17,7 @@ class Config(object):
 
     FULFIL_SUBDOMAIN = os.environ.get('FULFIL_SUBDOMAIN')
     FULFIL_API_KEY = os.environ.get('FULFIL_API_KEY')
+    FULFIL_CHANNEL = os.environ.get('FULFIL_CHANNEL')
 
     THEME = 'default'
     THEME_PATHS = [
