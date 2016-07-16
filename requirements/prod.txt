@@ -34,6 +34,9 @@ Flask-DebugToolbar==0.10.0
 # Themes
 Flask-Themes2
 
+# Babel
+Flask-Babel
+
 # Fulfil
 Flask-Fulfil
 
