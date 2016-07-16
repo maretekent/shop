@@ -10,6 +10,7 @@ from copy import copy
 from math import ceil
 
 import fulfil_client
+from fulfil_client.client import loads, dumps
 from flask import abort, has_request_context, request
 
 from shop.extensions import fulfil, redis_store
@@ -405,7 +406,7 @@ class Model(object):
         key = '%s:%s' % (cls.__model_name__, id)
         if redis_store.exists(key):
             print "Loading from cache"
-            return cls(id=id, values=redis_store.hgetall(key))
+            return cls(id=id, values=loads(redis_store.get(key)))
 
         # Not in cache. Build the record, save to cache and then return
         record = cls(id=id)
@@ -419,7 +420,7 @@ class Model(object):
         Save the values to a cache
         """
         key = '%s:%s' % (self.__model_name__, self.id)
-        redis_store.hmset(key, self._values)
+        redis_store.set(key, dumps(self._values))
 
     @classmethod
     def from_ids(cls, ids):
