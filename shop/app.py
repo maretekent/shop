@@ -2,13 +2,11 @@
 """The app module, containing the app factory function."""
 from flask import Flask
 
-from shop import public, user, product, node
-from shop.utils import render_theme_template as render_template
+from shop import node, product, public, user
 from shop.assets import assets
-from shop.extensions import (
-    cache, csrf_protect, debug_toolbar, fulfil, login_manager, themes, sentry
-)
+from shop.extensions import cache, csrf_protect, debug_toolbar, fulfil, login_manager, sentry, themes
 from shop.settings import ProdConfig
+from shop.utils import render_theme_template as render_template
 
 
 def create_app(config_object=ProdConfig):

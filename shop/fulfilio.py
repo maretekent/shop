@@ -10,9 +10,9 @@ from copy import copy
 from math import ceil
 
 import fulfil_client
+from flask import abort, has_request_context, request
 
 from shop.extensions import fulfil
-from flask import abort, has_request_context, request
 
 
 class BaseType(object):

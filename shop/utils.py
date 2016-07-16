@@ -2,8 +2,9 @@
 """
 Helper utilities and decorators.
 """
-from flask import flash, current_app
-from flask.ext.themes2 import get_theme, render_theme_template as rtt
+from flask import current_app, flash
+from flask.ext.themes2 import render_theme_template as rtt
+from flask.ext.themes2 import get_theme
 
 
 def flash_errors(form, category='warning'):

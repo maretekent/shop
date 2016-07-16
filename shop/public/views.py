@@ -7,7 +7,8 @@ from shop.extensions import login_manager
 from shop.public.forms import LoginForm
 from shop.user.forms import RegisterForm
 from shop.user.models import User
-from shop.utils import flash_errors, render_theme_template as render_template
+from shop.utils import render_theme_template as render_template
+from shop.utils import flash_errors
 
 blueprint = Blueprint('public', __name__, static_folder='../static')
 

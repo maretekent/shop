@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Node models."""
-from shop.fulfilio import Model, StringType
+from shop.fulfilio import IntType, Model, StringType
 
 
 class TreeNode(Model):

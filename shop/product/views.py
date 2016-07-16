@@ -6,7 +6,8 @@ from flask import Blueprint, abort, request
 
 from shop.node.models import TreeNode
 from shop.product.models import Product
-from shop.utils import render_theme_template as render_template, get_random_product
+from shop.utils import render_theme_template as render_template
+from shop.utils import get_random_product
 
 blueprint = Blueprint(
     'products', __name__,

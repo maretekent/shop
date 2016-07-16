@@ -3,7 +3,8 @@
 from flask import Blueprint, abort
 
 from shop.node.models import TreeNode
-from shop.utils import render_theme_template as render_template, dummy_products
+from shop.utils import render_theme_template as render_template
+from shop.utils import dummy_products
 
 blueprint = Blueprint(
     'node', __name__,
@@ -21,7 +22,6 @@ def nodes():
 
 
 # TODO: Cache
-@dummy_products
 def get_products_in_node(node_id, page, per_page):
     """
     Return products in a page for the node
