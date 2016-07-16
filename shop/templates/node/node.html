@@ -23,19 +23,19 @@
 </section>
 {% endif %}
 
-{% if products %}
+{% if listings %}
 <section class="products" id="products-new-sellers">
   <div class="section-title"><h2>Products</h2></div>
   <ul class="clearfix">
-    {% for product in products %}
+    {% for listing in listings %}
     <li class="col-xs-6 col-sm-3 col-md-2">
-      <a href="{{ url_for('products.product', id=product.id, handle=product.uri) }}">
+      <a href="{{ url_for('products.product', handle=listing.product_identifier) }}">
         <div class="img-wrapper">
-          <img class="img img-responsive" src="{{ product.image }}"/>        
+          <img class="img img-responsive" src="{{ listing.product.image }}"/>        
         </div>
         <div class="content">
-          <h4>{{ product.name }}</h4>
-          <h5>{{ product.price }}</h5>
+          <h4>{{ listing.product.name }}</h4>
+          <h5>{{ listing.product.list_price|currencyformat('USD') }}</h5>
         </div>
       </a>
     </li>

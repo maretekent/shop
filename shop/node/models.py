@@ -2,6 +2,7 @@
 """Node models."""
 from shop.fulfilio import IntType, Model, StringType
 from shop.product.models import ChannelListing, Product, ProductTemplate
+from shop.extensions import redis_store
 
 
 class TreeNode(Model):
@@ -16,6 +17,9 @@ class TreeNode(Model):
     display = StringType()
     description = StringType()
     products_per_page = IntType()
+
+    left = IntType()
+    right = IntType()
 
     @property
     def image(self):
@@ -56,6 +60,15 @@ class TreeNode(Model):
         This method does a lot of expensive network requests, so the results
         are cached for performance.
         """
+        key = '%s:%s:listings' % (self.__model_name__, self.id)
+
+        if not redis_store.exists(key):
+            self._cache_node_listing(key)
+
+    def _cache_node_listing(self, key):
+        """
+        A special method to cache and save listings
+        """
         node_products = TreeProductRel.rpc.search_read(
             [
                 ('node.left', '>=', self.left),
@@ -79,22 +92,42 @@ class TreeNode(Model):
 
         # Sort the listings in the order of products position in node
         listings = sorted(
-            listings, key=lambda l: product_ids.index(l['product'])
+            listings,
+            key=lambda l: product_ids.index(l['product']),
+            reverse=True,
         )
 
-        # Add the items to
-        items = []
+        templates = []      # A list to avoid duplicates
+
         for listing in listings:
-            if self.display == 'product.product':
-                items.append(listing.id)
+            if self.display == 'product.template':
+                if listing['product.template'] in templates:
+                    continue
+                templates.append(listing['product.template'])
+
+            # Add the listings to the sorted set in redis
+            redis_store.zadd(key, listings.index(listing), listing['id'])
 
     def get_listings(self, page, per_page=None):
         """
         Get the products or templates (hence items) in this node.
         """
+        key = '%s:%s:listings' % (self.__model_name__, self.id)
+
+        if not redis_store.exists(key):
+            self._cache_node_listing(key)
+
         if per_page is None:
             per_page = self.products_per_page
 
+        start = (page - 1) * per_page
+        end = start + per_page
+
+        listings = map(
+            lambda l: ChannelListing.from_cache(int(l)),
+            redis_store.zrange(key, start, end)
+        )
+        return listings
 
 
 class TreeProductRel(Model):

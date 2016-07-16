@@ -40,7 +40,7 @@ def get_top_sellers_in_node(node_id):
 @blueprint.route('/<int:id>')
 @blueprint.route('/<int:id>/<handle>')                  # Legacy
 @blueprint.route('/<int:id>/<handle>/page-<int:page>')  # Legacy
-def node(handle=None, id=None, page=1):
+def node(id=None, handle=None, page=1):
     """
     Display a specific node with given URI.
 
@@ -58,10 +58,10 @@ def node(handle=None, id=None, page=1):
     if not node:
         abort(404)
 
-    products = get_products_in_node(node.id, page, per_page)
+    listings = node.get_listings(page, per_page)
 
     top_sellers = []
-    if not products:
+    if not listings:
         # no direct products under the category.
         # Find top sellers
         top_sellers = get_top_sellers_in_node(node.id)
@@ -69,7 +69,7 @@ def node(handle=None, id=None, page=1):
     return render_template(
         'node/node.html',
         node=node,
-        products=products,
+        listings=listings,
         top_sellers=top_sellers,
         page=page
     )
