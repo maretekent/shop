@@ -10,7 +10,7 @@ from math import ceil
 from flask import abort, current_app, has_request_context, request
 from werkzeug.local import LocalProxy
 
-from fulfil_client.model import Query, StringType, model_base
+from fulfil_client.model import Query, StringType, model_base, IntType
 from shop.extensions import fulfil, redis_store
 
 Model = model_base(fulfil, redis_store)
@@ -20,6 +20,13 @@ class Channel(Model):
     __model_name__ = 'sale.channel'
 
     name = StringType()
+    code = StringType()
+
+    # TODO: convert followings to model type.
+    company = IntType()
+    currency = IntType()
+    anonymous_customer = IntType()
+    warehouse = IntType()
     # support_email = StringType()
 
     @property
