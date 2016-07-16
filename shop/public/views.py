@@ -34,6 +34,7 @@ def home():
             flash_errors(form)
     return render_template('public/home.html', form=form)
 
+
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     """Login Page"""
@@ -48,6 +49,7 @@ def login():
         else:
             flash_errors(form)
     return render_template('public/login.html', form=form)
+
 
 @blueprint.route('/logout/')
 @login_required

@@ -19,6 +19,7 @@ class BaseType(object):
     """
     A django field like object that implements a descriptor.
     """
+
     # Eager load this field
     eager = True
 
@@ -483,32 +484,44 @@ class ShopQuery(Query):
     """
     Implement web specific methods before starting to use query
     """
-    def get_or_404(self, ident):
-        """Like :meth:`get` but aborts with 404 if not found instead of returning ``None``."""
 
+    def get_or_404(self, ident):
+        """
+        Like :meth:`get` but aborts with 404 if not found instead
+        of returning ``None``.
+        """
         rv = self.get(ident)
         if rv is None:
             abort(404)
         return rv
 
     def first_or_404(self):
-        """Like :meth:`first` but aborts with 404 if not found instead of returning ``None``."""
-
+        """
+        Like :meth:`first` but aborts with 404 if not found instead
+        of returning ``None``.
+        """
         rv = self.first()
         if rv is None:
             abort(404)
         return rv
 
     def paginate(self, page=None, per_page=None, error_out=True):
-        """Returns ``per_page`` items from page ``page``.
-        If no items are found and ``page`` is greater than 1, or if page is less than 1, it aborts with 404.
+        """
+        Returns ``per_page`` items from page ``page``.
+
+        If no items are found and ``page`` is greater than 1
+        or if page is less than 1, it aborts with 404.
         This behavior can be disabled by passing ``error_out=False``.
-        If ``page`` or ``per_page`` are ``None``, they will be retrieved from the request query.
-        If the values are not ints and ``error_out`` is ``True``, it aborts with 404.
-        If there is no request or they aren't in the query, they default to 1 and 20 respectively.
+
+        If ``page`` or ``per_page`` are ``None``, they will be retrieved
+        from the request query.
+        If the values are not ints and ``error_out`` is ``True``,
+        it aborts with 404.
+        If there is no request or they aren't in the query,
+        they default to 1 and 20 respectively.
+
         Returns a :class:`Pagination` object.
         """
-
         if has_request_context():
             if page is None:
                 try:
@@ -616,11 +629,14 @@ class Pagination(object):
 
     def iter_pages(self, left_edge=2, left_current=2,
                    right_current=5, right_edge=2):
-        """Iterates over the page numbers in the pagination.  The four
+        u"""
+        Iterates over the page numbers in the pagination.  The four
         parameters control the thresholds how many numbers should be produced
         from the sides.  Skipped page numbers are represented as `None`.
         This is how you could render such a pagination in the templates:
+
         .. sourcecode:: html+jinja
+
             {% macro render_pagination(pagination, endpoint) %}
               <div class=pagination>
               {%- for page in pagination.iter_pages() %}
@@ -640,7 +656,7 @@ class Pagination(object):
         last = 0
         for num in xrange(1, self.pages + 1):
             if num <= left_edge or \
-               (num > self.page - left_current - 1 and \
+               (num > self.page - left_current - 1 and
                 num < self.page + right_current) or \
                num > self.pages - right_edge:
                 if last + 1 != num:

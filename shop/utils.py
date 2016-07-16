@@ -42,7 +42,7 @@ def get_random_product():
             "https://dzhj8173mkary.cloudfront.net/static-file-transform/2356/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
             "https://dzhj8173mkary.cloudfront.net/static-file-transform/386/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
             "https://dzhj8173mkary.cloudfront.net/static-file-transform/388/thumbnail%2Cw_300%2Ch_300%2Cm_a.jpg",
-        ]        
+        ]
         dummy_products = [
             Product(uri='tp1', name='Product 1', price="$1,040.00", image=random.choice(p_images)),
             Product(uri='tp1', name='Product 2', price="$40.00", image=random.choice(p_images)),
