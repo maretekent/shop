@@ -23,9 +23,11 @@
   <div class="col-md-6 col-sm-6 col-xs-12" id="product-details">
     <h1 class="product-name">{{ product.name }}</h1>
     <div data-price="1899" data-discountedprice="759" class="price">
-      <span class="strike">Rs. 1,899</span>
+      <span class="strike">{{ product.list_price|currencyformat('USD') }}</span>
+      {% if listing.unit_price < product.list_price %}
       <span class="discount">(60% OFF)</span><br>
-      <span class="final">Rs. 759</span>
+      <span class="final">{{ listing.unit_price|currencyformat('USD') }}</span>
+      {% endif %}
     </div>
 
     <div class="row" id="product-varying-attrs">

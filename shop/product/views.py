@@ -33,21 +33,15 @@ def products():
 
 
 @blueprint.route('/<handle>')
-@blueprint.route('/<int:id>')
-def product(handle=None, id=None):
+def product(handle):
     """
     Display a specific product with given URI
     """
-    if id:
-        product = Product.query.get_or_404(id)
-    elif handle:
-        product = Product.query.filter_by_domain([
-            ('uri', 'ilike', handle),
-        ]).first()
-    else:
-        abort(404)
+    from shop.node.models import TreeNode
 
-    print product._values
+    listing = ChannelListing.from_slug(handle)
+    if not listing:
+        abort(404)
 
     if 'node' in request.args:
         node = TreeNode.query.get(request.args.get('node', type=int))
@@ -56,7 +50,8 @@ def product(handle=None, id=None):
 
     return render_template(
         'product/product.html',
-        product=product,
+        listing=listing,
+        product=listing.product,
         node=node,
     )
 

@@ -12,6 +12,21 @@ class ProductTemplate(Model):
 
     name = StringType()
 
+    @property
+    def listings(self):
+        """
+        Return the products (that are listed in the current channel) and
+        active.
+        """
+        listings = ChannelListing.query.filter_by_domain(
+            [
+                ('channel', '=', current_app.config['FULFIL_CHANNEL']),
+                ('state', '=', 'active'),
+                ('product.template', '=', self.id),
+            ],
+        ).all()
+        return listings
+
 
 class Product(Model):
 
@@ -40,3 +55,40 @@ class Product(Model):
         return [
             get_random_product() for c in range(5)
         ]
+
+
+class ChannelListing(Model):
+    __model_name__ = 'product.product.channel_listing'
+
+    _eager_fields = set(['channel', 'product', 'product.template'])
+
+    product_identifier = StringType()
+    state = StringType()
+
+    @classmethod
+    def from_slug(cls, slug):
+        return cls.query.filter_by_domain(
+            [
+                ('channel', '=', current_app.channel),
+                ('product_identifier', '=', slug),
+            ]
+        ).first()
+
+    @property
+    def channel(self):
+        return self._values['channel']
+
+    @property
+    def template(self):
+        return ProductTemplate.from_cache(
+            id=self._values['product.template'], refresh=True
+        )
+
+    @property
+    def product(self):
+        return Product.from_cache(id=self._values['product'])
+
+    @property
+    def unit_price(self):
+        # TODO: Price should come from the listing and customer
+        return self.product.list_price
