@@ -3,11 +3,13 @@
 from flask.ext.themes2 import Themes
 from flask_cache import Cache
 from flask_babel import Babel
+from flask_redis import FlaskRedis
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_fulfil import Fulfil
 from flask_login import LoginManager
 from flask_wtf.csrf import CsrfProtect
 from raven.contrib.flask import Sentry
+from redis import StrictRedis
 
 csrf_protect = CsrfProtect()
 login_manager = LoginManager()
@@ -17,3 +19,4 @@ fulfil = Fulfil()
 themes = Themes()
 sentry = Sentry()
 babel = Babel()
+redis_store = FlaskRedis.from_custom_provider(StrictRedis)

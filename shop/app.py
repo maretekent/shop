@@ -4,7 +4,7 @@ from flask import Flask
 
 from shop import node, product, public, user
 from shop.assets import assets
-from shop.extensions import cache, csrf_protect, debug_toolbar, fulfil, login_manager, sentry, themes, babel
+from shop.extensions import cache, csrf_protect, debug_toolbar, fulfil, login_manager, sentry, themes, babel, redis_store
 from shop.settings import ProdConfig
 from shop.utils import render_theme_template as render_template
 
@@ -39,6 +39,7 @@ def register_extensions(app):
     fulfil.init_app(app)
     sentry.init_app(app)
     babel.init_app(app)
+    redis_store.init_app(app)
     themes.init_themes(app, app_identifier='fulfil-shop')
     return None
 

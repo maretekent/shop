@@ -37,6 +37,9 @@ Flask-Themes2
 # Babel
 Flask-Babel
 
+# Redis
+Flask-Redis
+
 # Fulfil
 Flask-Fulfil
 

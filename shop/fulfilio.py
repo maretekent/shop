@@ -12,7 +12,7 @@ from math import ceil
 import fulfil_client
 from flask import abort, has_request_context, request
 
-from shop.extensions import fulfil
+from shop.extensions import fulfil, redis_store
 
 
 class BaseType(object):
@@ -395,6 +395,31 @@ class Model(object):
 
         # Now create a modification tracking dictionary
         self._values = ModificationTrackingDict(values)
+
+    @classmethod
+    def from_cache(cls, id):
+        """
+        Check if a record is in cache. If it is load from there, if not
+        load the record and then cache it.
+        """
+        key = '%s:%s' % (cls.__model_name__, id)
+        if redis_store.exists(key):
+            print "Loading from cache"
+            return cls(id=id, values=redis_store.hgetall(key))
+
+        # Not in cache. Build the record, save to cache and then return
+        record = cls(id=id)
+        record.refresh()
+        record.cache()
+
+        return record
+
+    def cache(self):
+        """
+        Save the values to a cache
+        """
+        key = '%s:%s' % (self.__model_name__, self.id)
+        redis_store.hmset(key, self._values)
 
     @classmethod
     def from_ids(cls, ids):
