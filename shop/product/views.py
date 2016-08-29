@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """Product views."""
-import random
-
 from flask import Blueprint, abort, request
 
 from shop.product.models import ChannelListing, Product

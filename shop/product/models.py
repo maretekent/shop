@@ -2,7 +2,8 @@
 """Product models."""
 from flask import current_app
 
-from shop.fulfilio import CurrencyType, Model, StringType
+from fulfil_client.model import CurrencyType, StringType
+from shop.fulfilio import Model
 from shop.utils import get_random_product
 
 

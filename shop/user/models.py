@@ -2,7 +2,8 @@
 """User models."""
 from flask_login import UserMixin
 
-from shop.fulfilio import BooleanType, Model, ModelType, StringType
+from fulfil_client.model import BooleanType, ModelType, StringType
+from shop.fulfilio import Model
 
 
 class Party(Model):

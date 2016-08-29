@@ -9,9 +9,9 @@ from flask_script import Command, Manager, Option, Server, Shell
 from flask_script.commands import Clean, ShowUrls
 
 from shop.app import create_app
+from shop.extensions import redis_store
 from shop.settings import DevConfig, ProdConfig
 from shop.user.models import User
-from shop.extensions import redis_store
 
 CONFIG = ProdConfig if os.environ.get('SHOP_ENV') == 'prod' else DevConfig
 HERE = os.path.abspath(os.path.dirname(__file__))

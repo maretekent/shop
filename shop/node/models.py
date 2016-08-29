@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Node models."""
-from shop.fulfilio import IntType, Model, StringType
-from shop.product.models import ChannelListing, Product, ProductTemplate
+from fulfil_client.model import IntType, StringType
 from shop.extensions import redis_store
+from shop.fulfilio import Model
+from shop.product.models import ChannelListing, Product, ProductTemplate
 
 
 class TreeNode(Model):
