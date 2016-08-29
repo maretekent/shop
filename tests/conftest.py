@@ -14,6 +14,9 @@ from .factories import UserFactory
 def app():
     """An application for the tests."""
     _app = create_app(TestConfig)
+    subdomain = _app.config['FULFIL_SUBDOMAIN']
+    if subdomain and 'fulfil_demo' != subdomain:
+        pytest.fail("Tests cannot be run on %s." % subdomain)
     ctx = _app.test_request_context()
     ctx.push()
 
