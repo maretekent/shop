@@ -45,3 +45,6 @@ Flask-Fulfil
 
 # Sentry
 raven[flask]
+
+# Premailer for inlining CSS in emails
+premailer
