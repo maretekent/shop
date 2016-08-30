@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
-from flask import Blueprint, flash, redirect, request, url_for
+from flask import Blueprint, abort, current_app, flash, jsonify, redirect, request, url_for
+from flask_babel import gettext as _
 from flask_login import login_required, login_user, logout_user
+from itsdangerous import BadSignature, SignatureExpired
 
 from shop.extensions import login_manager
-from shop.public.forms import LoginForm
+from shop.public.forms import LoginForm, NewPasswordForm, ResetPasswordForm
 from shop.user.forms import RegisterForm
 from shop.user.models import User
 from shop.utils import render_theme_template as render_template
@@ -83,3 +85,61 @@ def about():
     """About page."""
     form = LoginForm(request.form)
     return render_template('public/about.html', form=form)
+
+
+@blueprint.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    form = ResetPasswordForm(request.form, csrf_enabled=False)
+    if form.validate_on_submit():
+        form.user.initiate_reset_password()
+        return render_template('public/reset-password-sent.html')
+    return render_template('public/reset-password.html', form=form)
+
+
+@blueprint.route('/new-password/<int:user_id>/<sign>', methods=['GET', 'POST'])
+def new_password(user_id, sign, max_age=60 * 60):
+    form = NewPasswordForm()
+    if form.validate_on_submit():
+        try:
+            unsigned = User._serializer.loads(
+                User._signer.unsign(sign, max_age=max_age),
+                salt='reset-password'
+            )
+        except SignatureExpired:
+            return xhr_safe_response(
+                _('The password reset link has expired'),
+                redirect(url_for('public.reset_password')), 400
+            )
+        except BadSignature:
+            return xhr_safe_response(
+                _('Invalid reset password code'),
+                redirect(url_for('public.reset_password')), 400
+            )
+        else:
+            if not user_id == unsigned:
+                current_app.logger.debug('Invalid reset password code')
+                abort(403)
+
+            User(id=user_id).set_password(form.password.data)
+            return xhr_safe_response(
+                _('Your password has been successfully changed! '
+                'Please login again'),
+                redirect(url_for('public.login')), 200
+            )
+    elif form.errors and (request.is_xhr or request.is_json):
+            return jsonify(errors=form.errors), 400
+
+    return render_template('new-password.jinja', password_form=form)
+
+
+def xhr_safe_response(message, response, xhr_status_code):
+    """
+    Method to handle response for jinja and XHR requests.
+    message: Message to show as flash and send as json response.
+    response: redirect or render_template method.
+    xhr_status_code: Status code to be sent with json response.
+    """
+    if request.is_xhr or request.is_json:
+        return jsonify(message=message), xhr_status_code
+    flash(_(message))
+    return response

@@ -2,7 +2,8 @@
 """Public forms."""
 from flask_wtf import Form
 from wtforms import PasswordField, StringField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email, ValidationError, Length, \
+     EqualTo
 
 from shop.user.models import User
 
@@ -37,3 +38,31 @@ class LoginForm(Form):
             self.email.errors.append('User not activated')
             return False
         return True
+
+
+class ResetPasswordForm(Form):
+    "Initiates a password reset"
+
+    email = StringField('E-mail', validators=[DataRequired(), Email()])
+
+    def validate_email(self, field):
+        self.user = User.find_user(self.email.data)
+
+        if not self.user:
+            raise ValidationError('Unknown e-mail')
+
+
+class NewPasswordForm(Form):
+    """New Password form."""
+
+    password = PasswordField(
+        'Password',
+        validators=[DataRequired(), Length(min=6)]
+    )
+    confirm = PasswordField(
+        'Verify password',
+        validators=[
+            DataRequired(),
+            EqualTo('password', message='Passwords must match')
+        ]
+    )

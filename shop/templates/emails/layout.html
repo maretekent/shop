@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="viewport" content="width=device-width" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Your {{ channel.name }} Password</title>
+<style>
+  {% include 'emails/styles.css' %}
+</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/EmailMessage">
+
+<table class="body-wrap">
+	<tr>
+		<td></td>
+		<td class="container" width="600">
+      <div class="content">
+        {% block content %}
+        {% endblock content %}
+				<div class="footer">
+          {% block footer %}
+					<table width="100%">
+						<tr>
+							<td class="aligncenter content-block">Follow <a href="http://twitter.com/fulfilio">@fulfilio</a> on Twitter.</td>
+						</tr>
+          </table>
+          {% endblock footer %}
+        </div>
+      </div>
+		</td>
+		<td></td>
+	</tr>
+</table>
+
+</body>
+</html>
+
