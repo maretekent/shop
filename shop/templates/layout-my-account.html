@@ -1,0 +1,27 @@
+{% extends theme('layout.html') %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <h3>My Account</h3>
+    <h4><small>{{ current_user.name }}</small></h4>
+    <hr/>
+  </div>
+  <div class="col-xs-12 col-sm-3">
+    <h5 class="small text-uppercase text-muted">Orders</h5>
+    <div class="list-group">
+      <a class="list-group-item">Orders</a>
+    </div>
+    <h5 class="small text-uppercase text-muted">Account</h5>
+    <div class="list-group">
+      <a class="list-group-item">My Profile</a>
+      <a class="list-group-item">Saved Cards</a>
+      <a class="list-group-item">My Address book</a>
+    </div>    
+  </div>
+  <div class="col-xs-12 col-sm-9">
+    {% block account_content %}
+    {% endblock account_content %}
+  </div>
+</div>
+{% endblock content %}
