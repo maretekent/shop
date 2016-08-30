@@ -6,6 +6,7 @@ from shop import node, product, public, user
 from shop.assets import assets
 from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil, login_manager, redis_store, sentry,
                              themes)
+from shop.fulfilio import channel
 from shop.settings import ProdConfig
 from shop.utils import render_theme_template as render_template
 
@@ -27,6 +28,7 @@ def create_app(config_object=ProdConfig):
     register_extensions(app)
     register_blueprints(app)
     register_errorhandlers(app)
+    register_context_processors(app)
     return app
 
 
@@ -64,3 +66,7 @@ def register_errorhandlers(app):
     for errcode in [401, 404, 500]:
         app.errorhandler(errcode)(render_error)
     return None
+
+
+def register_context_processors(app):
+    app.context_processor(lambda: {'channel': channel})

@@ -7,12 +7,35 @@ from views and models.
 """
 from math import ceil
 
-from flask import abort, has_request_context, request
+from flask import abort, current_app, has_request_context, request
+from werkzeug.local import LocalProxy
 
-from fulfil_client.model import Query, model_base
+from fulfil_client.model import Query, StringType, model_base
 from shop.extensions import fulfil, redis_store
 
 Model = model_base(fulfil, redis_store)
+
+
+class Channel(Model):
+    __model_name__ = 'sale.channel'
+
+    name = StringType()
+    # support_email = StringType()
+
+    @property
+    def support_email(self):
+        # TODO: Add support email to channel
+        return 'hello@fulfil.io'
+
+    @classmethod
+    def get_current_channel(cls):
+        "Get the current channel based on the env var"
+        return Channel.from_cache(
+            current_app.config['FULFIL_CHANNEL']
+        )
+
+
+channel = LocalProxy(Channel.get_current_channel)
 
 
 class ShopQuery(Query):
