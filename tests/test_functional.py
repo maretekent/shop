@@ -21,7 +21,7 @@ def active_user(app):
 
     # Record does not exist. So create.
     user = User(
-        display_name='John Doe',
+        name='John Doe',
         email='func@bar.com',
         password='myprecious',
         active=True

@@ -14,7 +14,7 @@ class TestUser:
     def test_get_by_id(self):
         """Get user by ID."""
         user = User({
-            'display_name': 'foo',
+            'name': 'foo',
             'email': 'foo2@bar.com'
         })
         user.save()
@@ -24,7 +24,7 @@ class TestUser:
     def test_password_is_nullable(self):
         """Test null password."""
         user = User(
-            display_name='John Doe',
+            name='John Doe',
             email='foo2@bar.com'
         )
         user.save()
@@ -39,7 +39,7 @@ class TestUser:
     def test_check_password(self):
         """Check password."""
         user = User(
-            display_name='John Doe',
+            name='John Doe',
             email='foo2@bar.com',
             password='foobarbaz123'
         )

@@ -68,7 +68,7 @@ def register():
     form = RegisterForm(request.form, csrf_enabled=False)
     if form.validate_on_submit():
         User(
-            display_name=form.name.data,
+            name=form.name.data,
             email=form.email.data,
             password=form.password.data,
             active=True

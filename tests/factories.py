@@ -17,7 +17,7 @@ class ModelFactory(Factory):
 class UserFactory(ModelFactory):
     """User factory."""
 
-    display_name = Sequence(lambda n: 'user{0}'.format(n))
+    name = Sequence(lambda n: 'user{0}'.format(n))
     email = Sequence(lambda n: 'user{0}@example.com'.format(n))
     password = 'example'
     active = True

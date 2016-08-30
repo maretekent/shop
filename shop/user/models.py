@@ -32,8 +32,7 @@ class User(UserMixin, Model):
 
     email = StringType(required=True)
 
-    # TODO: This should be changed to name
-    display_name = StringType(required=True)
+    name = StringType(required=True)
     password = StringType()
     party = ModelType(model=Party)
     active = BooleanType()
@@ -63,7 +62,7 @@ class User(UserMixin, Model):
 
     def save(self):
         if not self.party:
-            party = Party(name=self.display_name)
+            party = Party(name=self.name)
             party.save()
             self.party = party.id
         super(User, self).save()

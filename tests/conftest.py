@@ -43,7 +43,7 @@ def user(app):
 
     # Record does not exist. So create.
     user = UserFactory(
-        display_name="John Doe",
+        name="John Doe",
         email='foo@bar.com',
         password='myprecious'
     )
