@@ -25,7 +25,9 @@ class Channel(Model):
     @property
     def support_email(self):
         # TODO: Add support email to channel
-        return 'hello@fulfil.io'
+        # This is a temporary hack until then
+        import os
+        return os.environ['FROM_EMAIL']
 
     @classmethod
     def get_current_channel(cls):
