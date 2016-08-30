@@ -11,7 +11,7 @@ from shop.user.models import User
 class LoginForm(Form):
     """Login form."""
 
-    email = StringField('E-mail', validators=[DataRequired()])
+    email = StringField('E-mail', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
 
     def __init__(self, *args, **kwargs):
