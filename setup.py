@@ -12,6 +12,8 @@ setup(
         'Flask',
         'Flask-WTF',
         'Flask-Assets',
+        'cssmin',
+        'jsmin',
         'Flask-Login',
         'Flask-Cache',
         'Flask-DebugToolbar',
