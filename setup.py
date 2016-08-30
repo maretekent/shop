@@ -8,4 +8,18 @@ setup(
     include_package_data=True,
     zip_safe=False,
     long_description=open('README.rst').read(),
+    install_requires=[
+        'Flask',
+        'Flask-WTF',
+        'Flask-Assets',
+        'Flask-Login',
+        'Flask-Cache',
+        'Flask-DebugToolbar',
+        'Flask-Themes2',
+        'Flask-Babel',
+        'Flask-Redis',
+        'Flask-Fulfil',
+        'raven[flask]',
+        'premailer',
+    ]
 )
