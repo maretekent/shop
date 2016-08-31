@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """User views."""
-from flask import Blueprint, request, flash, url_for, jsonify, abort
+from flask import Blueprint, request, flash, url_for, abort
 from flask_login import login_required, current_user
 from werkzeug import redirect
 
 from shop.user.forms import AddressForm
 from shop.utils import render_theme_template as render_template
-from shop.user.models import Address, Party
-from shop.utils import flash_errors
+from shop.user.models import Address
 
 
 blueprint = Blueprint(
@@ -73,3 +72,20 @@ def edit_address(address_id):
         return redirect(url_for('user.addresses'))
 
     return render_template('users/address-edit.html', form=form, address=address)
+
+
+@blueprint.route("/address/delete/<int:address_id>", methods=["POST"])
+@login_required
+def delete_address(address_id):
+    """
+    Delete an address
+    POST deletes the address with the address_id
+    """
+    address_query = Address.query.filter_by(id=address_id)
+    if (address_query.all()[0]):
+        # If there was an address returned
+        address_query.archive()
+        flash("Address deleted", 'warning')
+        return redirect(url_for('user.addresses'))
+    else:
+        abort(404)
