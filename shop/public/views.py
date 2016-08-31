@@ -7,6 +7,7 @@ from itsdangerous import BadSignature, SignatureExpired
 
 from shop.extensions import login_manager
 from shop.public.forms import LoginForm, NewPasswordForm, ResetPasswordForm
+from shop.public.models import Country
 from shop.user.forms import RegisterForm
 from shop.user.models import User
 from shop.utils import render_theme_template as render_template
@@ -130,6 +131,32 @@ def new_password(user_id, sign, max_age=60 * 60):
             return jsonify(errors=form.errors), 400
 
     return render_template('new-password.jinja', password_form=form)
+
+
+@blueprint.route('/countries')
+def get_countries():
+    countries = Country.get_list()
+    response = {
+        "result":
+        [{"id": c.id,
+          "name": c.name,
+          "code": c.code}
+         for c in countries]
+    }
+    return jsonify(response)
+
+
+@blueprint.route('/countries/<int:country_id>/subdivisions')
+def get_country_subdivisions(country_id):
+    country = Country(id=country_id)
+    subdivisions = country.subdivisions
+    response = {
+        "result":
+        [{'name': s.name,
+          'id': s.id}
+            for s in subdivisions]
+    }
+    return jsonify(response)
 
 
 def xhr_safe_response(message, response, xhr_status_code):

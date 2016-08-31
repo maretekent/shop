@@ -9,6 +9,25 @@ from fulfil_client.model import BooleanType, ModelType, StringType
 from shop.extensions import fulfil
 from shop.fulfilio import Model, channel
 from shop.utils import render_email
+from shop.public.models import Country, Subdivision
+
+
+class Address(Model):
+    """
+    An address of a user
+    """
+
+    __model_name__ = 'party.address'
+
+    name = StringType(required=True)
+    street = StringType()
+    streetbis = StringType()
+    zip = StringType()
+    city = StringType()
+    country = ModelType(model=Country)
+    subdivision = ModelType(model=Subdivision)
+    phone = StringType()
+    full_address = StringType()
 
 
 class Party(Model):
@@ -146,45 +165,4 @@ class User(UserMixin, Model):
         """
         return Address.query.filter_by_domain(
             [('party', '=', self.party)]
-        ).all()
-
-
-class Country(Model):
-
-    __model_name__ = 'country.country'
-
-    name = StringType()
-    code = StringType()
-
-
-class Subdivision(Model):
-
-    __model_name__ = 'country.subdivision'
-
-    name = StringType()
-
-
-class Address(Model):
-    """
-    An address of a user
-    """
-
-    __model_name__ = 'party.address'
-
-    name = StringType(required=True)
-    city = StringType()
-    street = StringType()
-    streetbis = StringType()
-    country = ModelType(model=Country)
-    subdivision = ModelType(model=Subdivision)
-    phone = StringType()
-    full_address = StringType()
-
-    @classmethod
-    def get_addresses(cls):
-        """
-        Get all adresses of the user
-        """
-        return cls.query.filter_by_domain(
-            [('party', '=', current_user.party)]
         ).all()

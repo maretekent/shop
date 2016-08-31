@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 """User forms."""
 from flask_wtf import Form
-from wtforms import PasswordField, StringField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
+from wtforms import PasswordField, StringField, TextField, SelectField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 
-from .models import User
+from shop.user.models import User
+from shop.public.models import Country, Subdivision
 
 
 class RegisterForm(Form):
-    """Register form."""
-
     name = StringField(
         'Full Name',
         validators=[DataRequired()]
@@ -47,3 +46,74 @@ class RegisterForm(Form):
             return False
 
         return True
+
+
+class CountrySelectField(SelectField):
+    def __init__(self, *args, **kwargs):
+        super(CountrySelectField, self).__init__(*args, **kwargs)
+        self.choices = [
+            (country.id, country.name)
+            for country in Country.get_list()
+        ]
+
+
+class SubdivisionSelectField(SelectField):
+    def __init__(self, *args, **kwargs):
+        super(SubdivisionSelectField, self).__init__(*args, **kwargs)
+        countries = Country.get_list()
+        subdivisions = Subdivision.query.filter_by(country=countries[0].id).all()
+        self.choices = [
+            (subdivision.id, subdivision.name) for subdivision in subdivisions
+        ]
+
+
+def validate_subdivision(form, field):
+    """
+    Enforces the subdivision actually belongs to selected country
+    """
+    subdivisions = [s.id for s in Subdivision.query.filter_by(country=form.country.data).all()]
+    if field.data not in subdivisions and len(subdivisions):
+        raise ValidationError("Subdivision is not valid for the selected country.")
+
+
+class AddressForm(Form):
+    name = TextField(
+        'Name',
+        validators=[DataRequired()],
+        render_kw={"placeholder": "e.g. John Doe"}
+    )
+    street = TextField(
+        'Address Line 1',
+        validators=[DataRequired()],
+        render_kw={"placeholder": "Street address, P.O. box, company name, c/o"}
+    )
+    streetbis = TextField(
+        'Address Line 2',
+        render_kw={"placeholder": "Apartment, suite, unit, building, floor, etc."}
+    )
+    zip = TextField(
+        'Post Code',
+        validators=[DataRequired()],
+        render_kw={"placeholder": "e.g. 560100"}
+    )
+    city = TextField(
+        'City',
+        validators=[DataRequired()],
+        render_kw={"placeholder": "e.g. Los Angeles, Beverly Hills."}
+    )
+    country = CountrySelectField(
+        'Country',
+        validators=[DataRequired()],
+        coerce=int)
+    subdivision = SubdivisionSelectField(
+        'State/Province/Region',
+        validators=[DataRequired(), validate_subdivision],
+        coerce=int
+    )
+    phone = TextField(
+        'Phone',
+        render_kw={"placeholder": "e.g. +1234556"}
+    )
+
+    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
+        super(AddressForm, self).__init__(formdata, obj, prefix, **kwargs)
