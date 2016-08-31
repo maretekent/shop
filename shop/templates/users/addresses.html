@@ -14,8 +14,8 @@
             {% endfor %}
           </address>
         </div>
-        <div class="col-sm-6">
-          <a type="button" class="btn btn-xs btn-default pull-right">Edit</a>
+        <div class="col-xs-6">
+          <a type="button" class="btn btn-sm btn-default pull-right" href="{{ url_for('user.edit_address', address_id=address.id) }}"><span class="glyphicon glyphicon-pencil">&nbsp;</span>Edit</a>
         </div>
       </div>
     {% endfor %}
@@ -25,4 +25,5 @@
     </div>
     <br/>
   </div>
+
 {% endblock account_content %}

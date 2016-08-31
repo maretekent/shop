@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """User views."""
-from flask import Blueprint, request, url_for, flash
+from flask import Blueprint, request, flash, url_for, jsonify, abort
 from flask_login import login_required, current_user
 from werkzeug import redirect
 
 from shop.user.forms import AddressForm
 from shop.utils import render_theme_template as render_template
-from shop.user.models import Address
+from shop.user.models import Address, Party
 from shop.utils import flash_errors
 
 
@@ -49,3 +49,27 @@ def create_address():
         return redirect(url_for('user.addresses'))
 
     return render_template('users/address-form.html', form=form)
+
+
+@blueprint.route("/address/edit/<int:address_id>", methods=["GET", "POST"])
+@login_required
+def edit_address(address_id):
+    """
+    Edit an Address
+    POST will update an existing address.
+    GET will return a existing address edit form.
+    :param address_id: ID of the address
+    """
+    address = Address.query.get(address_id)
+    if not address.party == current_user.party:
+        abort(403)
+
+    form = AddressForm(request.form, address)
+    if form.validate_on_submit():
+        form.populate_obj(address)
+        address.party = current_user.party
+        address.save()
+        flash('Address successfully updated', 'success')
+        return redirect(url_for('user.addresses'))
+
+    return render_template('users/address-edit.html', form=form, address=address)

@@ -12,6 +12,21 @@ from shop.utils import render_email
 from shop.public.models import Country, Subdivision
 
 
+class Party(Model):
+    """
+    A contact (party) in Fulfil.
+
+    Needed since every user is associated with a contact
+    """
+
+    __model_name__ = 'party.party'
+
+    name = StringType(required=True)
+
+    def addresses(self):
+        return Address.query.filter_by(party=self.id).all()
+
+
 class Address(Model):
     """
     An address of a user
@@ -27,19 +42,8 @@ class Address(Model):
     country = ModelType(model=Country)
     subdivision = ModelType(model=Subdivision)
     phone = StringType()
+    party = ModelType(model=Party)
     full_address = StringType()
-
-
-class Party(Model):
-    """
-    A contact (party) in Fulfil.
-
-    Needed since every user is associated with a contact
-    """
-
-    __model_name__ = 'party.party'
-
-    name = StringType(required=True)
 
 
 class User(UserMixin, Model):
@@ -161,7 +165,7 @@ class User(UserMixin, Model):
 
     def get_addresses(self):
         """
-        Get all addresses of the user
+        Get all addresses of the party
         """
         return Address.query.filter_by_domain(
             [('party', '=', self.party)]
