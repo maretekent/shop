@@ -2,7 +2,7 @@
 """User models."""
 from flask import current_app, url_for
 from flask_babel import gettext
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from itsdangerous import TimestampSigner, URLSafeSerializer
 
 from fulfil_client.model import BooleanType, ModelType, StringType
@@ -139,3 +139,52 @@ class User(UserMixin, Model):
             'to_addrs': self.email,
             'msg': email_message.as_string(),
         }])
+
+    def get_addresses(self):
+        """
+        Get all addresses of the user
+        """
+        return Address.query.filter_by_domain(
+            [('party', '=', self.party)]
+        ).all()
+
+
+class Country(Model):
+
+    __model_name__ = 'country.country'
+
+    name = StringType()
+    code = StringType()
+
+
+class Subdivision(Model):
+
+    __model_name__ = 'country.subdivision'
+
+    name = StringType()
+
+
+class Address(Model):
+    """
+    An address of a user
+    """
+
+    __model_name__ = 'party.address'
+
+    name = StringType(required=True)
+    city = StringType()
+    street = StringType()
+    streetbis = StringType()
+    country = ModelType(model=Country)
+    subdivision = ModelType(model=Subdivision)
+    phone = StringType()
+    full_address = StringType()
+
+    @classmethod
+    def get_addresses(cls):
+        """
+        Get all adresses of the user
+        """
+        return cls.query.filter_by_domain(
+            [('party', '=', current_user.party)]
+        ).all()
