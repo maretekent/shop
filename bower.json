@@ -3,7 +3,8 @@
   "dependencies": {
     "jquery": "^3.0.0",
     "bootstrap": "^3.3.6",
-    "jquery-ui": "^1.11.4"
+    "jquery-ui": "^1.11.4",
+    "jquery-validation": "^1.15.1"
   },
   "resolutions": {
     "jquery": "1.9.1 - 2"
