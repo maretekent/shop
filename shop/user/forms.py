@@ -2,7 +2,7 @@
 """User forms."""
 from flask_login import current_user
 from flask_wtf import Form
-from wtforms import PasswordField, SelectField, StringField, TextField
+from wtforms import PasswordField, SelectField, StringField
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
                                 ValidationError)
 
@@ -58,15 +58,9 @@ class CountrySelectField(SelectField):
             for country in Country.get_list()
         ]
 
-
-class SubdivisionSelectField(SelectField):
-    def __init__(self, *args, **kwargs):
-        super(SubdivisionSelectField, self).__init__(*args, **kwargs)
-        countries = Country.get_list()
-        subdivisions = Subdivision.query.filter_by(country=countries[0].id).all()
-        self.choices = [
-            (subdivision.id, subdivision.name) for subdivision in subdivisions
-        ]
+    # Override method in SelectField
+    def process_data(self, country):
+        self.data = country.id if country else None
 
 
 def validate_subdivision(form, field):
@@ -79,26 +73,26 @@ def validate_subdivision(form, field):
 
 
 class AddressForm(Form):
-    name = TextField(
+    name = StringField(
         'Name',
         validators=[DataRequired()],
         render_kw={"placeholder": "e.g. John Doe"}
     )
-    street = TextField(
+    street = StringField(
         'Address Line 1',
         validators=[DataRequired()],
         render_kw={"placeholder": "Street address, P.O. box, company name, c/o"}
     )
-    streetbis = TextField(
+    streetbis = StringField(
         'Address Line 2',
         render_kw={"placeholder": "Apartment, suite, unit, building, floor, etc."}
     )
-    zip = TextField(
+    zip = StringField(
         'Post Code',
         validators=[DataRequired()],
         render_kw={"placeholder": "e.g. 560100"}
     )
-    city = TextField(
+    city = StringField(
         'City',
         validators=[DataRequired()],
         render_kw={"placeholder": "e.g. Los Angeles, Beverly Hills."}
@@ -106,16 +100,26 @@ class AddressForm(Form):
     country = CountrySelectField(
         'Country',
         validators=[DataRequired()],
-        coerce=int)
-    subdivision = SubdivisionSelectField(
+        coerce=int
+    )
+    subdivision = SelectField(
         'State/Province/Region',
         validators=[DataRequired(), validate_subdivision],
         coerce=int
     )
-    phone = TextField(
+    phone = StringField(
         'Phone',
         render_kw={"placeholder": "e.g. +1234556"}
     )
+
+    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
+        super(AddressForm, self).__init__(formdata, obj, prefix, **kwargs)
+        # initialize subdivision choices from formdata
+        country_id = int(formdata.get('country')) if 'country' in formdata else None
+        subdivisions = Subdivision.query.filter_by(country=country_id).all()
+        self.subdivision.choices = [
+            (s.id, s.name) for s in subdivisions
+        ]
 
 
 class ChangePasswordForm(Form):

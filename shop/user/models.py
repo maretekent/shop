@@ -3,8 +3,7 @@
 from flask import current_app, url_for
 from flask_babel import gettext
 from flask_login import UserMixin
-from fulfil_client.model import (BooleanType, IntType, ModelType, One2ManyType,
-                                 StringType)
+from fulfil_client.model import BooleanType, ModelType, One2ManyType, StringType
 from itsdangerous import TimestampSigner, URLSafeSerializer
 
 from shop.extensions import fulfil
@@ -20,7 +19,7 @@ class Address(Model):
 
     __model_name__ = 'party.address'
 
-    party = IntType()
+    party = ModelType('party.party')
     name = StringType(required=True)
     street = StringType()
     streetbis = StringType()
@@ -153,7 +152,9 @@ class User(UserMixin, Model):
         )
 
     def initiate_reset_password(self):
-        "Initiate the password reset for the user"
+        """
+        Initiate the password reset for the user
+        """
         EmailQueue = fulfil.model('email.queue')
 
         email_message = render_email(
