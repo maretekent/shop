@@ -5,7 +5,7 @@
 <div class="container">
     <h1>Add a new address</h1>
     <br/>
-    <form id="accountForm" class="form form-register" method="POST" action="" role="form">
+    <form id="addressForm" class="form form-register client-validate" method="POST" action="" role="form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div class="form-group">
                 {{form.name.label}}
@@ -46,26 +46,6 @@
 
 {% block js %}
 {{ super() }}
-<script src="{{ url_for('user.static', filename='libs/jquery-validation/dist/jquery.validate.min.js') }}"></script>
-<script type="text/javascript" charset="utf-8">
-  $(document).ready(function(){
-    // Register on change event
-    $("select#country").change(function(){
-      // Clear options as soon as country change
-      $('select#subdivision').empty();
-      $.getJSON("/countries/" + $("select#country").val() + "/subdivisions", function(data){
-        $.each(data.result, function(_, subdivision) {
-             $('select#subdivision')
-                .append($("<option></option>")
-                    .attr("value", subdivision.id)
-                    .attr("code", subdivision.code)
-                    .text(subdivision.name));
-        });
-        $("select#subdivision option[value='{{ form.subdivision.data }}']").attr('selected', true);
-      });
-    });
-    // Onload trigger the change as country comes packed with form
-    $("select#country").triggerHandler("change")
-  });
-</script>
+    <script src="{{ url_for('user.static', filename='libs/jquery-validation/dist/jquery.validate.min.js') }}"></script>
+    <script src="{{ url_for('user.static', filename='js/address-form.js') }}"></script>
 {% endblock js %}
