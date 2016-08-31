@@ -1,5 +1,28 @@
 {% extends theme('layout-my-account.html') %}
 
 {% block account_content %}
-<h4>Address Book</h4>
+  <div class="container-fluid">
+    <h1>Address book</h1>
+    <br/>
+    <!-- Addresses -->
+    {% for address in addresses %}
+      <div class="row">
+        <div class="col-sm-6">
+          <address>
+            {% for field in address.full_address.split('\n') %}
+              {{field}} <br/>
+            {% endfor %}
+          </address>
+        </div>
+        <div class="col-sm-6">
+          <a type="button" class="btn btn-xs btn-default pull-right">Edit</a>
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="row text-center">
+      <a class="btn btn-primary" href="">Add New</a>
+    </div>
+    <br/>
+  </div>
 {% endblock account_content %}
