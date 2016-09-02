@@ -2,7 +2,7 @@
 """Test forms."""
 
 from shop.public.forms import LoginForm
-from shop.user.forms import RegisterForm
+from shop.user.forms import RegisterForm, AddressForm
 
 
 class TestRegisterForm:
@@ -63,3 +63,34 @@ class TestLoginForm:
         form = LoginForm(email=user.email, password='example')
         assert form.validate() is False
         assert 'User not activated' in form.email.errors
+
+
+class TestAddressForm:
+
+    def test_validate_success(self):
+        form = AddressForm(
+            name="Home Address",
+            street="Street name",
+            streetbis="StreetBis",
+            zip="665788",
+            city="City name",
+            country=61,  # US
+            subdivision=2494,  # Arizona
+            phone=12345678
+        )
+        assert form.validate() is True
+
+    def test_validate_invalid_subdivision(self):
+        form = AddressForm(
+            name="Home Address",
+            street="Street name",
+            streetbis="StreetBis",
+            zip="665788",
+            city="City name",
+            country=61,  # US
+            subdivision=3185,  # Bangalore
+            phone=12345678
+        )
+        assert form.validate() is False
+        assert 'Subdivision is not valid for the selected country.' \
+               in form.subdivision.errors
