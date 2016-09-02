@@ -2,7 +2,7 @@
 """User models."""
 from flask import current_app, url_for
 from flask_babel import gettext
-from flask_login import UserMixin, current_user
+from flask_login import UserMixin
 from itsdangerous import TimestampSigner, URLSafeSerializer
 
 from fulfil_client.model import BooleanType, ModelType, StringType
@@ -152,7 +152,7 @@ class User(UserMixin, Model):
         email_message = render_email(
             channel.support_email,      # From
             self.email,                 # To
-            gettext('Your %(channel)s password', channel=channel.name), # Subj
+            gettext('Your %(channel)s password', channel=channel.name),  # Subj
             'emails/reset-password.text',
             'emails/reset-password.html',
             user=self,
