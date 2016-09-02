@@ -2,13 +2,15 @@
 """The app module, containing the app factory function."""
 from flask import Flask
 
-from shop import node, product, public, user
-from shop.assets import assets
-from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil, login_manager, redis_store, sentry,
-                             themes)
-from shop.fulfilio import channel
-from shop.settings import ProdConfig
+from shop import public, user, product, node, cart
 from shop.utils import render_theme_template as render_template
+from shop.assets import assets
+from shop.fulfilio import channel
+from shop.extensions import (
+    cache, csrf_protect, debug_toolbar, fulfil, login_manager, themes, sentry,
+    session, redis_store, babel
+)
+from shop.settings import ProdConfig
 
 
 def create_app(config_object=ProdConfig):
@@ -44,6 +46,7 @@ def register_extensions(app):
     babel.init_app(app)
     redis_store.init_app(app)
     themes.init_themes(app, app_identifier='fulfil-shop')
+    session.init_app(app)
     return None
 
 
@@ -53,6 +56,7 @@ def register_blueprints(app):
     app.register_blueprint(user.views.blueprint)
     app.register_blueprint(product.views.blueprint)
     app.register_blueprint(node.views.blueprint)
+    app.register_blueprint(cart.views.blueprint)
     return None
 
 

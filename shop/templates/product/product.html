@@ -53,7 +53,7 @@
           </div>
         </div>
 
-        <div class="form-group"> <label>Select Frog:</label> 
+        <div class="form-group"> <label>Select Frog:</label>
           <select class="form-control select-sort attribute" data-attr-id="4073">
             <option value="239" selected="">45 Degree Standard Angle</option>
             <option value="240">50 Degree High Angle</option>
@@ -67,7 +67,12 @@
           </select>
         </div>
 
-        <div class="buy"><button class="btn btn-big buy-now-btn">Add to cart</button></div>
+        <form action="/cart/add" method="POST" id="add-to-cart">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <input type="hidden" name="product" value="{{product.id}}"/>
+          <input type="hidden" name="quantity" value="1"/>
+          <button class="button btn-big buy-now-btn" type="submit" id="buy-now-btn">Add to Cart</button>
+        </form>
         <div class="wishlist big-tip-cont">
           <button class="btn tool-tip btn-link">Save to wishlist</button>
           <div class="big-tooltip top">
@@ -84,20 +89,20 @@
 
     <div class="social-sharing">
 
-      <a target="_blank" href="//www.facebook.com/sharer.php?u={{ request.url }}" 
+      <a target="_blank" href="//www.facebook.com/sharer.php?u={{ request.url }}"
           class="share-facebook">
         <span class="fa fa-facebook-official"></span>
         <span class="share-count is-loaded">1</span>
       </a>
-    
+
       <a target="_blank" href="//twitter.com/share?text={{ product.name }}&amp;url={{ request.url }}" class="share-twitter">
 		<span class="fa fa-twitter"></span>
       </a>
-  
+
       <a target="_blank" href="//pinterest.com/pin/create/button/?url={{ request.url }}&amp;media={{ product.image }}&amp;description={{ product.description }}" class="share-pinterest">
         <span class="fa fa-pinterest"></span>
       </a>
-    
+
     </div>
 
   </div>

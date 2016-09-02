@@ -18,6 +18,9 @@ Flask-Assets
 # Auth
 Flask-Login
 
+# Session
+Flask-session==0.2.3
+
 # Caching
 Flask-Cache
 

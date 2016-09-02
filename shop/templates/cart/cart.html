@@ -1,0 +1,33 @@
+{% extends theme("layout.html") %}
+{% block content %}
+<div class="container-narrow">
+    {% if cart.is_empty %}
+      <h2>Your shopping cart is empty</h2>
+    {% else %}
+      <h2>Shopping cart</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#<th>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>SubTotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for line in cart.lines %}
+        <!-- TODO: Fill this with actual values-->
+        <tr>
+          <th scope="row">#</th>
+          <td>Product 1</td>
+          <td>$39</td>
+          <td>3</td>
+          <td>$322</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endblock %}
