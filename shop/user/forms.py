@@ -30,6 +30,7 @@ class RegisterForm(Form):
     )
 
     def __init__(self, *args, **kwargs):
+        # type: (object, object) -> object
         """Create instance."""
         super(RegisterForm, self).__init__(*args, **kwargs)
         self.user = None
@@ -57,26 +58,16 @@ class CountrySelectField(SelectField):
         ]
 
 
-class SubdivisionSelectField(SelectField):
-    def __init__(self, *args, **kwargs):
-        super(SubdivisionSelectField, self).__init__(*args, **kwargs)
-        countries = Country.get_list()
-        subdivisions = Subdivision.query.filter_by(country=countries[0].id).all()
-        self.choices = [
-            (subdivision.id, subdivision.name) for subdivision in subdivisions
-        ]
-
-
-def validate_subdivision(form, field):
-    """
-    Enforces the subdivision actually belongs to selected country
-    """
-    subdivisions = [s.id for s in Subdivision.query.filter_by(country=form.country.data).all()]
-    if field.data not in subdivisions and len(subdivisions):
-        raise ValidationError("Subdivision is not valid for the selected country.")
-
-
 class AddressForm(Form):
+
+    def validate_subdivision(form, field):
+            """
+            Enforces the subdivision actually belongs to selected country
+            """
+            subdivisions = [s.id for s in Subdivision.query.filter_by(country=form.country.data).all()]
+            if field.data not in subdivisions and len(subdivisions):
+                raise ValidationError("Subdivision is not valid for the selected country.")
+
     name = TextField(
         'Name',
         validators=[DataRequired()],
@@ -104,8 +95,9 @@ class AddressForm(Form):
     country = CountrySelectField(
         'Country',
         validators=[DataRequired()],
-        coerce=int)
-    subdivision = SubdivisionSelectField(
+        coerce=int
+    )
+    subdivision = SelectField(
         'State/Province/Region',
         validators=[DataRequired(), validate_subdivision],
         coerce=int
@@ -117,3 +109,9 @@ class AddressForm(Form):
 
     def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
         super(AddressForm, self).__init__(formdata, obj, prefix, **kwargs)
+        # initialize subdivision choices from formdata
+        country_id = int(formdata.get('country')) if 'country' in formdata else None
+        subdivisions = Subdivision.query.filter_by(country=country_id).all()
+        self.subdivision.choices = [
+            (s.id, s.name) for s in subdivisions
+        ]

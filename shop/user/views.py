@@ -8,7 +8,6 @@ from shop.user.forms import AddressForm
 from shop.utils import render_theme_template as render_template
 from shop.user.models import Address
 
-
 blueprint = Blueprint(
     'user', __name__,
     url_prefix='/my', static_folder='../static'
@@ -39,7 +38,6 @@ def create_address():
     address_name = "" if current_user.is_anonymous else \
         current_user.name
     form = AddressForm(request.form, name=address_name)
-
     if form.validate_on_submit():
         address = Address(party=current_user.party)
         form.populate_obj(address)
