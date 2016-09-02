@@ -7,6 +7,8 @@ from flask_login import login_required, login_user, logout_user
 from itsdangerous import BadSignature, SignatureExpired
 
 from shop.extensions import login_manager
+from shop.globals import current_channel
+from shop.product.models import ChannelListing
 from shop.public.forms import LoginForm, NewPasswordForm, ResetPasswordForm
 from shop.public.models import Country
 from shop.user.forms import RegisterForm
@@ -82,6 +84,25 @@ def register():
     return render_template('public/register.html', form=form)
 
 
+@blueprint.route('/search')
+def search():
+    """
+    Lists results matching search query
+    """
+    # Only returns products as of now
+    q = request.args.get('q')
+    page = request.args.get('page', type=int) or None
+    per_page = request.args.get('per_page', type=int) or None
+    shop_query = ChannelListing.get_shop_query().filter_by_domain(
+        [
+            ('product.rec_name', 'ilike', '%{}%'.format(q)),
+            ('channel', '=', current_channel.id)
+        ],
+    )
+    results = shop_query.paginate(page=page, per_page=per_page)
+    return render_template('public/search.html', results=results)
+
+
 @blueprint.route('/about/')
 def about():
     """About page."""
@@ -124,8 +145,8 @@ def new_password(user_id, sign, max_age=60 * 60):
 
             User.get_by_id(user_id).set_password(form.password.data)
             return xhr_safe_response(
-                'Your password has been successfully changed! '
-                'Please login again',
+                _('Your password has been successfully changed! '
+                  'Please login again'),
                 redirect(url_for('public.login')), 200
             )
     elif form.errors and (request.is_xhr or request.is_json):

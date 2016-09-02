@@ -1,4 +1,4 @@
-<form class="box-search" action="/search" method="get">
+<form class="box-search" action="{{ url_for('public.search') }}" method="get">
   <div class="inner">
 	<input type="search" name="q" value="" class="search" placeholder="Search" required="">
   <button class="button-search"><span class="pe-7s-search"><i class="fa fa-search"></i></span></button>
