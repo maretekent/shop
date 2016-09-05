@@ -102,8 +102,8 @@ def new_password(user_id, sign, max_age=60 * 60):
     form = NewPasswordForm()
     if form.validate_on_submit():
         try:
-            unsigned = User._serializer.loads(
-                User._signer.unsign(sign, max_age=max_age),
+            unsigned = User._serializer().loads(
+                User._signer().unsign(sign, max_age=max_age),
                 salt='reset-password'
             )
         except SignatureExpired:
@@ -121,7 +121,7 @@ def new_password(user_id, sign, max_age=60 * 60):
                 current_app.logger.debug('Invalid reset password code')
                 abort(403)
 
-            User(id=user_id).set_password(form.password.data)
+            User.get_by_id(user_id).set_password(form.password.data)
             return xhr_safe_response(
                 _('Your password has been successfully changed! '
                 'Please login again'),
@@ -129,8 +129,7 @@ def new_password(user_id, sign, max_age=60 * 60):
             )
     elif form.errors and (request.is_xhr or request.is_json):
             return jsonify(errors=form.errors), 400
-
-    return render_template('new-password.jinja', password_form=form)
+    return render_template('public/new-password.html', form=form)
 
 
 @blueprint.route('/countries')
