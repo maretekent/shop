@@ -1,5 +1,5 @@
 <ul class="main-menu">
-  {% for menu in ['Home', 'Category 1', 'Category 2', 'Category 3', 'BLOG', 'CONTACT'] %}
+  {% for menu in ['Home', 'Category 1', 'Category 2', 'Category 3'] %}
   <li class="menu-item has-sub-menu">
     <a href="">{{ menu }}</a>
     <span class="arrow"></span>
@@ -10,4 +10,10 @@
     </ul>
   </li>
   {% endfor %}
+  <li class="menu-item">
+    <a href="">BLOG</a>
+  </li>
+  <li class="menu-item">
+    <a href="{{ url_for('pages.page', uri='faq') }}">FAQ</a>
+  </li>
 </ul>

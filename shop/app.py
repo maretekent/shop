@@ -2,7 +2,7 @@
 """The app module, containing the app factory function."""
 from flask import Flask
 
-from shop import public, user, product, node, cart
+from shop import public, user, product, node, cart, cms
 from shop.utils import render_theme_template as render_template
 from shop.assets import assets
 from shop.fulfilio import channel
@@ -57,6 +57,7 @@ def register_blueprints(app):
     app.register_blueprint(product.views.blueprint)
     app.register_blueprint(node.views.blueprint)
     app.register_blueprint(cart.views.blueprint)
+    app.register_blueprint(cms.views.blueprint)
     return None
 
 
