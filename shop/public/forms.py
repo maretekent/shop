@@ -43,7 +43,12 @@ class LoginForm(Form):
 class ResetPasswordForm(Form):
     "Initiates a password reset"
 
-    email = StringField('E-mail', validators=[DataRequired(), Email()])
+    email = StringField(
+        'E-mail',
+        validators=[DataRequired(), Email()],
+        render_kw={"placeholder": "Your registered email"}
+
+    )
 
     def validate_email(self, field):
         self.user = User.find_user(self.email.data)
@@ -57,12 +62,14 @@ class NewPasswordForm(Form):
 
     password = PasswordField(
         'Password',
-        validators=[DataRequired(), Length(min=6)]
+        validators=[DataRequired(), Length(min=6)],
+        render_kw={"placeholder": "Password"}
     )
     confirm = PasswordField(
         'Verify password',
         validators=[
             DataRequired(),
             EqualTo('password', message='Passwords must match')
-        ]
+        ],
+        render_kw={"placeholder": "Type password again"}
     )
