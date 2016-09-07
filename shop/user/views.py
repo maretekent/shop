@@ -1,19 +1,33 @@
 # -*- coding: utf-8 -*-
 """User views."""
 from flask import Blueprint, request, url_for, flash
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, logout_user
 from werkzeug import redirect
 
 from shop.user.forms import AddressForm
 from shop.utils import render_theme_template as render_template
 from shop.user.models import Address
-from shop.utils import flash_errors
+from shop.user.forms import ChangePasswordForm
 
 
 blueprint = Blueprint(
     'user', __name__,
     url_prefix='/my', static_folder='../static'
 )
+
+
+@blueprint.route('/change-password', methods=["GET", "POST"])
+@login_required
+def change_password():
+    """
+    Change user's password
+    """
+    form = ChangePasswordForm(request.form)
+    if form.validate_on_submit():
+        current_user.set_password(form.new_password.data)
+        flash("Your password was successfully updated!", "success")
+        return redirect(url_for('public.home'))
+    return render_template('users/change-password.html', form=form)
 
 
 @blueprint.route('/addresses')

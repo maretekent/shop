@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """User forms."""
 from flask_wtf import Form
+from flask_login import current_user
 from wtforms import PasswordField, StringField, TextField, SelectField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 
@@ -117,3 +118,37 @@ class AddressForm(Form):
 
     def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
         super(AddressForm, self).__init__(formdata, obj, prefix, **kwargs)
+
+
+class ChangePasswordForm(Form):
+    """Change Password form."""
+
+    old_password = PasswordField(
+        'Old Password',
+        validators=[DataRequired(), Length(min=6)],
+        render_kw={"placeholder": "Your old password"}
+    )
+    new_password = PasswordField(
+        'New Password',
+        validators=[DataRequired(), Length(min=6)],
+        render_kw={"placeholder": "Your new password"}
+    )
+    confirm = PasswordField(
+        'Verify New Password',
+        validators=[
+            DataRequired(),
+            EqualTo('new_password', message='Passwords must match')
+        ],
+        render_kw={"placeholder": "Type your new password again"}
+    )
+
+    def validate(self):
+        """Validate the form."""
+        initial_validation = super(ChangePasswordForm, self).validate()
+        if not initial_validation:
+            return False
+
+        if not current_user.check_password(self.old_password.data):
+            self.old_password.errors.append('Your old password is incorrect.')
+            return False
+        return True
