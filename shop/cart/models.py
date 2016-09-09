@@ -2,21 +2,25 @@
 """Product models."""
 import functools
 
-from flask import session, current_app
+from flask import session
+from flask_login import current_user
+from fulfil_client.model import (DecimalType, FloatType, ModelType,
+                                 One2ManyType, StringType)
 from shop.fulfilio import Model
-from fulfil_client.model import StringType, ModelType, FloatType, DecimalType, \
-    One2ManyType
-from shop.product.models import Product
-from shop.user.models import Address
 from shop.globals import current_channel
+
 
 def require_cart_with_sale(function):
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
         cart = Cart.get_active()
         if not cart.sale:
+            if current_user.is_anonymous:
+                party = current_channel.anonymous_customer
+            else:
+                party = current_user.party.id
             sale = Sale(
-                party=current_channel.anonymous_customer,
+                party=party,
                 invoice_address=None,
                 shipment_address=None,
                 company=current_channel.company,
@@ -29,46 +33,62 @@ def require_cart_with_sale(function):
         return function(*args, **kwargs)
     return wrapper
 
+
 class SaleLine(Model):
     __model_name__ = 'sale.line'
 
-    product = ModelType(model=Product)
+    product = ModelType("product.product")
     quantity = FloatType()
     unit_price = DecimalType()
     amount = DecimalType()
 
+
 class Sale(Model):
     __model_name__ = 'sale.sale'
 
-    shipment_address = ModelType(model=Address)
+    number = StringType()
+    party = ModelType("party.party")
+    shipment_address = ModelType("party.address")
+    invoice_address = ModelType("party.address")
     total_amount = DecimalType()
     tax_amount = DecimalType()
     untaxed_amount = DecimalType()
-    lines = One2ManyType(model=SaleLine)
+    lines = One2ManyType("sale.line")
 
     def add_product(self, product_id, quantity):
         line_data = {
             'sale': self.id,
             'product': product_id,
             'quantity': quantity,
-            '_parent_sale.shipment_address': self.shipment_address and \
-                self.shipment_address.id,
+            '_parent_sale.shipment_address': self.shipment_address and
+            self.shipment_address.id,
             '_parent_sale.channel': current_channel.id,
-            '_parent_sale.party': current_channel.anonymous_customer,
+            '_parent_sale.party': current_channel.anonymous_customer.id,
             '_parent_sale.currency': current_channel.currency,
             'warehouse': current_channel.warehouse
         }
         line_data.update(SaleLine.rpc.on_change_product(line_data))
-        res = SaleLine(**{
+        SaleLine(**{
             k: v for k, v in line_data.iteritems()
             if '.' not in k
         }).save()
+
 
 class Cart(Model):
     __model_name__ = 'nereid.cart'
 
     sessionid = StringType()
-    sale = ModelType(model=Sale)
+    sale = ModelType("sale.sale")
+
+    def confirm(self):
+        "Move order to confirmation state"
+        sale = self.sale
+        Sale.rpc.quote([sale.id])
+        Sale.rpc.confirm([sale.id])
+
+        # TODO: Set sale_date to today
+        self.sale = None
+        self.save()
 
     @property
     def size(self):
@@ -81,7 +101,7 @@ class Cart(Model):
     def is_empty(self):
         if not self.sale:
             return True
-        if len(self.lines) == 0:
+        if len(self.sale.lines) == 0:
             return True
         return False
 

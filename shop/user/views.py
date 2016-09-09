@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 """User views."""
-from flask import Blueprint, request, url_for, flash
-from flask_login import login_required, current_user, logout_user
-from werkzeug import redirect
-
-from shop.user.forms import AddressForm
-from shop.utils import render_theme_template as render_template
+from flask import Blueprint, flash, request, url_for
+from flask_login import current_user, login_required
+from shop.user.forms import AddressForm, ChangePasswordForm
 from shop.user.models import Address
-from shop.user.forms import ChangePasswordForm
-
+from shop.utils import render_theme_template as render_template
+from werkzeug import redirect
 
 blueprint = Blueprint(
     'user', __name__,

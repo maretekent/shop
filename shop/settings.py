@@ -24,6 +24,9 @@ class Config(object):
     if 'REDIS_URL' in os.environ:
         REDIS_URL = os.environ.get('REDIS_URL')
 
+    STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+    STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+
     THEME = 'default'
     THEME_PATHS = [
         os.path.join(APP_DIR, 'themes/'),

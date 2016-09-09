@@ -2,14 +2,14 @@
 """User models."""
 from flask import current_app, url_for
 from flask_babel import gettext
-from flask_login import UserMixin, current_user
+from flask_login import UserMixin
+from fulfil_client.model import (BooleanType, IntType, ModelType, One2ManyType,
+                                 StringType)
 from itsdangerous import TimestampSigner, URLSafeSerializer
-
-from fulfil_client.model import BooleanType, ModelType, StringType
 from shop.extensions import fulfil
-from shop.fulfilio import Model, channel
+from shop.fulfilio import Model
+from shop.globals import current_channel
 from shop.utils import render_email
-from shop.public.models import Country, Subdivision
 
 
 class Address(Model):
@@ -19,15 +19,23 @@ class Address(Model):
 
     __model_name__ = 'party.address'
 
+    party = IntType()
     name = StringType(required=True)
     street = StringType()
     streetbis = StringType()
     zip = StringType()
     city = StringType()
-    country = ModelType(model=Country)
-    subdivision = ModelType(model=Subdivision)
+    country = ModelType("country.country")
+    subdivision = ModelType("country.subdivision")
     phone = StringType()
     full_address = StringType()
+
+
+class ContactMechanism(Model):
+    __model_name__ = 'party.contact_mechanism'
+
+    type = StringType(required=True)
+    value = StringType(required=True)
 
 
 class Party(Model):
@@ -40,6 +48,8 @@ class Party(Model):
     __model_name__ = 'party.party'
 
     name = StringType(required=True)
+    contact_mechanisms = One2ManyType("party.contact_mechanism")
+    addresses = One2ManyType("party.address")
 
 
 class User(UserMixin, Model):
@@ -53,7 +63,7 @@ class User(UserMixin, Model):
 
     name = StringType(required=True)
     password = StringType()
-    party = ModelType(model=Party)
+    party = ModelType("party.party")
     active = BooleanType()
 
     @property
@@ -146,15 +156,15 @@ class User(UserMixin, Model):
         EmailQueue = fulfil.model('email.queue')
 
         email_message = render_email(
-            channel.support_email,      # From
+            current_channel.support_email,      # From
             self.email,                 # To
-            gettext('Your %(channel)s password', channel=channel.name), # Subj
+            gettext('Your %(channel)s password', channel=current_channel.name),  # Subj
             'emails/reset-password.text',
             'emails/reset-password.html',
             user=self,
         )
         EmailQueue.create([{
-            'from_addr': channel.support_email,
+            'from_addr': current_channel.support_email,
             'to_addrs': self.email,
             'msg': email_message.as_string(),
         }])

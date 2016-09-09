@@ -7,10 +7,10 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_fulfil import Fulfil
 from flask_login import LoginManager
 from flask_redis import FlaskRedis
+from flask_session import Session
 from flask_wtf.csrf import CsrfProtect
 from raven.contrib.flask import Sentry
 from redis import StrictRedis
-from flask_session import Session
 
 csrf_protect = CsrfProtect()
 login_manager = LoginManager()

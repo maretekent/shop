@@ -7,47 +7,14 @@ from views and models.
 """
 from math import ceil
 
-from flask import abort, current_app, has_request_context, request
-from werkzeug.local import LocalProxy
-
-from fulfil_client.model import Query, StringType, model_base, IntType
+from flask import abort, has_request_context, request
+from fulfil_client import model
 from shop.extensions import fulfil, redis_store
 
-Model = model_base(fulfil, redis_store)
+Model = model.model_base(fulfil, redis_store)
 
 
-class Channel(Model):
-    __model_name__ = 'sale.channel'
-
-    name = StringType()
-    code = StringType()
-
-    # TODO: convert followings to model type.
-    company = IntType()
-    currency = IntType()
-    anonymous_customer = IntType()
-    warehouse = IntType()
-    # support_email = StringType()
-
-    @property
-    def support_email(self):
-        # TODO: Add support email to channel
-        # This is a temporary hack until then
-        import os
-        return os.environ['FROM_EMAIL']
-
-    @classmethod
-    def get_current_channel(cls):
-        "Get the current channel based on the env var"
-        return Channel.from_cache(
-            current_app.config['FULFIL_CHANNEL']
-        )
-
-
-channel = LocalProxy(Channel.get_current_channel)
-
-
-class ShopQuery(Query):
+class ShopQuery(model.Query):
     """
     Implement web specific methods before starting to use query
     """

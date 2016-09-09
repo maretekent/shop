@@ -43,7 +43,7 @@ class TestLoginForm:
 
     def test_validate_unknown_username(self, app):
         """Unknown username."""
-        form = LoginForm(email='unknown', password='example')
+        form = LoginForm(email='unknown@hello.com', password='example')
         assert form.validate() is False
         assert 'Unknown email' in form.email.errors
 

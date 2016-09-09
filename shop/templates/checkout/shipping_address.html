@@ -1,0 +1,83 @@
+{% extends theme("layout.html") %}
+{% from 'macros/render_address.html' import render_address %}
+{% block content %}
+<div class="container-narrow">
+  <div class="col-md-7 col-sm-7 col-xs-12">
+    <div class="address-container">
+      {% if not current_user.is_anonymous and addresses %}
+      <h4><span class="underline">Choose an existing Shipping Address</span></h4>
+      <div class="row">
+        {% for address in addresses %}
+        <div class="col-md-6">
+          <div class="address">
+          <div class="address-card" data-address-id="{{ address.id }}">
+            {{ render_address(address) }}
+          </div>
+          <form role="form" method="POST" autocomplete="off">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="address" value="{{ address.id }}"/>
+            <button type="submit" class="btn btn-warning btn-block">
+              Ship to this address&nbsp;&nbsp;<i class="fa fa-angle-double-right"></i>
+            </button>
+          </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="row center">
+        <div class="or"><span class="circle">or</span></div>
+      </div>
+      {% endif %}
+
+      <h4>
+        {% if addresses %}
+        <span class="underline">Add a new address below</span>
+        {% else %}
+        <span class="underline">Enter your shipping address</span>
+        {% endif %}
+      </h4>
+      <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <form class="form form-register" method="POST" role="form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="form-group">
+                {{address_form.name.label}}
+                {{address_form.name(class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{address_form.street.label}}
+                {{address_form.street(class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{address_form.streetbis.label}}
+                {{address_form.streetbis(class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{address_form.zip.label}}
+                {{address_form.zip(class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{address_form.city.label}}
+                {{address_form.city(class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{address_form.country.label}}
+                {{address_form.country(class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{address_form.subdivision.label}}
+                {{address_form.subdivision(class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{address_form.phone.label}}
+                {{address_form.phone(class_="form-control")}}
+            </div>
+            <p><input class="btn btn-default btn-submit" type="submit" value="Save"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

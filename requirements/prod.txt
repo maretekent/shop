@@ -44,3 +44,6 @@ raven[flask]
 
 # Premailer for inlining CSS in emails
 premailer
+
+# Payment gateway stripe
+stripe

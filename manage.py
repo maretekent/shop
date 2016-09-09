@@ -7,11 +7,9 @@ from subprocess import call
 
 from flask_script import Command, Manager, Option, Server, Shell
 from flask_script.commands import Clean, ShowUrls
-
 from shop.app import create_app
 from shop.extensions import redis_store
 from shop.settings import DevConfig, ProdConfig
-from shop.user.models import User
 
 CONFIG = ProdConfig if os.environ.get('SHOP_ENV') == 'prod' else DevConfig
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -23,6 +21,7 @@ manager = Manager(app)
 
 def _make_context():
     """Return context dict for a shell session so you can access app, db, and the User model by default."""
+    from shop.user.models import User
     return {'app': app, 'User': User}
 
 

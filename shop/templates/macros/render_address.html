@@ -1,0 +1,19 @@
+{% macro render_address(address, edit=True) %}
+<div class="pull-right">
+  {% if edit %}
+  <a href="" ><i class="fa fa-pencil"></i>Edit</a>&nbsp;&nbsp;/&nbsp;&nbsp;<span class="remove-address" data-url=""><i class="fa fa-trash-o"></i>Remove</a>
+  {% endif %}
+</div>
+<address>
+  {% for line in address.full_address.split('\n') %}
+    {% if loop.first %}
+      <strong>{{ line }}</strong><br/>
+    {% else %}
+      {{ line }}<br/>
+    {% endif %}
+  {% endfor %}
+  {% if address.phone %}
+    <abbr title="Phone"><i class="fa fa-phone"></i></abbr>: {{ address.phone }}<br/>
+  {% endif %}
+</address>
+{% endmacro %}

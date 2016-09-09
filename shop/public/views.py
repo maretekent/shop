@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
-from flask import Blueprint, abort, current_app, flash, jsonify, redirect, request, url_for
+from flask import (Blueprint, abort, current_app, flash, jsonify, redirect,
+                   request, url_for)
 from flask_babel import gettext as _
 from flask_login import login_required, login_user, logout_user
 from itsdangerous import BadSignature, SignatureExpired
-
 from shop.extensions import login_manager
 from shop.public.forms import LoginForm, NewPasswordForm, ResetPasswordForm
 from shop.public.models import Country
@@ -123,8 +123,8 @@ def new_password(user_id, sign, max_age=60 * 60):
 
             User.get_by_id(user_id).set_password(form.password.data)
             return xhr_safe_response(
-                _('Your password has been successfully changed! '
-                'Please login again'),
+                'Your password has been successfully changed! '
+                'Please login again',
                 redirect(url_for('public.login')), 200
             )
     elif form.errors and (request.is_xhr or request.is_json):
