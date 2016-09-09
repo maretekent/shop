@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Fulfil-Shop',
-    version='0.1dev',
+    version='0.1dev1',
     packages=find_packages(),
     license='BSD',
     include_package_data=True,
