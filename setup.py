@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='Fulfil-Shop',
     version='0.1dev',
-    packages=['shop'],
+    packages=find_packages(),
     license='BSD',
     include_package_data=True,
     zip_safe=False,
