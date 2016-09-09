@@ -2,9 +2,9 @@
 """Product views."""
 from flask import Blueprint, abort, request
 
-from shop.product.models import ChannelListing, Product
+from shop.globals import current_channel
+from shop.product.models import ChannelListing
 from shop.utils import render_theme_template as render_template
-from shop.utils import get_random_product
 
 blueprint = Blueprint(
     'products', __name__,
@@ -20,13 +20,19 @@ def products():
     from shop.node.models import TreeNode
 
     collections = TreeNode.get_root_nodes()
-    new_arrivals = [
-        get_random_product() for c in range(10)
-    ]
+    page = request.args.get('page', type=int) or None
+    per_page = request.args.get('per_page', type=int) or 24  # default to suit the view
+    shop_query = ChannelListing.get_shop_query().filter_by_domain(
+            [
+                ('channel', '=', current_channel.id),
+            ]
+    )
+    paginate = shop_query.paginate(page=page, per_page=per_page)
     return render_template(
         'product/shop.html',
         collections=collections,
-        new_arrivals=new_arrivals,
+        new_arrivals=paginate.items,
+        paginate=paginate,
     )
 
 
