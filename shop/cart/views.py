@@ -28,7 +28,7 @@ def add_to_cart():
     cart = Cart.get_active()
     if form.validate_on_submit():
         cart.add_product(
-            product=form.product.data,
+            product_id=form.product.data,
             quantity=form.quantity.data
         )
         flash('Product has been added to cart', 'success')

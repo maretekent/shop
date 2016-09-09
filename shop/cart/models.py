@@ -4,7 +4,8 @@ import functools
 
 from flask import session, current_app
 from shop.fulfilio import Model
-from fulfil_client.model import StringType, ModelType, FloatType, DecimalType
+from fulfil_client.model import StringType, ModelType, FloatType, DecimalType, \
+    One2ManyType
 from shop.product.models import Product
 from shop.user.models import Address
 from shop.globals import current_channel
@@ -28,6 +29,14 @@ def require_cart_with_sale(function):
         return function(*args, **kwargs)
     return wrapper
 
+class SaleLine(Model):
+    __model_name__ = 'sale.line'
+
+    product = ModelType(model=Product)
+    quantity = FloatType()
+    unit_price = DecimalType()
+    amount = DecimalType()
+
 class Sale(Model):
     __model_name__ = 'sale.sale'
 
@@ -35,13 +44,15 @@ class Sale(Model):
     total_amount = DecimalType()
     tax_amount = DecimalType()
     untaxed_amount = DecimalType()
+    lines = One2ManyType(model=SaleLine)
 
-    def add_product(self, product, quantity):
+    def add_product(self, product_id, quantity):
         line_data = {
             'sale': self.id,
-            'product': product,
+            'product': product_id,
             'quantity': quantity,
-            '_parent_sale.shipment_address': self.shipment_address,
+            '_parent_sale.shipment_address': self.shipment_address and \
+                self.shipment_address.id,
             '_parent_sale.channel': current_channel.id,
             '_parent_sale.party': current_channel.anonymous_customer,
             '_parent_sale.currency': current_channel.currency,
@@ -53,22 +64,18 @@ class Sale(Model):
             if '.' not in k
         }).save()
 
-
-class SaleLine(Model):
-    __model_name__ = 'sale.line'
-
-    sale = ModelType(model=Sale)
-    product = ModelType(model=Product)
-    quantity = FloatType()
-    unit_price = DecimalType()
-    amount = DecimalType()
-
-
 class Cart(Model):
     __model_name__ = 'nereid.cart'
 
     sessionid = StringType()
     sale = ModelType(model=Sale)
+
+    @property
+    def size(self):
+        # TODO: Assuming every item has same unit
+        if self.is_empty:
+            return 0
+        return sum(map(lambda l: l.quantity, self.lines))
 
     @property
     def is_empty(self):
@@ -93,7 +100,6 @@ class Cart(Model):
         return cart
 
     @require_cart_with_sale
-    def add_product(self, product, quantity):
+    def add_product(self, product_id, quantity):
         self.refresh()
-        sale = Sale.get_by_id(self.sale)
-        sale.add_product(product, quantity)
+        self.sale.add_product(product_id, quantity)
