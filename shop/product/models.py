@@ -3,8 +3,10 @@
 from flask import current_app
 
 from fulfil_client.model import CurrencyType, StringType
-from shop.fulfilio import Model
+from shop.fulfilio import Model, ShopQuery
+from shop.globals import current_channel
 from shop.utils import get_random_product
+
 
 
 class ProductTemplate(Model):
@@ -76,7 +78,7 @@ class ChannelListing(Model):
     def from_slug(cls, slug):
         return cls.query.filter_by_domain(
             [
-                ('channel', '=', current_app.channel),
+                ('channel', '=', current_channel.id),
                 ('product_identifier', '=', slug),
             ]
         ).first()
@@ -97,3 +99,7 @@ class ChannelListing(Model):
     def unit_price(self):
         # TODO: Price should come from the listing and customer
         return self.product.list_price
+
+    @classmethod
+    def get_shop_query(cls):
+        return ShopQuery(cls.rpc, cls)
