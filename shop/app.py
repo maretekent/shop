@@ -46,6 +46,9 @@ def register_extensions(app):
     babel.init_app(app)
     redis_store.init_app(app)
     themes.init_themes(app, app_identifier='fulfil-shop')
+
+    # Set the session redis needed for Flask Session
+    app.config['SESSION_REDIS'] = redis_store._redis_client
     session.init_app(app)
     return None
 
