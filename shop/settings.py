@@ -20,6 +20,10 @@ class Config(object):
     FULFIL_API_KEY = os.environ.get('FULFIL_API_KEY')
     FULFIL_CHANNEL = os.environ.get('FULFIL_CHANNEL')
 
+    REDIS_URL = 'redis://redis:6379/0'
+    if 'REDIS_URL' in os.environ:
+        REDIS_URL = os.environ.get('REDIS_URL')
+
     THEME = 'default'
     THEME_PATHS = [
         os.path.join(APP_DIR, 'themes/'),
