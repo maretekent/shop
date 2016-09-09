@@ -20,6 +20,7 @@ setup(
         'Flask-Themes2',
         'Flask-Babel',
         'Flask-Redis',
+        'Flask-Session',
         'Flask-Fulfil',
         'raven[flask]',
         'premailer',
