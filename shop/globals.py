@@ -1,8 +1,5 @@
-from flask.globals import (
-    _request_ctx_stack, current_app,
-    request, session, g, LocalProxy, _find_app
-)
-from fulfilio import Channel
+from flask.globals import LocalProxy, _find_app, current_app
+
 
 def _find_cache():
     """
@@ -12,8 +9,16 @@ def _find_cache():
     app = _find_app()
     return app.cache
 
+
 def _get_current_channel():
+    from shop.public.models import Channel
     return Channel.get_by_id(current_app.config['FULFIL_CHANNEL'])
+
+
+def _get_current_cart():
+    from shop.cart.models import Cart
+    return Cart.get_active()
 
 cache = LocalProxy(_find_cache)
 current_channel = LocalProxy(lambda: _get_current_channel())
+current_cart = LocalProxy(lambda: _get_current_cart())

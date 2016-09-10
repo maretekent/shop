@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 """Product models."""
 from flask import current_app
-
 from fulfil_client.model import CurrencyType, StringType
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
 from shop.utils import get_random_product
-
 
 
 class ProductTemplate(Model):

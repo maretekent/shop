@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """Product views."""
-from flask import Blueprint, request, redirect, url_for, flash
-
-from shop.cart.models import Cart
+from flask import Blueprint, flash, redirect, request, url_for
 from shop.cart.forms import AddtoCartForm
+from shop.cart.models import Cart
 from shop.utils import render_theme_template as render_template
 
 blueprint = Blueprint(
@@ -20,6 +19,7 @@ def view_cart():
         'cart/cart.html',
         cart=cart,
     )
+
 
 @blueprint.route('/add', methods=["POST"])
 def add_to_cart():

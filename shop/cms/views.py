@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """CMS views."""
-from flask import Blueprint, redirect, url_for, abort
-
+from flask import Blueprint, abort, redirect, url_for
 from shop.cms.models import Article
 from shop.utils import render_theme_template as render_template
 
@@ -28,6 +27,7 @@ def page(uri):
     if article:
         return render_template('cms/pages.html', article=article)
     return abort(404)
+
 
 @blueprint.route('/sitemap-index.xml')
 def sitemap_index():

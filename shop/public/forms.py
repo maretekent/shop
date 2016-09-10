@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """Public forms."""
 from flask_wtf import Form
-from wtforms import PasswordField, StringField
-from wtforms.validators import DataRequired, Email, ValidationError, Length, \
-     EqualTo
-
 from shop.user.models import User
+from wtforms import PasswordField, StringField
+from wtforms.validators import (DataRequired, Email, EqualTo, Length,
+                                ValidationError)
 
 
 class LoginForm(Form):

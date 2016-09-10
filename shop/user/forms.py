@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """User forms."""
-from flask_wtf import Form
 from flask_login import current_user
-from wtforms import PasswordField, StringField, TextField, SelectField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
-
-from shop.user.models import User
+from flask_wtf import Form
 from shop.public.models import Country, Subdivision
+from shop.user.models import User
+from wtforms import PasswordField, SelectField, StringField, TextField
+from wtforms.validators import (DataRequired, Email, EqualTo, Length,
+                                ValidationError)
 
 
 class RegisterForm(Form):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """CMS models."""
-from shop.fulfilio import Model
 from fulfil_client.model import StringType
+from shop.fulfilio import Model
 
 
 class MenuItem(Model):

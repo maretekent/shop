@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Node views."""
 from flask import Blueprint, abort
-
 from shop.node.models import TreeNode
 from shop.utils import render_theme_template as render_template
 from shop.utils import dummy_products

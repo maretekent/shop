@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
 from flask import Flask
-
-from shop import public, user, product, node, cart, cms
-from shop.utils import render_theme_template as render_template
 from shop.assets import assets
-from shop.fulfilio import channel
-from shop.extensions import (
-    cache, csrf_protect, debug_toolbar, fulfil, login_manager, themes, sentry,
-    session, redis_store, babel
-)
+from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil,
+                             login_manager, redis_store, sentry, session,
+                             themes)
+from shop.globals import current_app, current_channel
 from shop.settings import ProdConfig
+from shop.utils import render_theme_template as render_template
 
 
 def create_app(config_object=ProdConfig):
@@ -55,12 +52,20 @@ def register_extensions(app):
 
 def register_blueprints(app):
     """Register Flask blueprints."""
-    app.register_blueprint(public.views.blueprint)
-    app.register_blueprint(user.views.blueprint)
-    app.register_blueprint(product.views.blueprint)
-    app.register_blueprint(node.views.blueprint)
-    app.register_blueprint(cart.views.blueprint)
-    app.register_blueprint(cms.views.blueprint)
+    import shop.user.views
+    app.register_blueprint(shop.user.views.blueprint)
+    import shop.public.views
+    app.register_blueprint(shop.public.views.blueprint)
+    import shop.product.views
+    app.register_blueprint(shop.product.views.blueprint)
+    import shop.node.views
+    app.register_blueprint(shop.node.views.blueprint)
+    import shop.cart.views
+    app.register_blueprint(shop.cart.views.blueprint)
+    import shop.cms.views
+    app.register_blueprint(shop.cms.views.blueprint)
+    import shop.checkout.views
+    app.register_blueprint(shop.checkout.views.blueprint)
     return None
 
 
@@ -77,4 +82,7 @@ def register_errorhandlers(app):
 
 
 def register_context_processors(app):
-    app.context_processor(lambda: {'channel': channel})
+    app.context_processor(lambda: {
+        'current_channel': current_channel,
+        'current_app': current_app,
+    })
