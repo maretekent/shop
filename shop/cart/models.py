@@ -128,3 +128,7 @@ class Cart(Model):
     def add_product(self, product_id, quantity):
         self.refresh()
         self.sale.add_product(product_id, quantity)
+
+    def remove_sale_line(self, line_id):
+        self.refresh()
+        SaleLine.rpc.delete([line_id])

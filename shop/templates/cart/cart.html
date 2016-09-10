@@ -9,7 +9,6 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Product</th>
           <th>Price</th>
           <th>Quantity</th>
           <th>SubTotal</th>
@@ -19,8 +18,26 @@
         {% for line in cart.sale.lines %}
         <!-- TODO: Fill this with actual values-->
         <tr>
-          <td><img src="{{ line.product.image }}" alt="" class="img-rounded" width="140" height="140"></td>
-          <td>{{ line.product.name }}</td>
+          <td>
+            <div class="row">
+              <div class="col-sm-2">
+                <img src="{{ line.product.image }}" alt="" class="img-rounded cart-line-thumbnail" width="140" height="140">
+              </div>
+              <div class="col-sm-10">
+                <p>
+                  <a href="{{ url_for('products.product', handle=line.product.listing.product_identifier) }}"><span class="cart-line-title">{{ line.product.name }}</span></a>
+                  {{ line.product.description }}
+                  <br>
+                  <form action="{{ url_for('cart.remove_from_cart') }}" method="POST" class="cart-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="line_id" value="{{line.id}}"/>
+                    <button type="submit" class="btn btn-link cart-button">Remove</button>
+                  </form>
+                   | <a href="">Add to wishlist</a>
+                </p>
+              </div>
+            </div>
+          </td>
           <td>{{ line.unit_price }}</td>
           <td>{{ line.quantity }}</td>
           <td>{{ line.amount }}</td>

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Product views."""
+from flask_babel import gettext as _
 from flask import Blueprint, flash, redirect, request, url_for
-from shop.cart.forms import AddtoCartForm
+from shop.cart.forms import AddtoCartForm, RemoveFromCartForm
 from shop.cart.models import Cart
 from shop.utils import render_theme_template as render_template
 
@@ -31,7 +32,21 @@ def add_to_cart():
             product_id=form.product.data,
             quantity=form.quantity.data
         )
-        flash('Product has been added to cart', 'success')
+        flash(_('Product has been added to cart'), 'success')
         return redirect(url_for('cart.view_cart'))
     flash('Could not add product to cart.', 'error')
+    return redirect(request.referer)
+
+
+@blueprint.route('/remove', methods=['POST'])
+def remove_from_cart():
+    form = RemoveFromCartForm(request.form)
+    cart = Cart.get_active()
+    if form.validate_on_submit():
+        cart.remove_sale_line(
+            line_id=form.line_id.data
+        )
+        flash(_("Removed product from cart"), 'success')
+        return redirect(url_for('cart.view_cart'))
+    flash(_('Looks like the item is already deleted.'), 'error')
     return redirect(request.referer)

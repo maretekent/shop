@@ -625,6 +625,30 @@ footer .footer-bottom {
   margin-right: 5px;
 }
 
+/* Cart styles */
+
+.cart-line-title {
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.4;
+  display: block;
+}
+
+.cart-line-thumbnail {
+  vertical-align: top;
+}
+
+.cart-button{
+  padding: 0;
+}
+
+.cart-form{
+  display: inline;
+}
+
+/* End cart styles */
+
+
 /* Responsive styles */
 
 /* Large Screen Styles */

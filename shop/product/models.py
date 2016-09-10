@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Product models."""
-from flask import current_app
 from fulfil_client.model import CurrencyType, StringType
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
@@ -19,14 +18,13 @@ class ProductTemplate(Model):
         Return the products (that are listed in the current channel) and
         active.
         """
-        listings = ChannelListing.query.filter_by_domain(
+        return ChannelListing.query.filter_by_domain(
             [
-                ('channel', '=', current_app.config['FULFIL_CHANNEL']),
+                ('channel', '=', current_channel.id),
                 ('state', '=', 'active'),
                 ('product.template', '=', self.id),
             ],
         ).all()
-        return listings
 
 
 class Product(Model):
@@ -54,6 +52,15 @@ class Product(Model):
     @property
     def template(self):
         return ProductTemplate.from_cache(self._values['template'])
+
+    @property
+    def listing(self):
+        return ChannelListing.query.filter_by_domain(
+            [
+                ('product', '=', self.id),
+                ('channel', '=', current_channel.id)
+            ]
+        ).first()
 
     def get_related_products(self):
         """
