@@ -16,7 +16,7 @@ def require_cart_with_sale(function):
         cart = Cart.get_active()
         if not cart.sale:
             if current_user.is_anonymous:
-                party = current_channel.anonymous_customer
+                party = current_channel.anonymous_customer.id
             else:
                 party = current_user.party.id
             sale = Sale(
