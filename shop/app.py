@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
-from flask import Flask
+from flask import Flask, current_app
 from shop.assets import assets
 from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil,
                              login_manager, redis_store, sentry, session,
                              themes)
-from shop.globals import current_app, current_channel
+from shop.globals import current_channel
 from shop.settings import ProdConfig
 from shop.utils import render_theme_template as render_template
 
