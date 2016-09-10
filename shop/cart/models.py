@@ -16,18 +16,23 @@ def require_cart_with_sale(function):
         cart = Cart.get_active()
         if not cart.sale:
             if current_user.is_anonymous:
-                party = current_channel.anonymous_customer.id
+                party = current_channel.anonymous_customer
             else:
-                party = current_user.party.id
-            sale = Sale(
-                party=party,
-                invoice_address=None,
-                shipment_address=None,
-                company=current_channel.company,
-                currency=current_channel.currency,
-                is_cart=True,
-                channel=current_channel.id,
-            ).save()
+                party = current_user.party
+            sale_data = {
+                "party": party.id,
+                "invoice_address": None,
+                "shipment_address": None,
+                "company": current_channel.company,
+                "currency": current_channel.currency,
+                "is_cart": True,
+                "channel": current_channel.id,
+            }
+            sale_data.update(Sale.rpc.on_change_channel(sale_data))
+            sale = Sale(**{
+                k: v for k, v in sale_data.iteritems()
+                if '.' not in k
+            }).save()
             cart.sale = sale.id
             cart.save()
         return function(*args, **kwargs)
