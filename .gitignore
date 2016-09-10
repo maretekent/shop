@@ -55,3 +55,6 @@ shop/static/libs/
 
 # OSX
 .DS_Store
+
+# Local runner scripts
+run.py
