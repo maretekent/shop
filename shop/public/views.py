@@ -8,7 +8,7 @@ from itsdangerous import BadSignature, SignatureExpired
 
 from shop.extensions import login_manager
 from shop.public.forms import LoginForm, NewPasswordForm, ResetPasswordForm
-from shop.public.models import Country
+from shop.public.models import Country, Banner
 from shop.user.forms import RegisterForm
 from shop.user.models import User
 from shop.utils import render_theme_template as render_template
@@ -26,17 +26,12 @@ def load_user(user_id):
 @blueprint.route('/', methods=['GET', 'POST'])
 def home():
     """Home page."""
-    form = LoginForm(request.form)
-    # Handle logging in
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            login_user(form.user)
-            flash('You are logged in.', 'success')
-            redirect_url = request.args.get('next') or url_for('public.home')
-            return redirect(redirect_url)
-        else:
-            flash_errors(form)
-    return render_template('public/home.html', form=form)
+    banners = Banner.query.filter_by_domain(
+        [
+            ('category.name', '=', 'Home Page Banners')
+        ]
+    ).all()
+    return render_template('public/home.html', banners=banners)
 
 
 @blueprint.route('/login', methods=['GET', 'POST'])
@@ -152,8 +147,8 @@ def get_country_subdivisions(country_id):
     subdivisions = country.subdivisions
     response = {
         "result":
-        [{'name': s.name,
-          'id': s.id}
+        [{"name": s.name,
+          "id": s.id}
             for s in subdivisions]
     }
     return jsonify(response)
