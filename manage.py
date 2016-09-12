@@ -26,12 +26,10 @@ def _make_context():
 
 
 @manager.command
-def test(*args):
+def test():
     """Run the tests."""
     import pytest
-    pytest_args = [TEST_PATH, "--verbose"]
-    pytest_args.extend(args[0])
-    exit_code = pytest.main(pytest_args)
+    exit_code = pytest.main([TEST_PATH, '--verbose'])
     return exit_code
 
 
@@ -79,5 +77,4 @@ manager.add_command('lint', Lint())
 
 if __name__ == '__main__':
     from flask_script import Command
-    Command.capture_all_args = True
     manager.run()
