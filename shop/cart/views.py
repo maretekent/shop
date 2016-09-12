@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Product views."""
-from flask_babel import gettext as _
 from flask import Blueprint, flash, redirect, request, url_for
+from flask_babel import gettext as _
+
 from shop.cart.forms import AddtoCartForm, RemoveFromCartForm
 from shop.cart.models import Cart
 from shop.utils import render_theme_template as render_template

@@ -4,8 +4,8 @@ from flask_wtf import Form
 from wtforms.fields import FloatField, IntegerField
 from wtforms.validators import DataRequired
 
-from shop.globals import current_cart
 from shop.cart.models import SaleLine
+from shop.globals import current_cart
 from shop.product.models import Product
 
 
@@ -31,6 +31,7 @@ class AddtoCartForm(Form):
 
 class RemoveFromCartForm(Form):
     "Form for removing sale line from cart"
+
     line_id = IntegerField('SaleLine', validators=[DataRequired()])
 
     def validate(self):

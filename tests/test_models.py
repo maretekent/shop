@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Model unit tests."""
 import pytest
+
 from shop.user.models import User
 
 from .factories import UserFactory

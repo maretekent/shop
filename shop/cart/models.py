@@ -6,6 +6,7 @@ from flask import session
 from flask_login import current_user
 from fulfil_client.model import (DecimalType, FloatType, ModelType,
                                  One2ManyType, StringType)
+
 from shop.fulfilio import Model
 from shop.globals import current_channel
 

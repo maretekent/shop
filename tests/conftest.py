@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Defines fixtures available to all tests."""
 import pytest
+from webtest import TestApp
+
 from shop.app import create_app
 from shop.settings import TestConfig
 from shop.user.models import User
-from webtest import TestApp
 
 from .factories import UserFactory
 
