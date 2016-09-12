@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Factories to help in tests."""
 from factory import Factory, Sequence
+
 from shop.user.models import User
 
 
