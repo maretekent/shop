@@ -51,3 +51,13 @@ def remove_from_cart():
         return redirect(url_for('cart.view_cart'))
     flash(_('Looks like the item is already deleted.'), 'error')
     return redirect(request.referer)
+
+
+@blueprint.route('/empty', methods=['POST'])
+def empty_cart():
+    """
+    Empties the cart
+    """
+    cart = Cart.get_active()
+    cart.clear()
+    return redirect(url_for('cart.view_cart'))
