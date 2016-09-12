@@ -30,46 +30,13 @@
       <span class="final">{{ listing.unit_price|currencyformat('USD') }}</span>
     </div>
 
-    <div class="row" id="product-varying-attrs">
+    <div class="row" id="product-varying-attrs"></div>
+
+    <div class="row">
       <div class="col-md-12">
-
-        <div class="color">
-          <label class="guide">Select a color</label>
-          <div class="size-left"></div>
-          <div class="size-cont">
-            {% for color in ['blue', 'green'] %}
-              <button class="size pdp-size-btn available {{ color }}">{{ button }}</button>
-            {% endfor %}
-          </div>
-        </div>
-
-        <div class="sizes mar-top">
-          <label class="guide">Select a size</label>
-          <div class="size-left"></div>
-          <div class="size-cont">
-            {% for button in range(6, 13) %}
-              <button class="size pdp-size-btn available">{{ button }}</button>
-            {% endfor %}
-          </div>
-        </div>
-
-        <div class="form-group"> <label>Select Frog:</label>
-          <select class="form-control select-sort attribute" data-attr-id="4073">
-            <option value="239" selected="">45 Degree Standard Angle</option>
-            <option value="240">50 Degree High Angle</option>
-            <option value="241">55 Degree High Angle</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Select Material:</label>
-          <select class="form-control select-sort attribute" data-attr-id="4074">
-            <option value="258">Iron</option>
-            <option value="257" selected="">Bronze</option>
-          </select>
-        </div>
-
-        <form action="/cart/add" method="POST" id="add-to-cart">
+        <form action="{{ url_for('cart.add_to_cart') }}" method="POST" id="add-to-cart">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <input type="hidden" name="product" value="{{product.id}}"/>
+          <input type="hidden" name="product" value="{{ product.id}} "/>
           <input type="hidden" name="quantity" value="1"/>
           <button class="button btn-big buy-now-btn" type="submit" id="buy-now-btn">Add to Cart</button>
         </form>
@@ -80,6 +47,7 @@
             <div class="big-tooltip-contents">Log in to save to wishlist</div></div>
             <span style="display:none;" class="saved"></span>
           </div>
+        </div>
       </div>
     </div>
 
@@ -109,3 +77,163 @@
 </section>
 
 {% endblock %}
+
+{% block js %}
+  {{ super() }}
+  {% if true or product.template.get_product_variation_data %}
+    <script type="text/html"  id='product-varying-attrs-tpl'>
+      <div class="col-md-12">
+        <% _.each(attrs, function(attr, index) { %>
+          <% if (attr.widget == 'dropdown') { %>
+            <div class="form-group"> {{ _('Select') }} <%= attr.display_name %>: <br/>
+              <select class="form-control select-sort attribute input-lg" data-attr-id="<%= attr.attribute_id %>">
+                <% _.each(attr.options, function(option, index) { %>
+                <option value="<%= _.escape(option[0]) %>" <% if (option[0] == currentVariantAttrs[attr.attribute_id]) { %> selected <% } %> ><%= _.escape(option[1]) %></option>
+                <% }); %>
+              </select>
+            </div>
+          <% } %>
+        <% }); %>
+      </div>
+    </script>
+
+    <script type="text/html" id='product-inventory-tpl'>
+      <span class="text-<%= statusClass %>"><i class="fa fa-<%= iconClass %>"></i>
+        <%= message %>
+      </span>
+    </script>
+
+    <script type="text/html" id="tab-pane-images">
+      <%
+        _.each(variant.image_urls, function(url_collection, index) {
+      %>
+        <div class="tab-pane <% if (index == 0) { %> active <% } %>" id="tab<%= index %>">
+          <div class="zoom-container">
+            <a id="zoom-target" href="<%- url_collection.regular %>" data-lightbox="<%= variant.id %>" >
+              <img class="zoom-image" src="<%- url_collection.large %>" alt="<%= variant.rec_name %>" />
+            </a>
+          </div>
+        </div>
+      <%
+        });
+      %>
+    </script>
+
+    <script type="text/html" id="tab-list-images">
+      <%
+        _.each(variant.image_urls, function(url_collection, index) {
+      %>
+        <li class="<% if (index == 0) { %> active <% } %>">
+          <a href="#tab<%= index %>" data-toggle="tab">
+            <img src="<%- url_collection.thumbnail %>" alt="<%= variant.rec_name %>" />
+          </a>
+        </li>
+      <%
+        });
+      %>
+    </script>
+
+    <script type="text/javascript">
+      $(document).ready(function() {
+        var productObj = {{ product.template.get_product_variation_data()|safe }};
+        window.productObj = productObj;
+        var currentVariantId = {{ product.id }}; // on page load this is the product ID
+        /*
+           Return the variant information given a product variant ID
+        */
+        var getVariantInfo = function(variantId) {
+          return _.find(productObj['variants'], function(product) {
+            return (product.id == variantId) ;
+          });
+        };
+        window.getVariantInfo = getVariantInfo;
+        var currentVariant = getVariantInfo(currentVariantId);
+        /*
+           Find a variant from the list which matches the attributes
+           selected. If there is none then return null
+        */
+        var findVariantMatching = function(attributeSelection) {
+          return _.find(productObj['variants'], function(product) {
+            return _.isEqual(product.attributes, attributeSelection)
+          });
+        };
+        /*
+           called when an attribute changes. Based on the selected attributes,
+           it tries to identify the product. If it does, then it returns the
+           id of that product
+        */
+        var onChangeAttribute = function() {
+          var attributeSelection = _.reduce(
+            $(".attribute"),  // Selector for the attribute fields.
+            function(memo, attrEl) {
+              // Append the attribute name and value to the map
+              memo[attrEl.getAttribute('data-attr-id')] = attrEl.value;
+              return memo;
+            },
+            {} // Initial empty attribute set
+          );
+          // Find a product which matches the attributes
+          product = findVariantMatching(attributeSelection);
+          var statusClass, iconClass, message;
+          if (product) {
+            // Set this product's assets as the current product
+            $('.price .final').show();
+            $('.product-code').text("Product Code: " + product.code);
+            $('.price .final').text(product.price);
+            // Set only, no removals
+            $('.product-name').text(product.name);
+            // Set the correct product in all input field
+            $('input[name="product"]').val(product.id);
+            // Set the images
+            var tab_pane_template = _.template($("#tab-pane-images").html());
+            $('#pane-tab').html(tab_pane_template({'variant': product}));
+            var tab_list_template = _.template($("#tab-list-images").html());
+            $('#list-tab').html(tab_list_template({'variant': product}));
+            // Product inventory
+            if(product.inventory_status == 'in_stock'){
+              statusClass = iconClass ='info';
+              // Remove the disabled attribute from the buy now button.
+              $('#buy-now-btn').removeAttr('disabled');
+              message = 'In stock';
+            } else {
+              statusClass = 'danger';
+              iconClass = 'warning';
+              $('#buy-now-btn').attr('disabled', 'disabled');
+              message = 'Out of stock';
+            }
+          } else {
+            // Display that the product is not available
+            $('#buy-now-btn').attr('disabled', 'disabled');
+            $('.price .final').hide();
+            $('.product-code').text('');
+            // Product inventory
+            statusClass = 'danger';
+            iconClass = 'warning';
+            message = 'Product not available';
+          }
+          var product_inventory_tpl = _.template(
+            $('#product-inventory-tpl').html()
+          );
+          // Set the inventory attributes of the product
+          $('#product-inventory').html(product_inventory_tpl({
+            'statusClass': statusClass,
+            'iconClass': iconClass,
+            'message': message
+          }));
+        };
+        /* Use _ templates to render the attribute options
+           Same thing could have been done in jinja but at the
+           cost of server time ;)
+           */
+        var product_varying_attrs_tpl = _.template(
+          $("#product-varying-attrs-tpl").html()
+        );
+        $("#product-varying-attrs").html(product_varying_attrs_tpl({
+          'attrs': productObj.variation_attributes,
+          'currentVariantAttrs': getVariantInfo({{ product.id }}).attributes
+        }));
+        $('.attribute').change(onChangeAttribute);
+      });
+    </script>
+  {% endif %}
+{% endblock js %}
