@@ -202,8 +202,15 @@ def payment():
             flash("Your Card has been declined, please try again later")
             return redirect(request.referer)
         else:
+            # Save sale to a local variable as confirm method clears the sale
+            sale = cart.sale
             cart.confirm()
-            return "Payment Captured successfully"
+            return redirect(url_for(
+                'cart.render',
+                sale_id=sale.id,
+                confirmation=True,
+                access_code=sale.guest_access_code,
+            ))
 
     return render_template(
         'checkout/payment.html'
