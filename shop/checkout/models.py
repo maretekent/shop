@@ -27,7 +27,7 @@ def sale_has_non_guest_party(function):
     def wrapper(*args, **kwargs):
         cart = current_cart
         if cart.sale and cart.sale.party and \
-                cart.sale.party.id == current_channel.anonymous_customer:
+                cart.sale.party.id == current_channel.anonymous_customer.id:
             return redirect(url_for('checkout.sign_in'))
         return function(*args, **kwargs)
     return wrapper
