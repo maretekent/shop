@@ -15,7 +15,7 @@
 {% macro render_channel_list(listing, node=None, name=None, list_name=None) -%}
   {% if not name %}
     {% if node and node.display == 'product.template' %}
-      {% set name = product.template.name %}
+      {% set name = listing.product.template.name %}
     {% else %}
       {% set name = listing.product.name %}
     {% endif %}
