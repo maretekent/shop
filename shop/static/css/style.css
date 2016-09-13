@@ -646,6 +646,10 @@ footer .footer-bottom {
   display: inline;
 }
 
+.cart-title {
+  margin-top: 0;
+}
+
 /* End cart styles */
 
 

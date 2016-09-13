@@ -133,3 +133,7 @@ class Cart(Model):
     def remove_sale_line(self, line_id):
         self.refresh()
         SaleLine.rpc.delete([line_id])
+
+    def clear(self):
+        self.sale = None
+        self.save()
