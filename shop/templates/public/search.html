@@ -1,0 +1,24 @@
+{% extends theme("layout.html") %}
+
+{% from 'utils.html' import render_pagination, render_channel_list  %}
+
+{% block content %}
+  <section class="products" id="products-new-sellers">
+    {% set query = request.args.get('q') %}
+    <div class="section-title"><h2>Showing results for "{{ query }}"</h2></div>
+    <ul class="clearfix">
+      {% for listing in results.items %}
+        <li class="col-xs-12 col-sm-6 col-md-3">
+          {{ render_channel_list(listing, list_name="Products Search List") }}
+        </li>
+        {% else %}
+        <li>
+          <p class="text-center"><strong>We found nothing!</strong></p>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% if results.pages > 1 %}
+    {{ render_pagination(results, endpoint='public.search', q=query) }}
+  {% endif %}
+{% endblock content %}
