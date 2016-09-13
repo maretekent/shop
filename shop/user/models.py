@@ -177,3 +177,14 @@ class User(UserMixin, Model):
         return Address.query.filter_by_domain(
             [('party', '=', self.party)]
         ).all()
+
+    def get_magic_login_link(self, **options):
+        """
+        Returns a direct login link for user
+        """
+        return url_for(
+            'public.magic_login',
+            sign=self._get_sign('magic-login'),
+            user_id=self.id,
+            **options
+        )

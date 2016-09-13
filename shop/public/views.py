@@ -6,7 +6,7 @@ from flask_babel import gettext as _
 from flask_login import login_required, login_user, logout_user
 from itsdangerous import BadSignature, SignatureExpired
 
-from shop.extensions import login_manager
+from shop.extensions import login_manager, fulfil
 from shop.globals import current_channel
 from shop.product.models import ChannelListing
 from shop.public.forms import LoginForm, NewPasswordForm, ResetPasswordForm
@@ -14,7 +14,7 @@ from shop.public.models import Banner, Country
 from shop.user.forms import RegisterForm
 from shop.user.models import User
 from shop.utils import render_theme_template as render_template
-from shop.utils import flash_errors
+from shop.utils import flash_errors, render_email
 
 blueprint = Blueprint('public', __name__, static_folder='../static')
 
@@ -148,6 +148,76 @@ def new_password(user_id, sign, max_age=60 * 60):
     elif form.errors and (request.is_xhr or request.is_json):
             return jsonify(errors=form.errors), 400
     return render_template('public/new-password.html', form=form)
+
+
+@blueprint.route("/magic-login/<int:user_id>/<sign>", methods=["GET"])
+def magic_login(user_id, sign, max_age=5 * 60):
+    """
+    Let the user log in without password if the token
+    is valid (less than 5 min old)
+    """
+    try:
+        unsigned = User._serializer().loads(
+            User._signer().unsign(sign, max_age=max_age),
+            salt='magic-login'
+        )
+    except SignatureExpired:
+        return xhr_safe_response(
+            _('The link has expired'),
+            redirect(url_for('public.login')), 400
+        )
+    except BadSignature:
+        return xhr_safe_response(
+            _('Invalid login link'),
+            redirect(url_for('public.login')), 400
+        )
+    else:
+        if not user_id == unsigned:
+            current_app.logger.debug('Invalid link')
+            abort(403)
+
+        login_user(load_user(user_id))
+        # TODO: Set this used token as expired to prevent using
+        # it more than once
+        return xhr_safe_response(
+            _('You have been successfully logged in'),
+            redirect(url_for('public.home')), 200
+        )
+
+
+@blueprint.route('/send-magic-link/<email>', methods=['GET'])
+def send_magic_login_link(email):
+    """
+    Send a magic login email to the user
+    """
+    EmailQueue = fulfil.model('email.queue')
+
+    user = User.query.filter_by_domain([
+        ('email', '=', email),
+    ]).first()
+    if not user:
+        # This email was not found so, let user know about this
+        message = "No user with email %s was found!" % email
+        current_app.logger.debug(_(message))
+    else:
+        message = "Please check your mail and follow the link"
+        email_message = render_email(
+            current_channel.support_email,  # From
+            email, _('Magic Signin Link'),
+            text_template='emails/magic-login-text.txt',
+            html_template='emails/magic-login-html.html',
+            user=user,
+            channel=current_channel,
+        )
+        EmailQueue.create([{
+            'from_addr': current_channel.support_email,
+            'to_addrs': email,
+            'msg': email_message.as_string()
+        }])
+
+    return xhr_safe_response(
+        _(message), redirect(url_for('public.home')), 200
+    )
 
 
 @blueprint.route('/countries')

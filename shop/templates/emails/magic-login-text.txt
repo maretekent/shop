@@ -1,0 +1,25 @@
+------------------------------
+
+       {{ channel.name }}
+
+------------------------------
+
+
+
+
+Your {{ channel.name }} Account!
+
+Hello {{ user.name }}!
+
+You requested to get a login link for your {{ channel.name }} account.
+
+Click on the link below to Login:
+
+{{ user.get_magic_login_link(_external=True) }}
+
+If this link does not work, copy and paste it into your browser's address window.
+
+Thanks for shopping with us!
+
+Sincerely,
+Your Friends at {{ channel.name }}
