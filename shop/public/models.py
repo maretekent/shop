@@ -2,7 +2,6 @@
 """Public models."""
 
 from fulfil_client import model
-
 from shop.fulfilio import Model
 
 

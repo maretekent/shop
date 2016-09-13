@@ -2,12 +2,11 @@
 """User forms."""
 from flask_login import current_user
 from flask_wtf import Form
+from shop.public.models import Country, Subdivision
+from shop.user.models import User
 from wtforms import PasswordField, SelectField, StringField, TextField
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
                                 ValidationError)
-
-from shop.public.models import Country, Subdivision
-from shop.user.models import User
 
 
 class RegisterForm(Form):
@@ -116,9 +115,6 @@ class AddressForm(Form):
         'Phone',
         render_kw={"placeholder": "e.g. +1234556"}
     )
-
-    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
-        super(AddressForm, self).__init__(formdata, obj, prefix, **kwargs)
 
 
 class ChangePasswordForm(Form):

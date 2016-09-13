@@ -3,11 +3,9 @@
 import stripe
 from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_login import current_user, login_user
-
-from shop.checkout.forms import CheckoutSignInForm
+from shop.checkout.forms import CheckoutAddressForm, CheckoutSignInForm
 from shop.checkout.models import not_empty_cart, sale_has_non_guest_party
 from shop.globals import current_app, current_cart, current_channel
-from shop.user.forms import AddressForm
 from shop.user.models import Address, Party, User
 from shop.utils import render_theme_template as render_template
 
@@ -52,7 +50,7 @@ def sign_in():
 
             cart = current_cart
             party_name = unicode('Guest with email: %s' % form.email.data)
-            if cart.sale.party.id == current_channel.anonymous_customer:
+            if cart.sale.party.id == current_channel.anonymous_customer.id:
                 # Create a party with the email as email, and session as
                 # name, but attach the session to it.
                 party, = Party.rpc.create([{
@@ -115,46 +113,36 @@ def shipping_address():
     if current_user.is_anonymous and cart.sale.shipment_address:
         address = cart.sale.shipment_address
 
-    address_form = AddressForm(address)
-
-    if request.method == 'POST':
-        if not current_user.is_anonymous and request.form.get('address'):
+    address_form = CheckoutAddressForm(object=address)
+    if address_form.validate_on_submit():
+        if address_form.address.data:
             # Registered user has chosen an existing address
-            address = Address.get_by_id(request.form.get('address', type=int))
-
-            if address.party != cart.sale.party.id:
-                flash('The address chosen is not valid')
-                return redirect(
-                    url_for('checkout.shipping_address')
-                )
+            address = Address.get_by_id(address_form.address.data)
 
         else:
             # Guest user or registered user creating an address. Only
             # difference is that the party of address depends on guest or
             # not
-            if not address_form.validate():
-                address = None
+            if current_user.is_anonymous and \
+                    cart.sale.shipment_address:
+                # Save to the same address if the guest user
+                # is just trying to update the address
+                address = cart.sale.shipment_address
             else:
-                if current_user.is_anonymous and \
-                        cart.sale.shipment_address:
-                    # Save to the same address if the guest user
-                    # is just trying to update the address
-                    address = cart.sale.shipment_address
-                else:
-                    address = Address()
+                address = Address()
 
-                address.party = cart.sale.party
-                address.name = address_form.name.data
-                address.street = address_form.street.data
-                address.streetbis = address_form.streetbis.data
-                address.zip = address_form.zip.data
-                address.city = address_form.city.data
-                address.country = address_form.country.data
-                address.subdivision = address_form.subdivision.data
+            address.party = cart.sale.party.id
+            address.name = address_form.name.data
+            address.street = address_form.street.data
+            address.streetbis = address_form.streetbis.data
+            address.zip = address_form.zip.data
+            address.city = address_form.city.data
+            address.country = address_form.country.data
+            address.subdivision = address_form.subdivision.data
 
-                if address_form.phone.data:
-                    address.phone = address_form.phone.data
-                address.save()
+            if address_form.phone.data:
+                address.phone = address_form.phone.data
+            address.save()
 
         if address is not None:
             sale = cart.sale

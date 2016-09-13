@@ -5,7 +5,6 @@ See: http://webtest.readthedocs.org/
 """
 import pytest
 from flask import url_for
-
 from shop.user.models import User
 
 

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """CMS views."""
 from flask import Blueprint, abort, redirect, url_for
-
 from shop.cms.models import Article
 from shop.utils import render_theme_template as render_template
 

@@ -3,7 +3,6 @@
 import functools
 
 from flask import redirect, url_for
-
 from shop.globals import current_cart, current_channel
 
 

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """CMS models."""
 from fulfil_client.model import StringType
-
 from shop.fulfilio import Model
 
 
