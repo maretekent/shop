@@ -29,7 +29,8 @@ def home():
     """Home page."""
     banners = Banner.query.filter_by_domain(
         [
-            ('category.name', '=', 'Home Page Banners')
+            ('category.name', '=', 'Home Page Banners'),
+            ('state', '=', 'published')
         ]
     ).all()
     return render_template('public/home.html', banners=banners)
