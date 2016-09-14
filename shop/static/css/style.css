@@ -111,6 +111,12 @@ textarea {
   margin-right: 15px;
 }
 
+.carousel-image {
+  width: auto;
+  height: 400px;
+  max-height: 400px;
+}
+
 .mini-cart .cart-link {
   position: relative;
   color: #222;

@@ -1,21 +1,20 @@
 
 {% extends theme("layout.html") %}
 {% block content %}
-  <h1>Welcome to Fulfil Shop</h1>
-  <div id="banner-carousel" class="carousel slide" data-ride="carousel" style="height:400px">
+  <div id="banner-carousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
     <ol class="carousel-indicators">
       {% for banner in banners %}
-        <li data-target="#banner-carousel" data-slide-to="{{ banner.sequence }}" {% if banner.sequence ==1 %}class="active"{% endif %}></li>
+        <li data-target="#banner-carousel" data-slide-to="{{ banner.sequence }}" {% if loop.first %}class="active"{% endif %}></li>
       {% endfor %}
     </ol>
 
     <!-- Wrapper for slides -->
     <div class="carousel-inner" role="listbox">
       {% for banner in banners %}
-        <div {% if banner.sequence ==1 %}class="item active"{% else %}class="item"{% endif %}>
+        <div {% if loop.first %}class="item active"{% else %}class="item"{% endif %}>
           <img src="{{ banner.file.url }}"
-               class="img-responsive center-block" alt="{{ banner.file.name }}">
+               class="img img-responsive center-block carousel-image" alt="{{ banner.file.name }}">
           <div class="carousel-caption">
             {{ banner.file.name }}
             ...
