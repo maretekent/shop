@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """Cart forms."""
 from flask_wtf import Form
+from wtforms.fields import FloatField, IntegerField
+from wtforms.validators import DataRequired
+
 from shop.cart.models import SaleLine
 from shop.globals import current_cart
 from shop.product.models import Product
-from wtforms.fields import FloatField, IntegerField
-from wtforms.validators import DataRequired
 
 
 class AddtoCartForm(Form):

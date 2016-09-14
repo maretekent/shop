@@ -2,9 +2,9 @@
 """Product models."""
 import json
 
-from fulfil_client.model import (
-    CurrencyType, StringType, One2ManyType, ModelType, IntType
-)
+from fulfil_client.model import (CurrencyType, IntType, ModelType, One2ManyType,
+                                 StringType)
+
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
 from shop.utils import get_random_product

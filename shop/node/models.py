@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Node models."""
 from fulfil_client.model import IntType, StringType
+
 from shop.extensions import redis_store
 from shop.fulfilio import Model
 from shop.product.models import ChannelListing

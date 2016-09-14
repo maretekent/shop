@@ -3,6 +3,7 @@
 import stripe
 from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_login import current_user, login_user
+
 from shop.checkout.forms import CheckoutAddressForm, CheckoutSignInForm
 from shop.checkout.models import not_empty_cart, sale_has_non_guest_party
 from shop.globals import current_app, current_cart, current_channel
