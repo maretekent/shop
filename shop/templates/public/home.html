@@ -1,35 +1,39 @@
 
 {% extends theme("layout.html") %}
 {% block content %}
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<!-- <div class="jumbotron">
-
   <h1>Welcome to Fulfil Shop</h1>
+  <div id="banner-carousel" class="carousel slide" data-ride="carousel" style="height:400px">
+    <!-- Indicators -->
+    <ol class="carousel-indicators">
+      {% for banner in banners %}
+        <li data-target="#banner-carousel" data-slide-to="{{ banner.sequence }}" {% if banner.sequence ==1 %}class="active"{% endif %}></li>
+      {% endfor %}
+    </ol>
 
-  <p>This is a starter Flask template. It includes Bootstrap 3, jQuery 2, Flask-SQLAlchemy, WTForms, and various testing utilities out of the box.</p>
-  <p><a href="https://github.com/sloria/cookiecutter-flask" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
-</div> -->
-<!-- /.jumbotron -->
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner" role="listbox">
+      {% for banner in banners %}
+        <div {% if banner.sequence ==1 %}class="item active"{% else %}class="item"{% endif %}>
+          <img src="{{ banner.file.url }}"
+               class="img-responsive center-block" alt="{{ banner.file.name }}">
+          <div class="carousel-caption">
+            {{ banner.file.name }}
+            ...
+          </div>
+        </div>
+      {% endfor %}
+    </div>
 
-<!-- <div class="body-content">
-  <div class="row">
-    <div class="col-lg-4">
-      <h2><i class="fa fa-code"></i> Bootstrap 3</h2>
-      <p>Sleek, intuitive, and powerful mobile-first front-end framework for faster and easier web development.</p>
-      <p><a class="btn btn-default" href="http://getbootstrap.com/">Official website &raquo;</a></p>
-    </div>
-    <div class="col-lg-4">
-      <h2><i class="fa fa-flask"></i> SQLAlchemy</h2>
-      <p>SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that gives application developers the full power and flexibility of SQL.</p>
-      <p><a href="http://www.sqlalchemy.org/" class="btn btn-default" href="#">Official website &raquo;</a></p>
-   </div>
-    <div class="col-lg-4">
-      <h2><i class="fa fa-edit"></i> WTForms</h2>
-      <p>WTForms is a flexible forms validation and rendering library for python web development.</p>
-      <p><a href="http://wtforms.simplecodes.com/" class="btn btn-default" href="#">Official website &raquo;</a></p>
-    </div>
+    <!-- Controls -->
+    <a class="left carousel-control" href="#banner-carousel" role="button" data-slide="prev">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#banner-carousel" role="button" data-slide="next">
+      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
   </div>
-</div> -->
-<div style="width: 100%; height: 400px;"></div>
+  <br>
 {% endblock %}
 

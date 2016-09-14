@@ -52,3 +52,21 @@ class Subdivision(Model):
 
     name = model.StringType()
     country = model.ModelType("country.country")
+
+
+class StaticFile(Model):
+
+    __model_name__ = 'nereid.static.file'
+
+    name = model.StringType()
+    url = model.StringType()
+
+
+class Banner(Model):
+
+    __model_name__ = 'nereid.cms.banner'
+
+    name = model.StringType()
+    file = model.ModelType('nereid.static.file')
+    sequence = model.IntType()
+    description = model.StringType()
