@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Product views."""
 from flask import Blueprint, abort, request
+
 from shop.globals import current_channel
 from shop.product.models import ChannelListing
 from shop.utils import render_theme_template as render_template

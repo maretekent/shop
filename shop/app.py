@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
 from flask import Flask, current_app
+
 from shop.assets import assets
 from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil,
                              login_manager, redis_store, sentry, session,
