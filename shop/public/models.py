@@ -76,3 +76,10 @@ class Banner(Model):
     sequence = model.IntType()
     description = model.StringType()
     click_url = model.StringType()
+
+
+class Currency(Model):
+
+    __model_name__ = 'currency.currency'
+
+    code = model.StringType()

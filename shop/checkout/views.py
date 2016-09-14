@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """Checkout views."""
+import json
+from decimal import Decimal
+
 import stripe
 from flask import Blueprint, abort, flash, redirect, request, session, url_for
 from flask_login import current_user, login_user, login_required
@@ -8,6 +11,7 @@ from shop.checkout.forms import CheckoutAddressForm, CheckoutSignInForm, Checkou
 from shop.checkout.models import (PaymentProfile, not_empty_cart,
                                   sale_has_non_guest_party)
 from shop.globals import current_cart, current_channel, current_app
+from shop.public.models import Currency
 from shop.user.models import Address, Party, User
 from shop.utils import render_theme_template as render_template
 from shop.signals import cart_user_changed
@@ -178,7 +182,57 @@ def validate_address():
 @not_empty_cart
 @sale_has_non_guest_party
 def delivery_method():
-    return redirect(url_for('checkout.payment'))
+    """
+    Selection of delivery method (options)
+
+    Based on the shipping address selected, the delivery options
+    could be shown to the user. This may include choosing shipping speed
+    and if there are multiple items, the option to choose items as they are
+    available or all at once.
+    """
+    sale = current_cart.sale
+    if not sale.shipment_address:
+        return redirect(url_for('checkout.shipping_address'))
+
+    if not sale.weight:
+        # No weight, no need to ship
+        return redirect(url_for('checkout.payment'))
+
+    if request.method == 'POST' and request.form.get('carrier_json'):
+        rate = json.loads(request.form.get('carrier_json'))
+        rate.pop('currency_code', None)
+        rate.update({
+            'cost': Decimal(str(rate['cost']))
+        })
+
+        # TODO: make this method work without AR
+        sale.rpc.apply_shipping_rate(sale.id, rate)
+
+        return redirect(url_for('checkout.payment'))
+
+    try:
+        delivery_rates = sale.rpc.get_shipping_rates(
+            sale.id,
+            None,
+            silent=True
+        )
+
+    except Exception as e:
+        # Possible Errors: Overweight shipment, Invalid address
+        # TODO: Handle gracefully
+        flash(e.message)
+        return redirect(url_for('checkout.shipping_address'))
+
+    for rate in delivery_rates:
+        cost_currency = Currency.get_by_id(rate['cost_currency']['id'])
+        if cost_currency:
+            rate['currency_code'] = cost_currency.code
+
+    return render_template(
+        'checkout/delivery_method.html',
+        delivery_rates=delivery_rates,
+        sale=sale
+    )
 
 
 @blueprint.route('/payment', methods=['GET', 'POST'])

@@ -1,0 +1,38 @@
+{% extends theme("layout.html") %}
+
+{% block content %}
+<section>
+    <!-- Shipping Method -->
+    <form method="post">
+      <h4><span>{{ _('Choose your Shipping Method') }}</span></h4>
+      <input name=_csrf_token
+             type=hidden
+             value="{{ csrf_token() }}">
+      {% for rate in delivery_rates %}
+      <div class="radio">
+        <label class=" {% if loop.first %}current{% endif %}">
+          <input
+              type="radio" name="carrier_json"
+              value='{{ rate | tojson |safe }}'
+              {{ 'checked' if loop.first else '' }}/>
+          {{ rate["carrier"]["rec_name"] }} |
+          {{ rate["carrier_service"]["rec_name"] }}
+           <code>
+            {{ rate["currency_code"] }}
+            {{ rate["cost"]|currencyformat(rate["currency_code"]) }}
+          </code>
+        </label>
+      </div>
+      {% else %}
+        <div class="alert alert-warning">
+          {{ _('No shipping method found for this shipment Address') }}
+          <a href="{{ url_for('checkout.shipping_address') }}">{{ _('click here') }}</a>
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-warning" id="payment-btn">
+        {{ _('Continue to Payment') }}
+      </button>
+    </form>
+</section>
+<br>
+{% endblock content %}

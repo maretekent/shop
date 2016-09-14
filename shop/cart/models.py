@@ -71,7 +71,8 @@ class Sale(Model):
     invoices = One2ManyType("account.invoice")
     sale_date = Date()
     state = StringType()
-    currency = StringType()
+    currency = ModelType('currency.currency')
+    weight = DecimalType()
 
     #: This access code will be cross checked if the user is guest for a match
     #: to optionally display the order to an user who has not authenticated
@@ -152,7 +153,9 @@ class Cart(Model):
             guest_cart.clear()
 
     def confirm(self):
-        "Move order to confirmation state"
+        """
+        Move order to confirmation state
+        """
         sale = self.sale
         Sale.rpc.quote([sale.id])
         Sale.rpc.confirm([sale.id])
