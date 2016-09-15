@@ -49,6 +49,8 @@
       {% endblock logo %}
 
       {% block navigation %}
+        {% set root_nav=get_nav(current_app.config.get('FULFIL_ROOT_NAV', 'shop_root_nav')) %}
+        {% set menu=root_nav and root_nav.get_tree(depth=3) %}
         <div class="col-md-9 col-sm-12 navigation">
           <div class="row row-1 slogan-search-row">
             <div class="mobile-menu-wrapper">
@@ -56,12 +58,12 @@
               <div class="mobile-menu-outer" id="mobile-menu-outer">
                 <ul class="mobile-menu" id="mobile-menu" >
                   <span class="close-mobile-menu" id="close-mobile-menu"><i class="fa fa-close"></i></span>
-                  <li class="menu-item"><a href="">Home</a></li>
-                  <li class="menu-item"><a href="">Category 1</a></li>
-                  <li class="menu-item"><a href="">Category 2</a></li>
-                  <li class="menu-item"><a href="">Category 3</a></li>
-                  <li class="menu-item"><a href="">BLOG</a></li>
-                  <li class="menu-item"><a href="">CONTACT</a></li>
+                  {% for child in menu.children %}
+                    {#Till level one only#}
+                    <li class="menu-item">
+                      <a href="{{ child.link | get_menuitem_link }}">{{ child.title }}</a>
+                    </li>
+                  {% endfor %}
                 </ul>
               </div>
             </div>
@@ -82,7 +84,7 @@
             </div>
           </div>
           <div class="row row-2 menu-row">
-            {% with form=form  %}
+            {% with form=form, menu=menu  %}
             {% include theme("partials/nav.html") %}
             {% endwith %}
           </div>

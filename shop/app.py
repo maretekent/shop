@@ -3,9 +3,11 @@
 from flask import Flask, current_app
 
 from shop.assets import assets
+from shop.cms.models import MenuItem
 from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil,
                              login_manager, redis_store, sentry, session,
                              themes)
+from shop.filters import get_menuitem_link
 from shop.globals import current_channel
 from shop.settings import ProdConfig
 from shop.utils import render_theme_template as render_template
@@ -29,6 +31,7 @@ def create_app(config_object=ProdConfig):
     register_blueprints(app)
     register_errorhandlers(app)
     register_context_processors(app)
+    register_filters(app)
     return app
 
 
@@ -86,4 +89,11 @@ def register_context_processors(app):
     app.context_processor(lambda: {
         'current_channel': current_channel,
         'current_app': current_app,
+        'get_nav': MenuItem.get_nav,
+    })
+
+
+def register_filters(app):
+    app.jinja_env.filters.update({
+        'get_menuitem_link': get_menuitem_link
     })

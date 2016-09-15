@@ -19,6 +19,7 @@ def _get_current_cart():
     from shop.cart.models import Cart
     return Cart.get_active()
 
+
 cache = LocalProxy(_find_cache)
 current_channel = LocalProxy(lambda: _get_current_channel())
 current_cart = LocalProxy(lambda: _get_current_cart())

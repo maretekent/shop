@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """CMS models."""
 from flask import url_for
-from fulfil_client.model import StringType, One2ManyType
+from fulfil_client.model import One2ManyType, StringType
 
 from shop.fulfilio import Model
 
@@ -9,6 +9,17 @@ from shop.fulfilio import Model
 class MenuItem(Model):
 
     __model_name__ = 'nereid.cms.menuitem'
+
+    title = StringType()
+    target = StringType()
+    type_ = StringType()
+
+    def get_tree(self, depth):
+        return self.rpc.get_menu_item(self.id, depth)
+
+    @classmethod
+    def get_nav(cls, code):
+        return cls.query.filter_by(code=code).first()
 
 
 class BannerCategory(Model):

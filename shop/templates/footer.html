@@ -2,33 +2,22 @@
 	<div class="footer-top clearfix">
 		<div class="container">
 			<div class="left-column clearfix">
-				<ul class="link-lists">
-					<li class="title">Important links</li>
-					<li class="link"><a href="#">Link #1</a></li>
-					<li class="link"><a href="#">Link #2</a></li>
-					<li class="link"><a href="#">Link #3</a></li>
-					<li class="link"><a href="#">Link #4</a></li>
-				</ul>
-				<ul class="link-lists">
-					<li class="title">Important links</li>
-					<li class="link"><a href="#">Link #1</a></li>
-					<li class="link"><a href="#">Link #2</a></li>
-					<li class="link"><a href="#">Link #3</a></li>
-					<li class="link"><a href="#">Link #4</a></li>
-				</ul>
-				<ul class="link-lists">
-					<li class="title">Important links</li>
-					<li class="link"><a href="#">Link #1</a></li>
-					<li class="link"><a href="#">Link #2</a></li>
-					<li class="link"><a href="#">Link #3</a></li>
-					<li class="link"><a href="#">Link #4</a></li>
-				</ul>
-				<ul class="link-lists">
-					<li class="title">Important links</li>
-					<li class="link"><a href="#">Link #1</a></li>
-					<li class="link"><a href="#">Link #2</a></li>
-					<li class="link"><a href="#">Link #3</a></li>
-				</ul>									
+        {% set footer_nav=get_nav(current_app.config.get('FULFIL_FOOTER_NAV', 'shop_footer_nav')) %}
+        {% set footer_menu = footer_nav and footer_nav.get_tree(depth=3) %}
+        {% for menuitem in footer_menu.children %}
+          <ul class="link-lists">
+            <li class="title">{{ menuitem.title }}</li>
+            {% if menuitem.children %}
+              {% for item in menuitem.children %}
+                <li class="link">
+                  <a href="{{ item.link | get_menuitem_link }}" target="{{ item.target }}">
+                    {{ item.title }}
+                  </a>
+                </li>
+              {% endfor %}
+            {% endif %}
+          </ul>
+        {% endfor %}
 			</div>
 			<div class="right-column clearfix">
 				<div class="social">
@@ -67,7 +56,7 @@
 		<div class="container">
 			<small>
 				<ul class="company">
-					<li>© Fulfil.IO Inc.</li>
+					<li>&copy; Fulfil.IO Inc.</li>
 				</ul>
 
 				<ul class="footer-nav">

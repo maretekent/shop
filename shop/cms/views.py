@@ -35,10 +35,8 @@ def category(uri):
     """
     Render a category
     """
-    category = ArticleCategory.query.filter_by(unique_name=uri).first()
-    if category:
-        return render_template('cms/category.html', category=category)
-    return abort(404)
+    category = ArticleCategory.query.filter_by(unique_name=uri).first_or_404()
+    return render_template('cms/category.html', category=category)
 
 
 @blueprint.route('/sitemap-index.xml')

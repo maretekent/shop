@@ -8,7 +8,7 @@
   <ul class="clearfix">
     {% for child in node.children %}
     <li class="col-xs-12 col-sm-6 col-md-3">
-      <a href="{{ url_for('node.node', handle=child.slug, id=child.id) }}">
+      <a href="{{ child.get_absolute_url() }}">
         <div class="img-wrapper">
           <img class="img img-responsive" src="{{ child.image }}"/>  
         </div>
@@ -29,7 +29,7 @@
   <ul class="clearfix">
     {% for listing in listings %}
     <li class="col-xs-6 col-sm-3 col-md-2">
-      <a href="{{ url_for('products.product', handle=listing.product_identifier) }}">
+      <a href="{{ listing.get_absolute_url() }}">
         <div class="img-wrapper">
           <img class="img img-responsive" src="{{ listing.product.image }}"/>        
         </div>

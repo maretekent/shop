@@ -6,10 +6,10 @@ See: http://webtest.readthedocs.org/
 import pytest
 from flask import url_for
 
-from shop.user.models import User
 from shop.cart.models import Cart
-from shop.product.models import Product
 from shop.globals import current_channel
+from shop.product.models import Product
+from shop.user.models import User
 
 
 @pytest.fixture
