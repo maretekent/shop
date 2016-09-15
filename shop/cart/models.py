@@ -61,6 +61,11 @@ class Sale(Model):
     untaxed_amount = DecimalType()
     lines = One2ManyType("sale.line")
 
+    #: This access code will be cross checked if the user is guest for a match
+    #: to optionally display the order to an user who has not authenticated
+    #: as yet
+    guest_access_code = StringType()
+
     def add_product(self, product_id, quantity):
         line_data = {
             'sale': self.id,
