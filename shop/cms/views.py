@@ -2,7 +2,7 @@
 """CMS views."""
 from flask import Blueprint, abort, redirect, url_for
 
-from shop.cms.models import Article
+from shop.cms.models import Article, ArticleCategory
 from shop.utils import render_theme_template as render_template
 
 blueprint = Blueprint(
@@ -27,6 +27,17 @@ def page(uri):
     article = Article.query.filter_by(uri=uri).first()
     if article:
         return render_template('cms/pages.html', article=article)
+    return abort(404)
+
+
+@blueprint.route('/category/<uri>')
+def category(uri):
+    """
+    Render a category
+    """
+    category = ArticleCategory.query.filter_by(unique_name=uri).first()
+    if category:
+        return render_template('cms/category.html', category=category)
     return abort(404)
 
 
