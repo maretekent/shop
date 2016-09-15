@@ -1,0 +1,146 @@
+{% extends theme("layout.html") %}
+{% from 'utils.html' import render_pagination  %}
+
+{% block content %}
+<!-- My Orders Page starts here -->
+<section>
+  <div class="container">
+    <div class="filter-by hidden-sm hidden-xs">
+      <div class="dropdown pull-right">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+          {% if request.args.get('filter_by') == 'recent' %}
+            {% set order_state = 'Recent orders' %}
+          {% elif request.args.get('filter_by') == 'done' %}
+            {% set order_state = 'Done orders' %}
+          {% elif request.args.get('filter_by') == 'canceled' %}
+            {% set order_state = 'Canceled orders' %}
+          {% elif request.args.get('filter_by') == 'archived' %}
+            {% set order_state = 'Archived orders' %}
+          {% else %}
+            {% set order_state = '' %}
+          {% endif %}
+          {% if request.args.get('filter_by') %} Filtered by {{ order_state }} {% else %} {{ 'Filter by orders state' }}{% endif %}
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ url_for('user.orders', filter_by="recent") }}">{{ 'Recent Orders' }}</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ url_for('user.orders', filter_by="done") }}">{{ 'Done Orders' }}</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ url_for('user.orders', filter_by="canceled") }}">{{ 'Canceled Orders' }}</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ url_for('user.orders', filter_by="archived") }}">{{ 'Archived Orders' }}</a></li>
+        </ul>
+      </div>
+    </div>
+
+
+    <div class="col-md-12 my-account-order">
+      <h4>My Orders</h4>
+      <!--My Orders-->
+      {% if sales %}
+      <div class="col-md-10 no-pad-xs">
+        <div class="cart-table">
+          <!--Recent Orders Table starts here -->
+          {% for sale in sales %}
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-12 col-xs-12 text-center-xs">
+                    <div class="primary row">
+                      <div class="col-md-4 col-sm-4 col-xs-12">
+                        Date Placed
+                      </div>
+                      <div class="col-md-8 col-sm-8 col-xs-12">
+                        {{ sale.sale_date|dateformat }}
+                      </div>
+                    </div>
+                    <div class="secondry row">
+                      <div class="col-md-4 col-sm-4 col-xs-12">
+                        Order No.
+                      </div>
+                      <div class="col-md-8 col-sm-8 col-xs-12">
+                        <a href="{{ url_for('cart.render', sale_id=sale.id) }}" class="text-info">#{{ sale.number }}</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-12 text-center">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                    <div class="primary">
+                      Status
+                    </div>
+                    <div class="secondry">
+                      {% if sale.state ==  "done" %}
+                      <span class="text-success">Done</span>
+                      {% elif sale.state in ("processing", "confirmed") %}
+                      <span class="text-info">Processing</span>
+                      {% elif sale.state == "cancel" %}
+                      <span class="text-danger">Canceled</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                    <div class="primary">
+                      Total Amount
+                    </div>
+                    <div class="secondry">
+                      {{ sale.total_amount }}
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                    Action
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="col-md-8 col-xs-8">
+                <div class="orderd-products">
+                    {% for line in sale.lines %}
+                    <div class="row margin-bottom-10">
+                    {% if line.product and line.product.displayed_on_eshop %}
+                      <div class="col-md-7 col-xs-8">
+                        <a href="{{ url_for('product.product.render', uri=line.product.uri) }}" class="product-name">{{ line.description }}</a>
+                      </div>
+                    {% else %}
+                      <div class="col-md-7 col-xs-8">
+                        <a class="product-name">{{ line.description }}</a>
+                      </div>
+                    {% endif %}
+                      <div class="text-muted col-md-4 col-xs-4">
+                        Qty :  {{ line.quantity }}
+                      </div>
+                    </div>
+                    {% endfor %}
+                </div>
+              </div>
+              <div class="col-md-4 col-xs-4 text-right">
+                {% for invoice in sale.invoices %}
+                {% if invoice.state == "paid" %}
+                <a href="{{ url_for('account.invoice.download_invoice', active_id=invoice.id) }}" class="text-muted download-invoice">
+                  <i class="fa fa-cloud-download"></i>Download invoice
+                </a>
+                <br>
+                {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+      <h4 class="text-muted center">No Orders Available</h4>
+    </div>
+    {% endif %}
+  </div>
+
+  </div>
+</section>
+
+
+{% if paginate.pages > 1 %}
+  {{ render_pagination(paginate, endpoint='user.orders', filter_by=request.args.get('filter_by')) }}
+{% endif %}
+
+{% endblock %}

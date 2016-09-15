@@ -225,6 +225,18 @@ textarea {
   font-size: 14px;
 }
 
+.my-account  a.dropdown-toggle{
+  border-color: #fff;
+}
+.my-account  a.dropdown-toggle:hover,.my-account  a.dropdown-toggle:active,.btn-group.open .dropdown-toggle{
+  border-color: #eee;
+  background: #FAFAFA;
+  box-shadow: none;
+}
+.my-account > div.container{
+  padding-bottom:25px;
+}
+
 .navigation>.row-1 {
   padding-bottom: 15px;
 }
