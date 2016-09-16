@@ -5,7 +5,6 @@ import json
 from flask import url_for
 from fulfil_client.model import (CurrencyType, IntType, ModelType, One2ManyType,
                                  StringType)
-
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
 from shop.utils import get_random_product

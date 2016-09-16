@@ -3,7 +3,8 @@
 import functools
 
 from flask import redirect, url_for
-
+from fulfil_client.model import ModelType, StringType
+from shop.fulfilio import Model
 from shop.globals import current_cart, current_channel
 
 
@@ -31,3 +32,17 @@ def sale_has_non_guest_party(function):
             return redirect(url_for('checkout.sign_in'))
         return function(*args, **kwargs)
     return wrapper
+
+
+class PaymentGateway(Model):
+    __model_name__ = 'payment_gateway.gateway'
+
+    provider = StringType()
+    stripe_api_key = StringType()
+    stripe_publishable_key = StringType()
+
+
+class PaymentProfile(Model):
+    __model_name__ = 'party.payment_profile'
+
+    party = ModelType('party.party')

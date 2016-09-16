@@ -2,11 +2,10 @@
 """Checkout forms."""
 from flask_login import current_user
 from flask_wtf import Form
-from wtforms import IntegerField, PasswordField, RadioField, StringField
-from wtforms.validators import DataRequired, Email, ValidationError
-
 from shop.user.forms import AddressForm
 from shop.user.models import Address
+from wtforms import IntegerField, PasswordField, RadioField, StringField
+from wtforms.validators import DataRequired, Email, ValidationError
 
 
 class CheckoutSignInForm(Form):

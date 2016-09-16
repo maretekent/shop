@@ -1,7 +1,6 @@
-from six import string_types
-
 from shop.cms.models import Article, ArticleCategory
 from shop.node.models import TreeNode
+from six import string_types
 
 
 def get_menuitem_link(data):

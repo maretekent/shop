@@ -5,12 +5,11 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from flask import Blueprint, abort, flash, request, url_for
 from flask_login import current_user, login_required
-from werkzeug import redirect
-
 from shop.cart.models import Sale
 from shop.user.forms import AddressForm, ChangePasswordForm
 from shop.user.models import Address
 from shop.utils import render_theme_template as render_template
+from werkzeug import redirect
 
 blueprint = Blueprint(
     'user', __name__,
