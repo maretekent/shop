@@ -7,6 +7,9 @@ import pytest
 from flask import url_for
 
 from shop.user.models import User
+from shop.cart.models import Cart
+from shop.product.models import Product
+from shop.globals import current_channel
 
 
 @pytest.fixture
@@ -29,14 +32,13 @@ def active_user(app):
     return user.save()
 
 
-@pytest.skip('Not implemented login yet')
 class TestLoggingIn:
     """Login."""
 
     def test_can_log_in_returns_200(self, active_user, testapp):
         """Login successful."""
-        # Goes to homepage
-        res = testapp.get('/')
+        # Goes to login page
+        res = testapp.get('/login')
         # Fills out login form in navbar
         form = res.forms['loginForm']
         form['email'] = active_user.email
@@ -47,7 +49,7 @@ class TestLoggingIn:
 
     def test_sees_alert_on_log_out(self, active_user, testapp):
         """Show alert on logout."""
-        res = testapp.get('/')
+        res = testapp.get('/login')
         # Fills out login form in navbar
         form = res.forms['loginForm']
         form['email'] = active_user.email
@@ -61,8 +63,8 @@ class TestLoggingIn:
     def test_sees_error_message_if_password_is_incorrect(
             self, active_user, testapp):
         """Show error if password is incorrect."""
-        # Goes to homepage
-        res = testapp.get('/')
+        # Goes to login
+        res = testapp.get('/login')
         # Fills out login form, password incorrect
         form = res.forms['loginForm']
         form['email'] = active_user.email
@@ -75,8 +77,8 @@ class TestLoggingIn:
     def test_sees_error_message_if_username_doesnt_exist(
             self, active_user, testapp):
         """Show error if username doesn't exist."""
-        # Goes to homepage
-        res = testapp.get('/')
+        # Goes to login
+        res = testapp.get('/login')
         # Fills out login form, password incorrect
         form = res.forms['loginForm']
         form['email'] = 'unknown@email.com'
@@ -95,11 +97,8 @@ class TestRegistering:
         """Register a new user."""
         old_count = User.query.count()
 
-        # Goes to homepage
-        res = testapp.get('/')
-
-        # Clicks Create Account button
-        res = res.click('Create account')
+        # Goes to register page
+        res = testapp.get(url_for('public.register'))
 
         # Fills out the form
         form = res.forms['registerForm']
@@ -147,3 +146,70 @@ class TestRegistering:
         res = form.submit()
         # sees error
         assert 'Email already registered' in res
+
+
+class TestAddingToCart:
+    """Add to cart"""
+
+    def test_guest_user_adds_to_cart(self, testapp):
+        """Guest user adds product to cart"""
+        res = testapp.get('/')
+        cart = Cart.query.filter_by_domain([
+            ('sessionid', '=', testapp.cookies['session'])
+        ]).first()
+        assert cart is None
+
+        # Goes to product page
+        product = Product.query.filter_by_domain([
+            ('channel_listings.channel', '=', current_channel.id),
+        ]).first()
+        res = testapp.get('/products/%s' % product.listing.product_identifier)
+
+        # Submits form by clicking Add to Cart button
+        form = res.forms['add-to-cart']
+        res = form.submit().follow()
+
+        assert res.status_code == 200
+
+        cart = Cart.query.filter_by_domain([
+            ('sessionid', '=', testapp.cookies['session'])
+        ]).first()
+        assert cart.is_empty is False
+        assert cart.size == 1
+
+    def test_registered_user_adds_to_cart(self, active_user, testapp):
+        """Registered user adds to cart"""
+        res = testapp.get('/')
+        cart = Cart.query.filter_by_domain([
+            ('sessionid', '=', testapp.cookies['session'])
+        ]).first()
+        assert cart is None
+
+        # User logs in
+        res = testapp.get('/login')
+        # Fills out login form in navbar
+        form = res.forms['loginForm']
+        form['email'] = active_user.email
+        form['password'] = 'myprecious'
+        # Submits
+        res = form.submit().follow()
+        assert res.status_code == 200
+
+        # Goes to product page
+        product = Product.query.filter_by_domain([
+            ('channel_listings.channel', '=', current_channel.id),
+        ]).first()
+        res = testapp.get('/products/%s' % product.listing.product_identifier)
+
+        # Submits form by clicking Add to Cart button
+        form = res.forms['add-to-cart']
+        res = form.submit().follow()
+
+        assert res.status_code == 200
+
+        cart = Cart.query.filter_by_domain([
+            ('sessionid', '=', testapp.cookies['session'])
+        ]).first()
+        assert cart.is_empty is False
+        assert cart.size == 1
+        assert cart.sale.party == active_user.party
