@@ -37,7 +37,7 @@ def add_to_cart():
         flash(_('Product has been added to cart'), 'success')
         return redirect(url_for('cart.view_cart'))
     flash('Could not add product to cart.', 'error')
-    return redirect(request.referer)
+    return redirect(request.referrer)
 
 
 @blueprint.route('/remove', methods=['POST'])
@@ -51,7 +51,7 @@ def remove_from_cart():
         flash(_("Removed product from cart"), 'success')
         return redirect(url_for('cart.view_cart'))
     flash(_('Looks like the item is already deleted.'), 'error')
-    return redirect(request.referer)
+    return redirect(request.referrer)
 
 
 @blueprint.route('/empty', methods=['POST'])

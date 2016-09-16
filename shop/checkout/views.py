@@ -100,7 +100,7 @@ def sign_in():
                     url_for('checkout.shipping_address')
                 )
             else:
-                return redirect(request.referer)
+                return redirect(request.referrer)
 
     return render_template(
         'checkout/sign_in.html',
@@ -204,7 +204,7 @@ def payment():
         except stripe.error.CardError:
             # The card has been declined
             flash("Your Card has been declined, please try again later")
-            return redirect(request.referer)
+            return redirect(request.referrer)
         else:
             # Save sale to a local variable as confirm method clears the sale
             sale = cart.sale
