@@ -89,6 +89,27 @@ def edit_address(address_id):
     return render_template('users/address-edit.html', form=form, address=address)
 
 
+@blueprint.route("/address/<int:address_id>/delete", methods=["POST"])
+@login_required
+def delete_address(address_id):
+    """
+    Delete an address
+    POST deletes the address with the address_id
+    """
+    address_query = Address.query.filter_by_domain(
+        [
+            ('id', '=', address_id),
+            ('party', '=', current_user.party.id)
+        ]
+    )
+    if address_query.first():
+        address_query.archive()
+        flash("Address deleted", 'warning')
+        return redirect(url_for('user.addresses'))
+    else:
+        abort(404)
+
+
 @blueprint.route('/orders')
 @login_required
 def orders():
