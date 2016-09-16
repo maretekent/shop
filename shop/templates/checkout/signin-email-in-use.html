@@ -1,0 +1,44 @@
+{% extends theme("layout.html") %}
+{% block content %}
+<div class="container-narrow">
+  <div class="row">
+    <div class="alert alert-warning row" role="alert">
+      <div class="col-md-1 col-sm-1 col-xs-1">
+          <i class="fa fa-exclamation-triangle"></i>
+      </div>
+      <div class="col-md-11 col-sm-11 col-xs-11">
+        <h4>It seems that <span class="text-muted">email id: {{ email }}</span> you provided for guest checkout is tied to an existing account.
+          <a href="{{ url_for('checkout.sign_in') }}" class="text-primary">Guest Checkout </a>
+          with different email or <a href="{{ url_for('public.login') }}" class="text-primary">Sign In</a> to continue.
+        </h4>
+      </div>
+    </div>
+    <div class="row">
+      <h4 class="text-center">
+        <span>Email Address already in use</span>
+      </h4>
+    </div>
+    <div class="row">
+      <div class="col-md-5 col-md-offset-1">
+        <h4>
+          <span>Want to checkout as logged in user ?</span>
+        </h4>
+        <div class="row">
+          <h5 class="col-md-offset-2 col-md-4">
+            <a href="{{ url_for('public.login') }}" class="btn btn-default btn-block">Sign In</a>
+          </h5>
+        </div>
+        <h5><a href="{{ url_for('public.reset_password') }}" class="text-primary">Forgot Password ?</a></h5>
+      </div>
+      <div class="col-md-5 col-md-offset-1">
+        <h4><span>Get a magic link to signin instantly</span></h4>
+        <div class="row">
+          <h5 class="col-md-offset-1 col-md-6">
+            <a href="{{ url_for('public.send_magic_login_link', email=email) }}" class="btn btn-default btn-block">Send Magic Link</a>
+          </h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

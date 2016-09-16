@@ -1,7 +1,7 @@
 {% extends 'emails/layout.html' %}
 
 {% block title %}
-<title>Your {{ channel.name }} Password</title>
+<title>Your {{ channel.name }} Account</title>
 {% endblock title %}
 
 {% block content %}
@@ -17,25 +17,19 @@
         </tr>
         <tr>
           <td class="content-block">
-            You requested that your {{ channel.name }} password be reset.
+            You requested to get a login link for your {{ channel.name }} account.
           </td>
         </tr>
         <tr>
           <td class="content-block">
-            Click on the button below to create your new password:
+            Click on the button below to login:
           </td>
         </tr>
         <tr>
           <td class="content-block">
-            <a href="{{ user.get_reset_password_link(_external=True) }}" itemprop="target" class="btn-primary" itemprop="url">Reset Password</a>
+            <a href="{{ user.get_magic_login_link(_external=True) }}" itemprop="target" class="btn-primary" itemprop="url">Login</a>
           </td>
 
-        </tr>
-
-        <tr>
-          <td class="content-block">
-            In the event that you didn't make this request, fear not! Your password is still safe and you can delete this email.
-          </td>
         </tr>
         <tr>
           <td class="content-block">

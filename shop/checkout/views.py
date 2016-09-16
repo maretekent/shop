@@ -41,13 +41,17 @@ def sign_in():
 
     if form.validate_on_submit():
         if form.checkout_mode.data == 'guest':
-
-            """
-            if not cls.allowed_as_guest(form.email.data):
-                return render_template(
-                    'checkout/signin-email-in-use.jinja',
-                    email=form.email.data
-                )"""
+            existing_user = User.query.filter_by_domain([
+                ('email', '=', form.email.data),
+            ]).show_active_only(False).first()
+            if existing_user:
+                if not existing_user.active:
+                    flash("Please activate your account first")
+                else:
+                    return render_template(
+                        'checkout/signin-email-in-use.html',
+                        email=form.email.data
+                    )
 
             cart = current_cart
             party_name = unicode('Guest with email: %s' % form.email.data)

@@ -3,7 +3,8 @@
 <head>
 <meta name="viewport" content="width=device-width" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Your {{ channel.name }} Password</title>
+{% block title %}
+{% endblock title %}
 <style>
   {% include 'emails/styles.css' %}
 </style>
