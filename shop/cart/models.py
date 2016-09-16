@@ -67,22 +67,31 @@ class Sale(Model):
     guest_access_code = StringType()
 
     def add_product(self, product_id, quantity):
-        line_data = {
-            'sale': self.id,
-            'product': product_id,
-            'quantity': quantity,
-            '_parent_sale.shipment_address': self.shipment_address and
-            self.shipment_address.id,
-            '_parent_sale.channel': current_channel.id,
-            '_parent_sale.party': current_channel.anonymous_customer.id,
-            '_parent_sale.currency': current_channel.currency,
-            'warehouse': current_channel.warehouse
-        }
-        line_data.update(SaleLine.rpc.on_change_product(line_data))
-        SaleLine(**{
-            k: v for k, v in line_data.iteritems()
-            if '.' not in k
-        }).save()
+        # check if SaleLine already exists
+        sale_line = SaleLine.query.filter_by_domain([
+            ('product', '=', product_id),
+            ('sale', '=', self.id),
+        ]).first()
+        if sale_line:
+            sale_line.quantity = quantity
+            sale_line.save()
+        else:
+            line_data = {
+                'sale': self.id,
+                'product': product_id,
+                'quantity': quantity,
+                '_parent_sale.shipment_address': self.shipment_address and
+                self.shipment_address.id,
+                '_parent_sale.channel': current_channel.id,
+                '_parent_sale.party': current_channel.anonymous_customer.id,
+                '_parent_sale.currency': current_channel.currency,
+                'warehouse': current_channel.warehouse
+            }
+            line_data.update(SaleLine.rpc.on_change_product(line_data))
+            SaleLine(**{
+                k: v for k, v in line_data.iteritems()
+                if '.' not in k
+            }).save()
 
 
 class Cart(Model):

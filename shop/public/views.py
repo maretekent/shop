@@ -6,7 +6,7 @@ from flask_babel import gettext as _
 from flask_login import login_required, login_user, logout_user
 from itsdangerous import BadSignature, SignatureExpired
 
-from shop.extensions import login_manager, fulfil
+from shop.extensions import fulfil, login_manager
 from shop.globals import current_channel
 from shop.product.models import ChannelListing
 from shop.public.forms import LoginForm, NewPasswordForm, ResetPasswordForm

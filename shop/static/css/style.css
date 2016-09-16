@@ -631,6 +631,17 @@ footer .footer-bottom {
   margin-right: 5px;
 }
 
+.order-confirmation {
+  font-size: 2em;
+  text-align: center;
+}
+
+.invoice-shipment-address{
+  padding: 0 20px;
+  border: 1px solid #dfdfdf;
+}
+
+
 /* Cart styles */
 
 .cart-line-title {
@@ -656,14 +667,13 @@ footer .footer-bottom {
   margin-top: 0;
 }
 
-.order-confirmation {
-  font-size: 2em;
-  text-align: center;
+.cart-quantity{
+  width: 60px;
 }
 
-.invoice-shipment-address{
-  padding: 0 20px;
-  border: 1px solid #dfdfdf;
+.cart-quantity-submit-button {
+  width: 60px;
+  display: none;
 }
 
 /* End cart styles */

@@ -52,7 +52,35 @@
             </div>
           </td>
           <td>{{ line.unit_price }}</td>
-          <td>{{ line.quantity }}</td>
+          <td id="qty">
+            {% if line.quantity < 10 %}
+              <form action="{{ url_for('cart.add_to_cart') }}" method="POST" id="qty-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" name="product" value="{{line.product.id}}"/>
+                <select class="form-control cart-quantity" name="quantity"
+                        data-initial="{{ line.quantity|int }}">
+                  {% for i in range(1,10) %}
+                    <option value="{{i}}"
+                            {% if i == line.quantity|int %}selected{% endif %}>
+                            {{i}}
+                    </option>
+                  {% endfor %}
+                  <option disabled="">--</option>
+                  <option value="10+">10+</option>
+                </select>
+              </form>
+            {% else %}
+              <form action="{{ url_for('cart.add_to_cart') }}" method="POST" id="qty-input-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" name="product" value="{{line.product.id}}"/>
+                <input type="number" name="quantity" value="{{ line.quantity|int }}"
+                       data-initial="{{ line.quantity|int }}" class="form-control cart-quantity"
+                       step="1" min="0" maxlength="3"/>
+                <button type="submit"
+                        class="btn btn-default btn-xs cart-quantity-submit-button">Update</button>
+              </form>
+            {% endif %}
+          </td>
           <td>{{ line.amount }}</td>
         </tr>
         {% endfor %}
@@ -64,3 +92,37 @@
     </div>
 </div>
 {% endblock %}
+
+{% block js %}
+<script>
+  $(document).ready(function(){
+    var update_on_dirty = function() {
+      if ($(this).val() == $(this).attr('data-initial')) {
+        $(this).siblings('button').fadeOut('fast');
+      } else {
+        $(this).siblings('button').fadeIn('fast');
+      }
+    };
+    $("#qty-form select").change(function() {
+      var product_id = parseInt($(this).siblings('input[name="product"]').val());
+      if ($(this).val() == '10+') {
+        var initial_value = $(this).attr('data-initial');
+        $(this).after(
+          '  <input type="number" name="quantity" value="'+ initial_value +'"'+
+          '         data-initial="'+ initial_value +'" class="form-control cart-quantity"'+
+          '         step="1" min="0" maxlength="3"/>'+
+          '  <button type="submit"'+
+          '          class="btn btn-default btn-xs cart-quantity-submit-button">Update</button>'
+        );
+        var qty_input_form = $(this).siblings("input[name='quantity']");
+        qty_input_form.on('input', update_on_dirty);
+        qty_input_form.focus();
+        $(this).detach();
+      } else {
+        $(this).parent().submit();
+      };
+    });
+    $("#qty-input-form input[name='quantity']").on('input', update_on_dirty);
+  });
+</script>
+{% endblock js %}
