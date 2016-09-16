@@ -4,10 +4,10 @@ import functools
 
 from flask import session
 from flask_login import current_user
-from fulfil_client.model import (DecimalType, FloatType, ModelType,
+from fulfil_client.model import (Date, DecimalType, FloatType, ModelType,
                                  One2ManyType, StringType)
 
-from shop.fulfilio import Model
+from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
 
 
@@ -47,6 +47,7 @@ class SaleLine(Model):
     quantity = FloatType()
     unit_price = DecimalType()
     amount = DecimalType()
+    description = StringType()
 
 
 class Sale(Model):
@@ -60,11 +61,19 @@ class Sale(Model):
     tax_amount = DecimalType()
     untaxed_amount = DecimalType()
     lines = One2ManyType("sale.line")
+    invoices = One2ManyType("account.invoice")
+    sale_date = Date()
+    state = StringType()
+    currency = StringType()
 
     #: This access code will be cross checked if the user is guest for a match
     #: to optionally display the order to an user who has not authenticated
     #: as yet
     guest_access_code = StringType()
+
+    @classmethod
+    def get_shop_query(cls):
+        return ShopQuery(cls.rpc, cls)
 
     def add_product(self, product_id, quantity):
         # check if SaleLine already exists

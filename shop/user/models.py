@@ -175,7 +175,7 @@ class User(UserMixin, Model):
         Get all addresses of the user
         """
         return Address.query.filter_by_domain(
-            [('party', '=', self.party)]
+            [('party', '=', self.party.id)]
         ).all()
 
     def get_magic_login_link(self, **options):

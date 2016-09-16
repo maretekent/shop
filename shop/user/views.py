@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 """User views."""
+from datetime import date
+
+from dateutil.relativedelta import relativedelta
 from flask import Blueprint, flash, request, url_for
 from flask_login import current_user, login_required
 from werkzeug import redirect
 
+from shop.cart.models import Sale
 from shop.user.forms import AddressForm, ChangePasswordForm
 from shop.user.models import Address
 from shop.utils import render_theme_template as render_template
@@ -61,3 +65,60 @@ def create_address():
         return redirect(url_for('user.addresses'))
 
     return render_template('users/address-form.html', form=form)
+
+
+@blueprint.route('/orders')
+@login_required
+def orders():
+    """Render all orders
+    """
+    filter_by = request.args.get('filter_by', None)
+    page = request.args.get('page', type=int) or None
+    per_page = request.args.get('per_page', type=int) or 24
+
+    domain = [
+        ('party', '=', current_user.party.id),
+    ]
+    req_date = (
+        date.today() + relativedelta(months=-3)
+    )
+
+    if filter_by == 'done':
+        domain.append(('state', '=', 'done'))
+
+    elif filter_by == 'canceled':
+        domain.append(('state', '=', 'cancel'))
+
+    elif filter_by == 'archived':
+        # only done and cancelled orders should be in archive
+        # irrespective of the date. Pre orders for example
+        # could be over 3 months old and still be in the
+        # processing state
+        domain.append(
+            ('state', 'in', ('done', 'cancel'))
+        )
+
+        # Add a sale_date domain for recent orders.
+        domain.append((
+            'sale_date', '<', req_date
+        ))
+
+    else:
+        domain.append([
+            'OR',
+            ('state', 'in', ('confirmed', 'processing')),
+            [
+                ('state', 'in', ('done', 'cancel')),
+                ('sale_date', '>=', req_date),
+            ]
+        ])
+
+    # Handle order duration
+    shop_query = Sale.get_shop_query().filter_by_domain(domain)
+    paginate = shop_query.paginate(page=page, per_page=per_page)
+
+    return render_template(
+        'users/orders.html',
+        sales=paginate.items,
+        paginate=paginate
+    )
