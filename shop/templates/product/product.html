@@ -34,7 +34,7 @@
 
     <div class="row">
       <div class="col-md-12">
-        <form action="{{ url_for('cart.add_to_cart') }}" method="POST" id="add-to-cart">
+        <form action="{{ url_for('cart.add_to_cart') }}" method="POST" id="add-to-cart" name="add-to-cart">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
           <input type="hidden" name="product" value="{{ product.id}} "/>
           <input type="hidden" name="quantity" value="1"/>
