@@ -3,7 +3,7 @@
 import functools
 
 from flask import session
-from flask_login import current_user
+from flask_login import current_user, user_logged_in
 from fulfil_client.model import (Date, DecimalType, FloatType, ModelType,
                                  One2ManyType, StringType)
 
@@ -108,6 +108,30 @@ class Cart(Model):
 
     sessionid = StringType()
     sale = ModelType("sale.sale")
+    user = ModelType("nereid.user")
+
+    @staticmethod
+    @user_logged_in.connect
+    def update_user_cart(sender, user):
+        """This method is triggered when a login event occurs.
+        When a user logs in, all items in his guest cart should be added to his
+        logged in or registered cart. If there is no such cart, it should be
+        created.
+        """
+        # There is a cart
+        guest_cart = Cart.query.filter_by_domain(
+            [
+                ('sessionid', '=', session.sid)
+            ]
+        ).first()
+        if guest_cart and guest_cart.sale and guest_cart.sale.lines:
+            user_cart = Cart.get_active(user=user)
+            # Transfer lines from guest cart to user cart
+            for line in guest_cart.sale.lines:
+                user_cart.sale.add_product(line.product.id, line.quantity)
+
+        # Clear the old cart
+        guest_cart.clear()
 
     def confirm(self):
         "Move order to confirmation state"
@@ -135,17 +159,28 @@ class Cart(Model):
         return False
 
     @classmethod
-    def get_active(cls):
-        """Always return a cart
-        TODO: Make it work for logged in user
+    def get_active(cls, user=current_user):
         """
-        cart = Cart.query.filter_by_domain(
-            [
-                ['sessionid', '=', session.sid],
-            ]
-        ).first()
-        if not cart:
-            cart = Cart(sessionid=session.sid).save()
+        Get active cart for either a user or a guest
+        Or create one if none found
+        """
+        if user.is_anonymous:
+            cart = Cart.query.filter_by_domain(
+                [
+                    ['sessionid', '=', session.sid],
+                ]
+            ).first()
+            if not cart:
+                cart = Cart(sessionid=session.sid).save()
+        else:
+            cart = Cart.query.filter_by_domain(
+                [
+                    ('user', '=', user.id)
+                ]
+            ).first()
+            if not cart:
+                cart = Cart(user=user.id).save()
+
         return cart
 
     @require_cart_with_sale

@@ -23,27 +23,19 @@ def sign_in():
         # Registered user with a fresh login can directly proceed to
         # step 2, which is filling the shipping address
         #
-        # if this is a recent sign-in by a registred user
+        # if this is a recent sign-in by a registered user
         # automatically proceed to the shipping_address step
         # TODO: Check if this is a recent login
         return redirect(url_for('checkout.shipping_address'))
 
-    if current_user.is_anonymous:
-        form = CheckoutSignInForm(
-            email=session.get('email'),
-            checkout_mode='guest',
-        )
-    else:
-        form = CheckoutSignInForm(
-            email=current_user.email,
-            checkout_mode='account',
-        )
+    form = CheckoutSignInForm(
+        email=session.get('email'),
+        checkout_mode='guest',
+    )
 
     if form.validate_on_submit():
         if form.checkout_mode.data == 'guest':
-            existing_user = User.query.filter_by_domain([
-                ('email', '=', form.email.data),
-            ]).show_active_only(False).first()
+            existing_user = User.find_user(form.email.data)
             if existing_user:
                 if not existing_user.active:
                     flash("Please activate your account first")
