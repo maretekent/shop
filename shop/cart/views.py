@@ -3,7 +3,6 @@
 from flask import Blueprint, abort, flash, redirect, request, url_for
 from flask_babel import gettext as _
 from flask_login import current_user
-
 from shop.cart.forms import AddtoCartForm, RemoveFromCartForm
 from shop.cart.models import Cart, Sale
 from shop.utils import render_theme_template as render_template

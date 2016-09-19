@@ -5,7 +5,6 @@ from flask_babel import gettext
 from flask_login import UserMixin
 from fulfil_client.model import BooleanType, ModelType, One2ManyType, StringType
 from itsdangerous import TimestampSigner, URLSafeSerializer
-
 from shop.extensions import fulfil
 from shop.fulfilio import Model
 from shop.globals import current_channel

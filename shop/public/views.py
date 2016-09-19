@@ -5,7 +5,6 @@ from flask import (Blueprint, abort, current_app, flash, jsonify, redirect,
 from flask_babel import gettext as _
 from flask_login import login_required, login_user, logout_user
 from itsdangerous import BadSignature, SignatureExpired
-
 from shop.extensions import fulfil, login_manager
 from shop.globals import current_channel
 from shop.product.models import ChannelListing

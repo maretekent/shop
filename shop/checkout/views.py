@@ -3,10 +3,11 @@
 import stripe
 from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_login import current_user, login_user
-
+from shop.cart.models import Sale
 from shop.checkout.forms import CheckoutAddressForm, CheckoutSignInForm
-from shop.checkout.models import not_empty_cart, sale_has_non_guest_party
-from shop.globals import current_app, current_cart, current_channel
+from shop.checkout.models import (PaymentProfile, not_empty_cart,
+                                  sale_has_non_guest_party)
+from shop.globals import current_cart, current_channel
 from shop.user.models import Address, Party, User
 from shop.utils import render_theme_template as render_template
 
@@ -192,14 +193,16 @@ def payment():
     if not cart.sale.shipment_address:
         return redirect(url_for('nereid.checkout.shipping_address'))
     if request.method == 'POST':
-        stripe.api_key = current_app.config.get('STRIPE_SECRET_KEY')
-        # TODO: Create payment profile on server side and then charge card
         try:
-            stripe.Charge.create(
-                amount=int(cart.sale.total_amount * 100),
-                currency="usd",
-                source=request.form.get('stripeToken'),
-                description="Charge for order"
+            customer_id = PaymentProfile.rpc.create_profile_using_stripe_token(
+                current_user.party.id,
+                current_channel.payment_gateway.id,
+                request.form.get('stripeToken')
+            )
+            Sale.rpc.add_sale_payment(
+                current_cart.sale.id,
+                current_channel.payment_gateway.id,
+                customer_id
             )
         except stripe.error.CardError:
             # The card has been declined

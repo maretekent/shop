@@ -2,12 +2,11 @@
 """User forms."""
 from flask_login import current_user
 from flask_wtf import Form
+from shop.public.models import Country, Subdivision
+from shop.user.models import User
 from wtforms import PasswordField, SelectField, StringField
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
                                 ValidationError)
-
-from shop.public.models import Country, Subdivision
-from shop.user.models import User
 
 
 class RegisterForm(Form):

@@ -7,7 +7,6 @@ from subprocess import call
 
 from flask_script import Command, Manager, Option, Server, Shell
 from flask_script.commands import Clean, ShowUrls
-
 from shop.app import create_app
 from shop.extensions import redis_store
 from shop.settings import DevConfig, ProdConfig

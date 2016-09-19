@@ -5,7 +5,6 @@ See: http://webtest.readthedocs.org/
 """
 import pytest
 from flask import url_for
-
 from shop.cart.models import Cart
 from shop.globals import current_channel
 from shop.product.models import Product

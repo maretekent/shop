@@ -2,7 +2,6 @@
 """Public models."""
 
 from fulfil_client import model
-
 from shop.fulfilio import Model
 
 
@@ -20,6 +19,7 @@ class Channel(Model):
     currency = model.IntType()
     warehouse = model.IntType()
     # support_email = StringType()
+    payment_gateway = model.ModelType('payment_gateway.gateway')
 
     @property
     def support_email(self):

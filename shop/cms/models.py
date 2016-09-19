@@ -2,7 +2,6 @@
 """CMS models."""
 from flask import url_for
 from fulfil_client.model import One2ManyType, StringType
-
 from shop.fulfilio import Model
 
 
