@@ -74,7 +74,7 @@
                       </div>
                       <div class="col-sm-10">
                         <p>
-                          <a href="{{ url_for('products.product', handle=line.product.listing.product_identifier) }}"><span class="cart-line-title">{{ line.product.name }}</span></a>
+                          <a href="{{ line.product.listing.get_absolute_url() }}"><span class="cart-line-title">{{ line.product.name }}</span></a>
                           {{ line.product.description }}
                           <br>
                           <form action="{{ url_for('cart.remove_from_cart') }}" method="POST" class="cart-form">

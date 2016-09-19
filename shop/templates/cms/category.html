@@ -1,0 +1,15 @@
+{% extends theme("layout.html") %}
+
+{% block content %}
+  <div class="col-xs-12">
+    <h2>
+      {{ category.title }}
+    </h2>
+    <p>
+      {{ category.description or '' }}
+      Render artiles here
+      {{category.published_articles}}
+    </p>
+  </div>
+
+{% endblock content %}

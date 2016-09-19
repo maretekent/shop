@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Node models."""
+from flask import url_for
 from fulfil_client.model import IntType, StringType
 
 from shop.extensions import redis_store
@@ -130,6 +131,9 @@ class TreeNode(Model):
             redis_store.zrange(key, start, end)
         )
         return listings
+
+    def get_absolute_url(self):
+        return url_for('node.node', id=self.id, handle=self.slug)
 
 
 class TreeProductRel(Model):

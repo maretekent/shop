@@ -20,6 +20,11 @@ class Config(object):
     FULFIL_API_KEY = os.environ.get('FULFIL_API_KEY')
     FULFIL_CHANNEL = os.environ.get('FULFIL_CHANNEL')
 
+    if 'FULFIL_ROOT_NAV' in os.environ:
+        FULFIL_ROOT_NAV = os.environ['FULFIL_ROOT_NAV']
+    if 'FULFIL_FOOTER_NAV' in os.environ:
+        FULFIL_FOOTER_NAV = os.environ['FULFIL_FOOTER_NAV']
+
     REDIS_URL = 'redis://redis:6379/0'
     if 'REDIS_URL' in os.environ:
         REDIS_URL = os.environ.get('REDIS_URL')

@@ -1,19 +1,23 @@
 <ul class="main-menu">
-  {% for menu in ['Home', 'Category 1', 'Category 2', 'Category 3'] %}
-  <li class="menu-item has-sub-menu">
-    <a href="">{{ menu }}</a>
-    <span class="arrow"></span>
-    <ul class="sub-menu">
-      {% for submenu in [1, 2, 3] %}
-        <li class="sub-menu-item"><a href="/">Submenu {{ submenu }}</a></li>
-      {% endfor %}
-    </ul>
-  </li>
+  {% for menuitem in menu.children %}
+    <li class="menu-item {{ 'has-sub-menu' if menuitem.children else '' }}">
+      <a href="{{ menuitem.link | get_menuitem_link }}" target="{{ menuitem.target }}">
+        {{ menuitem.title }}
+      </a>
+      {% if menuitem.children %}
+        <ul class="sub-menu">
+          {%- for item in menuitem.children recursive %}
+          <li class="sub-menu-item">
+            <a href="{{ item.link | get_menuitem_link }}" target="{{ item.target }}">
+              {{ item.title }}
+            </a>
+            {% if item.children %}
+              <ul class="sub-menu">{{ loop(item.children) }}</ul>
+            {% endif %}
+          </li>
+          {%- endfor %}
+        </ul>
+      {% endif %}
+    </li>
   {% endfor %}
-  <li class="menu-item">
-    <a href="">BLOG</a>
-  </li>
-  <li class="menu-item">
-    <a href="{{ url_for('pages.page', uri='faq') }}">FAQ</a>
-  </li>
 </ul>

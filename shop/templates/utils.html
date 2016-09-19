@@ -20,7 +20,7 @@
       {% set name = listing.product.name %}
     {% endif %}
   {% endif %}
-  <a href="{{ url_for('products.product', handle=listing.product_identifier) }}"
+  <a href="{{ listing.get_absolute_url() }}"
      ga-product-link
      data-ga-product-list="{{ node and node.name or list_name }}"
      data-ga-event-label="Product Thumbnail"

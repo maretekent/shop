@@ -2,6 +2,7 @@
 """Product models."""
 import json
 
+from flask import url_for
 from fulfil_client.model import (CurrencyType, IntType, ModelType, One2ManyType,
                                  StringType)
 
@@ -176,6 +177,9 @@ class ChannelListing(Model):
 
     def get_availability(self):
         return self.rpc.get_availability(self.id)
+
+    def get_absolute_url(self):
+        return url_for('products.product', handle=self.product_identifier)
 
 
 class ProductVariationAttributes(Model):
