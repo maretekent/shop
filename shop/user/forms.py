@@ -115,7 +115,10 @@ class AddressForm(Form):
     def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
         super(AddressForm, self).__init__(formdata, obj, prefix, **kwargs)
         # initialize subdivision choices from formdata
-        country_id = int(formdata.get('country')) if 'country' in formdata else None
+        if formdata:
+            country_id = int(formdata.get('country')) if 'country' in formdata else None
+        else:
+            country_id = Country.query.first().id
         subdivisions = Subdivision.query.filter_by(country=country_id).all()
         self.subdivision.choices = [
             (s.id, s.name) for s in subdivisions
