@@ -213,3 +213,51 @@ class TestAddingToCart:
         assert cart.is_empty is False
         assert cart.size == 1
         assert cart.sale.party == active_user.party
+
+    def test_add_items_to_cart_from_guest_cart_on_sign_in(self, active_user, testapp):
+        """
+        On sign in user's cart should have
+        items added as a guest
+        """
+        # Guest user adds product to cart
+        res = testapp.get('/')
+        cart = Cart.query.filter_by_domain([
+            ('sessionid', '=', testapp.cookies['session'])
+        ]).first()
+        assert cart is None
+
+        # Goes to product page
+        product = Product.query.filter_by_domain([
+            ('channel_listings.channel', '=', current_channel.id),
+        ]).first()
+        res = testapp.get('/products/%s' % product.listing.product_identifier)
+
+        # Submits form by clicking Add to Cart button
+        form = res.forms['add-to-cart']
+        res = form.submit().follow()
+
+        assert res.status_code == 200
+
+        cart = Cart.query.filter_by_domain([
+            ('sessionid', '=', testapp.cookies['session'])
+        ]).first()
+        assert cart.is_empty is False
+        assert cart.size == 1
+
+        # User logs in
+        res = testapp.get('/login')
+        # Fills out login form in navbar
+        form = res.forms['loginForm']
+        form['email'] = active_user.email
+        form['password'] = 'myprecious'
+        # Submits
+        res = form.submit().follow()
+        assert res.status_code == 200
+
+        user_cart = Cart.query.filter_by_domain(
+            [
+                ('user', '=', active_user.id)
+            ]
+        ).first()
+        assert user_cart.is_empty is False
+        assert user_cart.size == 1
