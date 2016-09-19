@@ -3,7 +3,7 @@
 from datetime import date
 
 from dateutil.relativedelta import relativedelta
-from flask import Blueprint, flash, request, url_for
+from flask import Blueprint, abort, flash, request, url_for
 from flask_login import current_user, login_required
 from werkzeug import redirect
 
@@ -50,21 +50,43 @@ def create_address():
     Return an address creation form
     POST
     ~~~~
-    Creates an address and redirects to the address view. If a next_url
-    is provided, redirects there.
+    Creates an address and redirects to the address view
     """
     address_name = "" if current_user.is_anonymous else \
         current_user.name
     form = AddressForm(request.form, name=address_name)
 
     if form.validate_on_submit():
-        address = Address(party=current_user.party)
+        address = Address(party=current_user.party.id)
         form.populate_obj(address)
         address.save()
         flash("The new address has been added to your address book", 'success')
         return redirect(url_for('user.addresses'))
 
     return render_template('users/address-form.html', form=form)
+
+
+@blueprint.route("/addresses/<int:address_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_address(address_id):
+    """
+    Edit an Address
+    POST will update an existing address.
+    GET will return a existing address edit form.
+    :param address_id: ID of the address
+    """
+    address = Address.query.get(address_id)
+    if not address.party == current_user.party:
+        abort(403)
+
+    form = AddressForm(request.form, obj=address)
+    if form.validate_on_submit():
+        form.populate_obj(address)
+        address.save()
+        flash('Your address has been updated', 'success')
+        return redirect(url_for('user.addresses'))
+
+    return render_template('users/address-edit.html', form=form, address=address)
 
 
 @blueprint.route('/orders')

@@ -7,15 +7,15 @@
     <!-- Addresses -->
     {% for address in addresses %}
       <div class="row">
-        <div class="col-sm-6">
+        <div class="col-xs-6">
           <address>
             {% for field in address.full_address.split('\n') %}
               {{field}} <br/>
             {% endfor %}
           </address>
         </div>
-        <div class="col-sm-6">
-          <a type="button" class="btn btn-xs btn-default pull-right">Edit</a>
+        <div class="col-xs-6">
+          <a type="button" class="btn btn-sm btn-default pull-right" href="{{ url_for('user.edit_address', address_id=address.id) }}"><i class="fa fa-pencil" aria-hidden="true">&nbsp;</i>Edit</a>
         </div>
       </div>
     {% endfor %}
@@ -25,4 +25,5 @@
     </div>
     <br/>
   </div>
+
 {% endblock account_content %}
