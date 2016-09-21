@@ -96,6 +96,8 @@ class Sale(Model):
                 'warehouse': current_channel.warehouse
             }
             line_data.update(SaleLine.rpc.on_change_product(line_data))
+            if line_data.get('taxes'):
+                line_data['taxes'] = [('add', line_data.get('taxes'))]
             SaleLine(**{
                 k: v for k, v in line_data.iteritems()
                 if '.' not in k
