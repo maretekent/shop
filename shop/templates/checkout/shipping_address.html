@@ -81,3 +81,9 @@
   </div>
 </div>
 {% endblock %}
+
+{% block js %}
+  {{ super() }}
+  <script src="{{ url_for('user.static', filename='libs/jquery-validation/dist/jquery.validate.min.js') }}"></script>
+  <script src="{{ url_for('user.static', filename='js/address-form.js') }}"></script>
+{% endblock js %}

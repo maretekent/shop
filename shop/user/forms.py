@@ -62,13 +62,15 @@ class CountrySelectField(SelectField):
         self.data = country.id if country else None
 
 
-def validate_subdivision(form, field):
-    """
-    Enforces the subdivision actually belongs to selected country
-    """
-    subdivisions = [s.id for s in Subdivision.query.filter_by(country=form.country.data).all()]
-    if field.data not in subdivisions and len(subdivisions):
-        raise ValidationError("Subdivision is not valid for the selected country.")
+class SubdivisionSelectField(SelectField):
+    def __init__(self, *args, **kwargs):
+        super(SubdivisionSelectField, self).__init__(*args, **kwargs)
+        self.choices = []
+
+    def pre_validate(self, form):
+        subdivisions = [s.id for s in Subdivision.query.filter_by(country=form.country.data).all()]
+        if self.data not in subdivisions and len(subdivisions):
+            raise ValidationError("Subdivision is not valid for the selected country.")
 
 
 class AddressForm(Form):
@@ -101,27 +103,15 @@ class AddressForm(Form):
         validators=[DataRequired()],
         coerce=int
     )
-    subdivision = SelectField(
+    subdivision = SubdivisionSelectField(
         'State/Province/Region',
-        validators=[DataRequired(), validate_subdivision],
+        validators=[DataRequired()],
         coerce=int
     )
     phone = StringField(
         'Phone',
         render_kw={"placeholder": "e.g. +1234556"}
     )
-
-    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
-        super(AddressForm, self).__init__(formdata, obj, prefix, **kwargs)
-        # initialize subdivision choices from formdata
-        if formdata:
-            country_id = int(formdata.get('country')) if 'country' in formdata else None
-        else:
-            country_id = Country.query.first().id
-        subdivisions = Subdivision.query.filter_by(country=country_id).all()
-        self.subdivision.choices = [
-            (s.id, s.name) for s in subdivisions
-        ]
 
 
 class ChangePasswordForm(Form):
