@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     python \
     nodejs \
+    git \
  && rm -rf /var/lib/apt/lists/*
 RUN npm install -g bower
 RUN curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python
