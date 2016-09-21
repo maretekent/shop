@@ -12,16 +12,32 @@
     <li><a href="/u.s.-polo-assn.-tshirts" type="b-cat">U.S. Polo Assn. Tshirts</a></li>
   </ul>
 
-  <h4 class="product-code">Product Code: {{ product.code }}</h4>
+  <h4 class="product-code">
+    Product Code: {{ product.code }}
+  </h4>
 </section>
 
-<section id="summary" class="clearfix">
-  <div class="col-md-6 col-sm-6 col-xs-12" id="product-media">
-    <img src="{{ product.image }}" class="img-responsive"/>
+<section id="summary" class="row">
+  <!-- Product image gallery -->
+  <div class="col-md-6 col-sm-6 col-xs-12 product-gallery" id="product-media">
+    <div class="row">
+      <div class="preview-thumbs col-md-2">
+        <ul>
+          {% for image in product.images %}
+          <li><img src="{{ image }}" class="img-responsive"/></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="preview-large col-md-10">
+        <img src="{{ product.image }}" class="img-responsive"/>
+      </div>
+    </div>
   </div>
 
+  <!-- Product Details -->
   <div class="col-md-6 col-sm-6 col-xs-12" id="product-details">
     <h1 class="product-name">{{ product.name }}</h1>
+
     <div data-price="1899" data-discountedprice="759" class="price">
       {% if listing.unit_price < product.list_price %}
       <span class="strike">{{ product.list_price|currencyformat('USD') }}</span>
@@ -30,51 +46,110 @@
       <span class="final">{{ listing.unit_price|currencyformat('USD') }}</span>
     </div>
 
+    <hr class="divider-dotted">
+
+    <!--
+    <div class="product-size">
+      <div class="product-size-header">
+        <h6 class="desc-header">SELECT SIZE</h6>
+        <span class="product-size-chart">
+          <span class="product-size-chart-info">Not sure?</span>
+          <button class="show-size-chart">See Size Chart</button>
+        </span>
+      </div>
+      <div class="product-size-buttons">
+        <button class="product-size-button">
+          <p class="size-buttons-unified-size">S</p>
+        </button>
+        <button class="product-size-button disabled">
+          <p class="size-buttons-unified-size">M<span class="product-size-strike"></span></p>
+        </button>
+        <button class="product-size-button">
+          <p class="size-buttons-unified-size">L</p>
+        </button>
+        <button class="product-size-button disabled">
+          <p class="size-buttons-unified-size">XL<span class="product-size-strike"></span></p>
+        </button>
+      </div>      
+    </div>
+    -->
+
     <div class="row" id="product-varying-attrs"></div>
 
-    <div class="row">
-      <div class="col-md-12">
-        <form action="{{ url_for('cart.add_to_cart') }}" method="POST" id="add-to-cart" name="add-to-cart">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <input type="hidden" name="product" value="{{ product.id}} "/>
-          <input type="hidden" name="quantity" value="1"/>
-          <button class="button btn-big buy-now-btn" type="submit" id="buy-now-btn">Add to Cart</button>
-        </form>
-        <div class="wishlist big-tip-cont">
-          <button class="btn tool-tip btn-link">Save to wishlist</button>
-          <div class="big-tooltip top">
-            <div class="arrow arrow-bottom"></div>
-            <div class="big-tooltip-contents">Log in to save to wishlist</div></div>
-            <span style="display:none;" class="saved"></span>
-          </div>
-        </div>
+    <div class="cart-wishlist clearfix">
+      <div class="wishlist">
+        <button class="wishlist-btn">Save to wishlist</button>        
+      </div>
+
+      <form class="cart-form" action="{{ url_for('cart.add_to_cart') }}" method="POST" id="add-to-cart" name="add-to-cart">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <input type="hidden" name="product" value="{{ product.id}} "/>
+        <input type="hidden" name="quantity" value="1"/>
+        <button class="buy-now-btn" type="submit" id="buy-now-btn">Add to Cart</button>
+      </form>
+
+      <div class="big-tooltip top">
+        <div class="arrow arrow-bottom"></div>
+        <div class="big-tooltip-contents">** Log in to save to wishlist</div>
+        <span style="display:none;" class="saved"></span>
       </div>
     </div>
 
-    <div class="product-description">
-      {{ (product.long_description or product.description)|safe }}
+    <hr class="divider-dotted">
+
+    <div class="product-description-short">
+     {{ (product.description)|safe }}
     </div>
 
-    <div class="social-sharing">
+  </div> <!-- End of product details -->
+</section>
 
-      <a target="_blank" href="//www.facebook.com/sharer.php?u={{ request.url }}"
-          class="share-facebook">
-        <span class="fa fa-facebook-official"></span>
-        <span class="share-count is-loaded">1</span>
-      </a>
+<section class="product-desc">
+  <div class="product-desc-long">
+    <h3 class="header">Product Description</h3>
+    {{ (product.long_description or product.description)|safe }}
+  </div>
 
-      <a target="_blank" href="//twitter.com/share?text={{ product.name }}&amp;url={{ request.url }}" class="share-twitter">
-		<span class="fa fa-twitter"></span>
-      </a>
+  <div class="social-sharing">
+    <a target="_blank" href="//www.facebook.com/sharer.php?u={{ request.url }}"
+        class="share-facebook">
+      <span class="fa fa-facebook-official"></span>
+      <span class="share-count is-loaded">1</span>
+    </a>
 
-      <a target="_blank" href="//pinterest.com/pin/create/button/?url={{ request.url }}&amp;media={{ product.image }}&amp;description={{ product.description }}" class="share-pinterest">
-        <span class="fa fa-pinterest"></span>
-      </a>
+    <a target="_blank" href="//twitter.com/share?text={{ product.name }}&amp;url={{ request.url }}" class="share-twitter">
+      <span class="fa fa-twitter"></span>
+    </a>
 
-    </div>
+    <a target="_blank" href="//pinterest.com/pin/create/button/?url={{ request.url }}&amp;media={{ product.image }}&amp;description={{ product.description }}" class="share-pinterest">
+      <span class="fa fa-pinterest"></span>
+    </a>
+  </div> <!-- End of social sharing -->  
+</section>
 
+{% if product.cross_sells %}
+<section class="recommended ">
+  <h3 class="header">RECOMMENDED PRODUCTS</h3>
+  <div class="rec-products row">
+    {% for cross_sell in product.cross_sells|selectattr("listing") %}
+      <div class="rec-product col-md-3">
+        <a href="{{ cross_sell.listing.get_absolute_url() }}" class="rec-product-wrapper-link">
+          <div class="img-wrapper">
+            <img src="{{ cross_sell.image }}" class="img-responsive"/>
+          </div>
+          <div class="content">
+            <h4 class="title">{{ cross_sell.name }}</h4>
+            <div class="pricing">
+              <span class="product-item-selling-price">${{ cross_sell.list_price }}</span>
+              <!-- <span class="product-item-discount">(50% OFF)</span>       -->
+            </div>
+          </div>
+        </a>
+      </div>    
+    {% endfor %}
   </div>
 </section>
+{% endif %}
 
 {% endblock %}
 
@@ -85,8 +160,8 @@
       <div class="col-md-12">
         <% _.each(attrs, function(attr, index) { %>
           <% if (attr.widget == 'dropdown') { %>
-            <div class="form-group"> {{ _('Select') }} <%= attr.display_name %>: <br/>
-              <select class="form-control select-sort attribute input-lg" data-attr-id="<%= attr.attribute_id %>">
+            <div class="form-group"><h6 class="desc-header">{{ _('SELECT') }} <%= attr.display_name.toUpperCase() %></h6>
+              <select class="form-control select-sort attribute" data-attr-id="<%= attr.attribute_id %>">
                 <% _.each(attr.options, function(option, index) { %>
                 <option value="<%= _.escape(option[0]) %>" <% if (option[0] == currentVariantAttrs[attr.attribute_id]) { %> selected <% } %> ><%= _.escape(option[1]) %></option>
                 <% }); %>
