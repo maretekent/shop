@@ -79,10 +79,16 @@ class Product(Model):
     long_description = StringType()
     uri = StringType()
     attributes = One2ManyType("product.product.attribute")
+    media = One2ManyType("product.media")
+    cross_sells = One2ManyType('product.product')
 
     @property
     def image(self):
         return self._values.get('default_image.url')
+
+    @property
+    def images(self):
+        return map(lambda m: m.url, self.media)
 
     @property
     def name(self):
@@ -257,3 +263,9 @@ class ProductAttributeSelectionOption(Model):
     __model_name__ = 'product.attribute.selection_option'
 
     name = StringType()
+
+
+class ProductMedia(Model):
+    __model_name__ = 'product.media'
+
+    url = StringType()
