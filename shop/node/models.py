@@ -134,6 +134,10 @@ class TreeNode(Model):
     def get_absolute_url(self):
         return url_for('node.node', id=self.id, handle=self.slug)
 
+    @classmethod
+    def make_tree_crumbs(cls, node_id):
+        return cls.rpc.make_tree_crumbs(node_id)
+
 
 class TreeProductRel(Model):
     __model_name__ = 'product.product-product.tree_node'

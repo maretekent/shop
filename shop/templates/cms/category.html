@@ -1,5 +1,10 @@
 {% extends theme("layout.html") %}
 
+{% block breadcrumb %}
+  {{ super() }}
+  {{ render_breadcrumb_item(category.title, category.get_absolute_url()) }}
+{% endblock breadcrumb %}
+
 {% block content %}
   <div class="col-xs-12">
     <h2>
@@ -7,7 +12,7 @@
     </h2>
     <p>
       {{ category.description or '' }}
-      Render artiles here
+      Render articles here
       {{category.published_articles}}
     </p>
   </div>

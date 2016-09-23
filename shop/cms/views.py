@@ -25,7 +25,7 @@ def page(uri):
     """
     article = Article.query.filter_by(uri=uri).first()
     if article:
-        return render_template('cms/pages.html', article=article)
+        return render_template('cms/page.html', article=article)
     return abort(404)
 
 
@@ -34,7 +34,7 @@ def category(uri):
     """
     Render a category
     """
-    category = ArticleCategory.query.filter_by(unique_name=uri).first_or_404()
+    category = ArticleCategory.query.filter_by(unique_name=uri).first()
     return render_template('cms/category.html', category=category)
 
 
