@@ -25,5 +25,6 @@ setup(
         'raven[flask]',
         'premailer',
         'stripe',
+        'six',
     ]
 )
