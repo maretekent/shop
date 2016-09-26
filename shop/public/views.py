@@ -90,8 +90,10 @@ def search():
     per_page = request.args.get('per_page', type=int) or None
     shop_query = ChannelListing.get_shop_query().filter_by_domain(
         [
+            ('channel', '=', current_channel.id),
+            ('product.active', '=', True),
+            ('product.salable', '=', True),
             ('product.rec_name', 'ilike', '%{}%'.format(q)),
-            ('channel', '=', current_channel.id)
         ],
     )
     results = shop_query.paginate(page=page, per_page=per_page)
