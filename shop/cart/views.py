@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Product views."""
-from flask import Blueprint, abort, flash, redirect, request, url_for
-from flask_babel import gettext as _
+from flask import Blueprint, abort, flash, redirect, request, url_for, jsonify
+from flask_babel import gettext as _, format_currency, format_number
 from flask_login import current_user
 from shop.cart.forms import AddtoCartForm, RemoveFromCartForm
 from shop.cart.models import Cart, Sale
@@ -17,10 +17,27 @@ blueprint = Blueprint(
 def view_cart():
     "Display shopping cart"
     cart = Cart.get_active()
-    return render_template(
-        'cart/cart.html',
-        cart=cart,
-    )
+    if request.is_xhr or request.is_json:
+        if not cart.sale:
+            return jsonify({'empty': True})
+
+        ccy = cart.sale.currency_code
+        return jsonify({
+            'cart': {
+                'lines': [{
+                    'product': l.product and l.product.name or None,
+                    'quantity': format_number(l.quantity),
+                    'unit': l.unit.symbol,
+                    'unit_price': format_currency(l.unit_price, ccy),
+                    'amount': format_currency(l.amount, ccy),
+                } for l in cart.sale.lines],
+                'empty': len(cart.sale.lines) > 0,
+                'total_amount': format_currency(cart.sale.total_amount, ccy),
+                'tax_amount': format_currency(cart.sale.tax_amount, ccy),
+                'untaxed_amount': format_currency(cart.sale.untaxed_amount, ccy),
+            }
+        })
+    return render_template('cart/cart.html', cart=cart)
 
 
 @blueprint.route('/add', methods=["POST"])

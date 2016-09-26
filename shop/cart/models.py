@@ -52,6 +52,8 @@ class SaleLine(Model):
 class Sale(Model):
     __model_name__ = 'sale.sale'
 
+    _eager_fields = set(['currency.code'])
+
     number = StringType()
     party = ModelType("party.party")
     shipment_address = ModelType("party.address")
@@ -73,6 +75,10 @@ class Sale(Model):
     @classmethod
     def get_shop_query(cls):
         return ShopQuery(cls.rpc, cls)
+
+    @property
+    def currency_code(self):
+        return self._values.get('currency.code')
 
     def add_product(self, product_id, quantity):
         # check if SaleLine already exists

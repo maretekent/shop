@@ -8,7 +8,7 @@ from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil,
                              login_manager, redis_store, sentry, session,
                              themes)
 from shop.filters import get_menuitem_link
-from shop.globals import current_channel
+from shop.globals import current_channel, current_cart
 from shop.settings import ProdConfig
 from shop.utils import render_theme_template as render_template
 
@@ -87,8 +87,9 @@ def register_errorhandlers(app):
 
 def register_context_processors(app):
     app.context_processor(lambda: {
-        'current_channel': current_channel,
         'current_app': current_app,
+        'current_channel': current_channel,
+        'current_cart': current_cart,
         'get_nav': MenuItem.get_nav,
         'make_tree_crumbs': TreeNode.make_tree_crumbs,
         'get_node': TreeNode.from_slug,
@@ -97,5 +98,5 @@ def register_context_processors(app):
 
 def register_filters(app):
     app.jinja_env.filters.update({
-        'get_menuitem_link': get_menuitem_link
+        'get_menuitem_link': get_menuitem_link,
     })
