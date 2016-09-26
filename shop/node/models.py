@@ -138,6 +138,30 @@ class TreeNode(Model):
     def make_tree_crumbs(cls, node_id):
         return cls.rpc.make_shop_tree_crumbs(node_id)
 
+    @classmethod
+    def from_slug(cls, slug):
+        """
+        Return the Node which matches the slug.
+
+        Results are cached for performance
+        """
+        slug = slug.lower()
+
+        key = '%s:%s' % (cls.__model_name__, slug)
+
+        if cls.cache_backend:
+            if not cls.cache_backend.exists(key):
+                # Use RPC search for efficient id search
+                # (instead of query api)
+                ids = cls.rpc.search([('slug', 'ilike', slug)])
+                if ids:
+                    cls.cache_backend.set(key, ids[0])
+                else:
+                    raise Exception("Node with slug %s not found" % slug)
+            else:
+                ids = [cls.cache_backend.get(key)]
+        return cls.from_cache(ids[0])
+
 
 class TreeProductRel(Model):
     __model_name__ = 'product.product-product.tree_node'

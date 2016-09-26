@@ -91,6 +91,7 @@ def register_context_processors(app):
         'current_app': current_app,
         'get_nav': MenuItem.get_nav,
         'make_tree_crumbs': TreeNode.make_tree_crumbs,
+        'get_node': TreeNode.from_slug,
     })
 
 
