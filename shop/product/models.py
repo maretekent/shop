@@ -107,6 +107,9 @@ class Product(Model):
             ]
         ).first()
 
+    def get_absolute_url(self):
+        return url_for('products.product', handle=self.uri)
+
     def get_related_products(self):
         """
         Return relsted products of this product

@@ -1,5 +1,10 @@
 {% extends theme("layout.html") %}
 
+{% block breadcrumb %}
+  {{ super() }}
+  {{ render_breadcrumb_item(article.title, article.get_absolute_url()) }}
+{% endblock breadcrumb %}
+
 {% block content %}
   <div class="col-xs-12">
     <h2>

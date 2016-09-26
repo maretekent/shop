@@ -4,6 +4,15 @@
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+{% macro render_breadcrumb_item(title, url) %}
+  <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+    <a href="{{ url }}" itemprop="url">
+      <span itemprop="title">{{ title }}</span>
+    </a>
+  </li>
+{% endmacro %}
+
 <head>
   <meta charset="utf-8">
 
@@ -91,6 +100,13 @@
       {% endblock navigation %}
     </div>
   </div>
+  <div class="container container-breadcrumb hidden-xs">
+      <ol class="breadcrumb">
+        {% block breadcrumb %}
+          {{ render_breadcrumb_item('Home', url_for('public.home')) }}
+        {% endblock %}
+      </ol>
+    </div>
   {% endblock header%}
 </header>
 

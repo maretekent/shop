@@ -3,6 +3,7 @@
 from flask import Flask, current_app
 from shop.assets import assets
 from shop.cms.models import MenuItem
+from shop.node.models import TreeNode
 from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil,
                              login_manager, redis_store, sentry, session,
                              themes)
@@ -89,6 +90,7 @@ def register_context_processors(app):
         'current_channel': current_channel,
         'current_app': current_app,
         'get_nav': MenuItem.get_nav,
+        'make_tree_crumbs': TreeNode.make_tree_crumbs,
     })
 
 

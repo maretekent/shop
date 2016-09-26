@@ -4,13 +4,16 @@
 
 <section id="breadcrumb" class="clearfix">
 
-  <ul class="breadcrumb">
-    <li><a href="/">Home</a></li>
-    <li><a href="/clothing" type="mc">Clothing</a></li>
-    <li><a href="/men-clothing" type="g-mc">Men Clothing</a></li>
-    <li><a href="/tshirts" type="cat">Tshirts</a></li>
-    <li><a href="/u.s.-polo-assn.-tshirts" type="b-cat">U.S. Polo Assn. Tshirts</a></li>
-  </ul>
+  {% block breadcrumb %}
+    {{ super() }}
+    {% if node %}
+      {% for url_data, title in make_tree_crumbs(node.id) %}
+        {% set url = url_data | get_menuitem_link %}
+        {{ render_breadcrumb_item(title, url) }}
+      {% endfor %}
+    {% endif %}
+    {{ render_breadcrumb_item(product.name, product.get_absolute_url()) }}
+  {% endblock breadcrumb %}
 
   <h4 class="product-code">
     Product Code: {{ product.code }}
@@ -70,7 +73,7 @@
         <button class="product-size-button disabled">
           <p class="size-buttons-unified-size">XL<span class="product-size-strike"></span></p>
         </button>
-      </div>      
+      </div>
     </div>
     -->
 
@@ -78,7 +81,7 @@
 
     <div class="cart-wishlist clearfix">
       <div class="wishlist">
-        <button class="wishlist-btn">Save to wishlist</button>        
+        <button class="wishlist-btn">Save to wishlist</button>
       </div>
 
       <form class="cart-form" action="{{ url_for('cart.add_to_cart') }}" method="POST" id="add-to-cart" name="add-to-cart">
@@ -124,7 +127,7 @@
     <a target="_blank" href="//pinterest.com/pin/create/button/?url={{ request.url }}&amp;media={{ product.image }}&amp;description={{ product.description }}" class="share-pinterest">
       <span class="fa fa-pinterest"></span>
     </a>
-  </div> <!-- End of social sharing -->  
+  </div> <!-- End of social sharing -->
 </section>
 
 {% if product.cross_sells %}
@@ -145,7 +148,7 @@
             </div>
           </div>
         </a>
-      </div>    
+      </div>
     {% endfor %}
   </div>
 </section>
