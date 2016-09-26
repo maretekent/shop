@@ -24,5 +24,6 @@ setup(
         'Flask-Fulfil',
         'raven[flask]',
         'premailer',
+        'stripe',
     ]
 )
