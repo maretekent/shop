@@ -26,5 +26,6 @@ setup(
         'premailer',
         'stripe',
         'six',
+        'python-dateutil',
     ]
 )
