@@ -136,7 +136,7 @@ class TreeNode(Model):
 
     @classmethod
     def make_tree_crumbs(cls, node_id):
-        return cls.rpc.make_tree_crumbs(node_id)
+        return cls.rpc.make_shop_tree_crumbs(node_id)
 
 
 class TreeProductRel(Model):
