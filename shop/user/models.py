@@ -88,6 +88,21 @@ class User(UserMixin, Model):
         """Check password."""
         return self.rpc.match_password(self.id, value)
 
+    @classmethod
+    def authenticate(cls, email, password):
+        """
+        Convenience method to implement
+        find_user and check_password
+        :param email: Email of the user
+        :param password: Password
+        :return: user instance if password matches
+        else None
+        """
+        user = cls.find_user(email)
+        if user and user.check_password(password):
+            return user
+        return None
+
     def save(self):
         if not self.party:
             party = Party(name=self.name)
