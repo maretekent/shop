@@ -1,3 +1,6 @@
 recursive-include shop/templates *
 recursive-include shop/themes *
 recursive-include shop/static *
+
+# added by check_manifest.py
+include LICENSE
