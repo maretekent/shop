@@ -106,8 +106,15 @@
                         <a class="product-name">{{ line.description }}</a>
                       </div>
                     {% endif %}
-                      <div class="text-muted col-md-4 col-xs-4">
+                      <div class="text-muted col-md-2 col-xs-2">
                         Qty :  {{ line.quantity }}
+                      </div>
+                      <div class="text-muted col-md-2 col-xs-2">
+                        <form action="{{ url_for('cart.add_to_cart') }}" method="POST" id="buy-again">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                          <input type="hidden" name="product" value="{{line.product.id}}"/>
+                        </form>
+                        <button type="submit" form="buy-again" class="btn">Buy Again</button>
                       </div>
                     </div>
                     {% endfor %}
