@@ -8,7 +8,7 @@ from shop.fulfilio import Model
 class Channel(Model):
     __model_name__ = 'sale.channel'
 
-    _eager_fields = {'anonymous_customer'}
+    _eager_fields = set(['anonymous_customer', 'currency.code'])
 
     name = model.StringType()
     code = model.StringType()
@@ -20,6 +20,10 @@ class Channel(Model):
     warehouse = model.IntType()
     # support_email = StringType()
     payment_gateway = model.ModelType('payment_gateway.gateway')
+
+    @property
+    def currency_code(self):
+        return self._values.get('currency.code')
 
     @property
     def support_email(self):

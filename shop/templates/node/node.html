@@ -48,7 +48,7 @@
         </div>
         <div class="content">
           <h4>{{ listing.product.name }}</h4>
-          <h5>{{ listing.product.list_price|currencyformat('USD') }}</h5>
+          <h5>{{ listing.product.list_price.format(current_locale) }}</h5>
         </div>
       </a>
     </li>

@@ -51,7 +51,7 @@
               </div>
             </div>
           </td>
-          <td>{{ line.unit_price }}</td>
+          <td>{{ line.unit_price.format(current_locale) }}</td>
           <td id="qty">
             {% if line.quantity < 10 %}
               <form action="{{ url_for('cart.add_to_cart') }}" method="POST" id="qty-form">
@@ -81,7 +81,7 @@
               </form>
             {% endif %}
           </td>
-          <td>{{ line.amount }}</td>
+          <td>{{ line.amount.format(current_locale) }}</td>
         </tr>
         {% endfor %}
       </tbody>
