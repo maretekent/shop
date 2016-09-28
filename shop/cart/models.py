@@ -184,7 +184,7 @@ class Cart(Model):
         return cart
 
     @classmethod
-    def find_cart(cls, user=None):
+    def find_cart(cls, user_id=None):
         """
         Return the cart for the user if one exists. The user is None a guest
         cart for the session is found.
@@ -193,9 +193,9 @@ class Cart(Model):
         :return: Active record of cart or None
         """
         domain = [
-            ('user', '=', user)
+            ('user', '=', user_id)
         ]
-        if not user:
+        if not user_id:
             domain.append(('sessionid', '=', session.sid))
         cart = Cart.query.filter_by_domain(domain).first()
         return cart
