@@ -207,7 +207,7 @@ class TestAddingToCart:
         assert res.status_code == 200
 
         cart = Cart.query.filter_by_domain([
-            ('sessionid', '=', testapp.cookies['session'])
+            ('user', '=', active_user.id)
         ]).first()
         assert cart.is_empty is False
         assert cart.size == 1
