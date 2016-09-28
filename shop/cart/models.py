@@ -126,19 +126,15 @@ class Cart(Model):
         created.
         """
         # There is a cart
-        guest_cart = Cart.query.filter_by_domain(
-            [
-                ('sessionid', '=', session.sid)
-            ]
-        ).first()
+        guest_cart = Cart.find_cart(None)
         if guest_cart and guest_cart.sale and guest_cart.sale.lines:
-            user_cart = Cart.get_active(user=user)
+            # Active cart is user's cart
+            user_cart = Cart.get_active()
             # Transfer lines from guest cart to user cart
             for line in guest_cart.sale.lines:
-                user_cart.sale.add_product(line.product.id, line.quantity)
-
-        # Clear the old cart
-        guest_cart.clear()
+                user_cart.add_product(line.product.id, line.quantity)
+            # Clear the old cart
+            guest_cart.clear()
 
     def confirm(self):
         "Move order to confirmation state"
@@ -166,28 +162,44 @@ class Cart(Model):
         return False
 
     @classmethod
-    def get_active(cls, user=current_user):
+    def get_active(cls):
         """
         Get active cart for either a user or a guest
         Or create one if none found
         """
-        if user.is_anonymous:
-            cart = Cart.query.filter_by_domain(
-                [
-                    ['sessionid', '=', session.sid],
-                ]
-            ).first()
-            if not cart:
+        domain = [
+            ('sessionid', '=', session.sid)
+        ]
+        if not current_user.is_anonymous:
+            domain = [
+                ('user', '=', current_user.id)
+            ]
+        cart = Cart.query.filter_by_domain(domain).first()
+        if not cart:
+            if current_user.is_anonymous:
                 cart = Cart(sessionid=session.sid).save()
-        else:
-            cart = Cart.query.filter_by_domain(
-                [
-                    ('user', '=', user.id)
-                ]
-            ).first()
-            if not cart:
-                cart = Cart(user=user.id).save()
+            else:
+                cart = Cart(user=current_user.id).save()
 
+        return cart
+
+    @classmethod
+    def find_cart(cls, user=None):
+        """
+        Return the cart for the user if one exists. The user is None a guest
+        cart for the session is found.
+
+        :param user: ID of the user
+        :return: Active record of cart or None
+        """
+        domain = [
+            ('user', '=', user)
+        ]
+        if not user:
+            domain = [
+                ('sessionid', '=', session.sid)
+            ]
+        cart = Cart.query.filter_by_domain(domain).first()
         return cart
 
     @require_cart_with_sale
