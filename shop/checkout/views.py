@@ -7,9 +7,10 @@ from shop.cart.models import Sale
 from shop.checkout.forms import CheckoutAddressForm, CheckoutSignInForm
 from shop.checkout.models import (PaymentProfile, not_empty_cart,
                                   sale_has_non_guest_party)
-from shop.globals import current_cart, current_channel
+from shop.globals import current_cart, current_channel, current_app
 from shop.user.models import Address, Party, User
 from shop.utils import render_theme_template as render_template
+from shop.signals import cart_user_changed
 
 blueprint = Blueprint(
     'checkout', __name__,
@@ -78,6 +79,8 @@ def sign_in():
                 contact_mechanism.save()
                 party.email = form.email.data
                 party.save()
+
+            cart_user_changed.send(current_app._get_current_object())
 
             return redirect(
                 url_for('checkout.shipping_address')
