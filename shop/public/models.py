@@ -75,3 +75,4 @@ class Banner(Model):
     file = model.ModelType('nereid.static.file')
     sequence = model.IntType()
     description = model.StringType()
+    click_url = model.StringType()
