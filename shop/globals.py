@@ -20,6 +20,12 @@ def _get_current_cart():
     return Cart.get_active()
 
 
+def _get_current_context():
+    from shop.extensions import fulfil
+    return fulfil.client.context
+
+
 cache = LocalProxy(_find_cache)
 current_channel = LocalProxy(lambda: _get_current_channel())
 current_cart = LocalProxy(lambda: _get_current_cart())
+current_context = LocalProxy(lambda: _get_current_context())

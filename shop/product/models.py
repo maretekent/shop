@@ -3,7 +3,7 @@
 import json
 
 from flask import url_for
-from fulfil_client.model import (CurrencyType, IntType, ModelType, One2ManyType,
+from fulfil_client.model import (MoneyType, IntType, ModelType, One2ManyType,
                                  StringType)
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
@@ -74,13 +74,17 @@ class Product(Model):
     ])
 
     code = StringType()
-    list_price = CurrencyType()
+    list_price = MoneyType('currency_code')
     description = StringType()
     long_description = StringType()
     uri = StringType()
     attributes = One2ManyType("product.product.attribute")
     media = One2ManyType("product.media")
     cross_sells = One2ManyType('product.product')
+
+    @property
+    def currency_code(self):
+        return current_channel.currency_code
 
     @property
     def image(self):

@@ -4,7 +4,7 @@ import functools
 
 from flask import session
 from flask_login import current_user, user_logged_in
-from fulfil_client.model import (Date, DecimalType, FloatType, ModelType,
+from fulfil_client.model import (Date, FloatType, ModelType, MoneyType,
                                  One2ManyType, StringType)
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
@@ -42,11 +42,17 @@ def require_cart_with_sale(function):
 class SaleLine(Model):
     __model_name__ = 'sale.line'
 
+    _eager_fields = set(['sale.currency.code'])
+
     product = ModelType("product.product")
     quantity = FloatType()
-    unit_price = DecimalType()
-    amount = DecimalType()
+    unit_price = MoneyType('currency_code')
+    amount = MoneyType('currency_code')
     description = StringType()
+
+    @property
+    def currency_code(self):
+        return self._values.get('sale.currency.code')
 
 
 class Sale(Model):
@@ -58,9 +64,9 @@ class Sale(Model):
     party = ModelType("party.party")
     shipment_address = ModelType("party.address")
     invoice_address = ModelType("party.address")
-    total_amount = DecimalType()
-    tax_amount = DecimalType()
-    untaxed_amount = DecimalType()
+    total_amount = MoneyType('currency_code')
+    tax_amount = MoneyType('currency_code')
+    untaxed_amount = MoneyType('currency_code')
     lines = One2ManyType("sale.line")
     invoices = One2ManyType("account.invoice")
     sale_date = Date()

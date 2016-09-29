@@ -87,9 +87,9 @@
                       </div>
                     </div>
                   </td>
-                  <td>{{ line.unit_price }}</td>
+                  <td>{{ line.unit_price.format(current_locale) }}</td>
                   <td>{{ line.quantity }}</td>
-                  <td>{{ line.amount }}</td>
+                  <td>{{ line.amount.format(current_locale) }}</td>
                 </tr>
                 {% endfor %}
               </tbody>
