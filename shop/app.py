@@ -88,7 +88,7 @@ def register_errorhandlers(app):
 def register_context_processors(app):
     app.context_processor(lambda: {
         'current_app': current_app,
-        'current_locale': current_context.get('language', 'en_US'),
+        'current_locale': current_context.get('language') or 'en_US',
         'current_channel': current_channel,
         'current_cart': current_cart,
         'get_nav': MenuItem.get_nav,
