@@ -110,10 +110,12 @@ class Sale(Model):
             line_data.update(SaleLine.rpc.on_change_product(line_data))
             if line_data.get('taxes'):
                 line_data['taxes'] = [('add', line_data.get('taxes'))]
-            SaleLine(**{
+            sale_line = SaleLine(**{
                 k: v for k, v in line_data.iteritems()
                 if '.' not in k
             }).save()
+
+        return sale_line
 
 
 class Cart(Model):
