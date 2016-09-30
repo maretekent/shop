@@ -1,0 +1,25 @@
+{% extends theme('layout-my-account.html') %}
+
+{% from 'utils.html' import render_field %}
+
+{% block account_content %}
+<section class="my-account">
+  <div class="container">
+    <div class="col-md-6">
+      <!-- Account Information -->
+      <div class="col-md-6">
+        <form class="form-horizontal" method="POST" autocomplete="off">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          {{ render_field(form.name) }}
+          {{ render_field(form.email, disabled=True) }}
+          <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-4">
+              <button type="submit" class="btn btn-warning btn-sm">Save</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock account_content %}

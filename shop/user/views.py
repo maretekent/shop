@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 from flask import Blueprint, abort, flash, request, url_for
 from flask_login import current_user, login_required
 from shop.cart.models import Sale
-from shop.user.forms import AddressForm, ChangePasswordForm
+from shop.user.forms import AccountForm, AddressForm, ChangePasswordForm
 from shop.user.models import Address
 from shop.utils import render_theme_template as render_template
 from werkzeug import redirect
@@ -164,3 +164,22 @@ def orders():
         sales=paginate.items,
         paginate=paginate
     )
+
+
+@blueprint.route('/account', methods=["GET", "POST"])
+@login_required
+def account():
+    """Render account details
+    """
+
+    form = AccountForm(
+        request.form,
+        name=current_user.name,
+        email=current_user.email
+    )
+    if form.validate_on_submit():
+        current_user.name = form.name.data
+        current_user.save()
+        return redirect(url_for('user.account'))
+
+    return render_template('users/account.html', form=form)

@@ -146,3 +146,18 @@ class ChangePasswordForm(Form):
             self.old_password.errors.append('Your old password is incorrect.')
             return False
         return True
+
+
+class AccountForm(Form):
+    """Change display name form."""
+
+    name = StringField(
+        'Your Name',
+        validators=[DataRequired()],
+        render_kw={"placeholder": "Your Name"}
+    )
+
+    email = StringField(
+        'Email',
+        render_kw={"placeholder": "Email"}
+    )

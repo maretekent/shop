@@ -14,7 +14,7 @@
     </div>
     <h5 class="small text-uppercase text-muted">Account</h5>
     <div class="list-group">
-      <a class="list-group-item">My Profile</a>
+      <a class="list-group-item" href="{{ url_for('user.account') }}">My Profile</a>
       <a class="list-group-item">Saved Cards</a>
       <a class="list-group-item" href="{{ url_for('user.addresses') }}">My Address book</a>
       <a class="list-group-item" href="{{ url_for('user.change_password') }}">Change Password</a>
