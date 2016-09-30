@@ -2,7 +2,7 @@
 """Checkout views."""
 import stripe
 from flask import Blueprint, flash, redirect, request, session, url_for
-from flask_login import current_user, login_user
+from flask_login import current_user, login_user, login_required
 from shop.cart.models import Sale
 from shop.checkout.forms import CheckoutAddressForm, CheckoutSignInForm
 from shop.checkout.models import (PaymentProfile, not_empty_cart,
@@ -208,7 +208,7 @@ def payment():
             sale = cart.sale
             cart.confirm()
             return redirect(url_for(
-                'cart.render',
+                'checkout.order',
                 sale_id=sale.id,
                 confirmation=True,
                 access_code=sale.guest_access_code,
@@ -216,4 +216,32 @@ def payment():
 
     return render_template(
         'checkout/payment.html'
+    )
+
+@login_required
+@blueprint.route('/order/<int:sale_id>')
+def order(sale_id):
+    """Render given sale order
+    :param sale: ID of the sale Order
+    """
+    confirmation = request.values.get('confirmation', type=bool)
+    # Try to find if the user can be shown the order
+    access_code = request.values.get('access_code', None)
+    sale = Sale.get_by_id(sale_id)
+
+    if current_user.is_anonymous:
+        if not access_code:
+            # No access code provided, user is not authorized to
+            # access order page
+            abort(401)
+        if access_code != sale.guest_access_code:
+            # Invalid access code
+            abort(403)
+    else:
+        if sale.party.id != current_user.party.id:
+            # Order does not belong to the user
+            abort(403)
+
+    return render_template(
+        'checkout/order-confirmation.html', sale=sale, confirmation=confirmation
     )
