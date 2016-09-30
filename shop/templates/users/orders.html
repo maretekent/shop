@@ -1,7 +1,7 @@
-{% extends theme("layout.html") %}
+{% extends theme('layout-my-account.html') %}
 {% from 'utils.html' import render_pagination  %}
 
-{% block content %}
+{% block account_content %}
 <!-- My Orders Page starts here -->
 <section>
   <div class="container">
@@ -150,4 +150,4 @@
   {{ render_pagination(paginate, endpoint='user.orders', filter_by=request.args.get('filter_by')) }}
 {% endif %}
 
-{% endblock %}
+{% endblock account_content %}
