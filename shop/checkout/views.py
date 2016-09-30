@@ -186,7 +186,7 @@ def delivery_method():
 def payment():
     cart = current_cart
     if not cart.sale.shipment_address:
-        return redirect(url_for('nereid.checkout.shipping_address'))
+        return redirect(url_for('checkout.shipping_address'))
     if request.method == 'POST':
         try:
             customer_id = PaymentProfile.rpc.create_profile_using_stripe_token(
