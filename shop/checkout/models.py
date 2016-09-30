@@ -38,7 +38,6 @@ class PaymentGateway(Model):
     __model_name__ = 'payment_gateway.gateway'
 
     provider = StringType()
-    stripe_api_key = StringType()
     stripe_publishable_key = StringType()
 
 
@@ -46,3 +45,6 @@ class PaymentProfile(Model):
     __model_name__ = 'party.payment_profile'
 
     party = ModelType('party.party')
+    gateway = ModelType('payment_gateway.gateway')
+    last_4_digits = StringType()
+    rec_name = StringType()

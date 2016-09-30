@@ -5,6 +5,7 @@ from flask_babel import gettext
 from flask_login import UserMixin
 from fulfil_client.model import BooleanType, ModelType, One2ManyType, StringType
 from itsdangerous import TimestampSigner, URLSafeSerializer
+
 from shop.extensions import fulfil
 from shop.fulfilio import Model
 from shop.globals import current_channel
@@ -49,6 +50,7 @@ class Party(Model):
     name = StringType(required=True)
     contact_mechanisms = One2ManyType("party.contact_mechanism")
     addresses = One2ManyType("party.address")
+    payment_profiles = One2ManyType("party.payment_profile")
 
 
 class User(UserMixin, Model):
