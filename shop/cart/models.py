@@ -46,6 +46,7 @@ class SaleLine(Model):
 
     product = ModelType("product.product")
     quantity = FloatType()
+    unit = ModelType("product.uom")
     unit_price = MoneyType('currency_code')
     amount = MoneyType('currency_code')
     description = StringType()

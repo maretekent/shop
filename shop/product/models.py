@@ -276,3 +276,9 @@ class ProductMedia(Model):
     __model_name__ = 'product.media'
 
     url = StringType()
+
+
+class ProductUOM(Model):
+    __model_name__ = 'product.uom'
+
+    symbol = StringType()
