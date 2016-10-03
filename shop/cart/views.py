@@ -2,9 +2,9 @@
 """Product views."""
 from flask import Blueprint, abort, flash, redirect, request, url_for, jsonify
 from flask_babel import gettext as _, format_currency, format_number
-from flask_login import current_user
+from flask_login import current_user, login_required
 from shop.cart.forms import AddtoCartForm, RemoveFromCartForm
-from shop.cart.models import Cart, Sale
+from shop.cart.models import Cart
 from shop.utils import render_theme_template as render_template
 
 blueprint = Blueprint(
@@ -78,31 +78,3 @@ def empty_cart():
     cart = Cart.get_active()
     cart.clear()
     return redirect(url_for('cart.view_cart'))
-
-
-@blueprint.route('/order/<int:sale_id>')
-def render(sale_id):
-    """Render given sale order
-    :param sale: ID of the sale Order
-    """
-    confirmation = request.values.get('confirmation', type=bool)
-    # Try to find if the user can be shown the order
-    access_code = request.values.get('access_code', None)
-    sale = Sale.get_by_id(sale_id)
-
-    if current_user.is_anonymous:
-        if not access_code:
-            # No access code provided, user is not authorized to
-            # access order page
-            abort(401)
-        if access_code != sale.guest_access_code:
-            # Invalid access code
-            abort(403)
-    else:
-        if sale.party.id != current_user.party.id:
-            # Order does not belong to the user
-            abort(403)
-
-    return render_template(
-        'cart/order-confirmation.html', sale=sale, confirmation=confirmation
-    )

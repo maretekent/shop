@@ -183,3 +183,16 @@ def account():
         return redirect(url_for('user.account'))
 
     return render_template('users/account.html', form=form)
+
+
+@login_required
+@blueprint.route('/order/<int:sale_id>')
+def order(sale_id):
+    """Render given sale order
+    :param sale: ID of the sale Order
+    """
+    sale = Sale.get_by_id(sale_id)
+    if sale.party.id != current_user.party.id:
+        # Order does not belong to the user
+        abort(403)
+    return render_template('user/order.html', sale=sale)

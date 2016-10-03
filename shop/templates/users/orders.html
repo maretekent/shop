@@ -58,7 +58,7 @@
                         Order No.
                       </div>
                       <div class="col-md-8 col-sm-8 col-xs-12">
-                        <a href="{{ url_for('cart.render', sale_id=sale.id) }}" class="text-info">#{{ sale.number }}</a>
+                        <a href="{{ url_for('user.order', sale_id=sale.id) }}" class="text-info">#{{ sale.number }}</a>
                       </div>
                     </div>
                   </div>
@@ -83,7 +83,7 @@
                       Total Amount
                     </div>
                     <div class="secondry">
-                      {{ sale.total_amount }}
+                      {{ sale.total_amount.format(current_locale) }}
                     </div>
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-12">
