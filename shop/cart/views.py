@@ -21,20 +21,19 @@ def view_cart():
         if not cart.sale:
             return jsonify({'empty': True})
 
-        ccy = cart.sale.currency_code
         return jsonify({
             'cart': {
                 'lines': [{
                     'product': l.product and l.product.name or None,
                     'quantity': format_number(l.quantity),
                     'unit': l.unit.symbol,
-                    'unit_price': format_currency(l.unit_price, ccy),
-                    'amount': format_currency(l.amount, ccy),
+                    'unit_price': l.unit_price.format(),
+                    'amount': l.amount.format(),
                 } for l in cart.sale.lines],
                 'empty': len(cart.sale.lines) > 0,
-                'total_amount': format_currency(cart.sale.total_amount, ccy),
-                'tax_amount': format_currency(cart.sale.tax_amount, ccy),
-                'untaxed_amount': format_currency(cart.sale.untaxed_amount, ccy),
+                'total_amount': cart.sale.total_amount.format(),
+                'tax_amount': cart.sale.tax_amount.format(),
+                'untaxed_amount': cart.sale.untaxed_amount.format(),
             }
         })
     return render_template('cart/cart.html', cart=cart)
