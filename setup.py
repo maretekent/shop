@@ -23,6 +23,7 @@ setup(
         'Flask-Session',
         'Flask-Fulfil',
         'raven[flask]',
+        'wtforms-components',
         'premailer',
         'stripe',
         'six',
