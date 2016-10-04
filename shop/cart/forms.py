@@ -17,6 +17,12 @@ class AddtoCartForm(Form):
 
     quantity = FloatField('Quantity', default=1.0, validators=[DataRequired()])
     product = IntegerField('Product', validators=[DataRequired()])
+    shipping_date = DateField(
+        'Shipping Date',
+        format="%Y-%m-%d",
+        validators=[DateRange(min=date.today()), Optional()]
+    )
+    address_id = IntegerField('Shipping Address', validators=[Optional()])
 
     def validate(self):
         """Validate the form."""
@@ -29,6 +35,23 @@ class AddtoCartForm(Form):
         if not product:
             self.product.errors.append('Unknown product')
             return False
+
+        if self.address_id.data:
+            if current_user.is_anonymous:
+                self.address_id.errors.append(
+                    'Address is invalid for guest user'
+                )
+                return False
+            address = Address.query.filter_by_domain([
+                ('id', '=', self.address_id.data),
+                ('party', '=', current_user.party.id),
+            ]).first()
+            if not address:
+                self.address_id.errors.append(
+                    'Address does not belong to the user'
+                )
+                return False
+
         return True
 
 

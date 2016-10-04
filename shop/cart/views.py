@@ -48,7 +48,9 @@ def add_to_cart():
     if form.validate_on_submit():
         cart.add_product(
             product_id=form.product.data,
-            quantity=form.quantity.data
+            quantity=form.quantity.data,
+            shipping_date=form.shipping_date.data,
+            address_id=form.address_id.data,
         )
         flash(_('Product has been added to cart'), 'success')
         return redirect(url_for('cart.view_cart'))
