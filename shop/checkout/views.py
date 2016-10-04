@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Checkout views."""
 import stripe
-from flask import Blueprint, flash, redirect, request, session, url_for
+from flask import Blueprint, abort, flash, redirect, request, session, url_for
 from flask_login import current_user, login_user, login_required
 from shop.cart.models import Sale
-from shop.checkout.forms import CheckoutAddressForm, CheckoutSignInForm
+from shop.checkout.forms import CheckoutAddressForm, CheckoutSignInForm, CheckoutPaymentForm
 from shop.checkout.models import (PaymentProfile, not_empty_cart,
                                   sale_has_non_guest_party)
 from shop.globals import current_cart, current_channel, current_app
@@ -187,13 +187,16 @@ def payment():
     cart = current_cart
     if not cart.sale.shipment_address:
         return redirect(url_for('checkout.shipping_address'))
-    if request.method == 'POST':
-        try:
+    form = CheckoutPaymentForm(request.form)
+    if form.validate_on_submit():
+        customer_id = form.payment_profile_id.data or None
+        if not customer_id:
             customer_id = PaymentProfile.rpc.create_profile_using_stripe_token(
                 current_user.party.id,
                 current_channel.payment_gateway.id,
-                request.form.get('stripeToken')
+                form.stripe_token.data,
             )
+        try:
             Sale.rpc.add_sale_payment(
                 current_cart.sale.id,
                 current_channel.payment_gateway.id,
@@ -215,8 +218,10 @@ def payment():
             ))
 
     return render_template(
-        'checkout/payment.html'
+        'checkout/payment.html',
+        form=form
     )
+
 
 @login_required
 @blueprint.route('/order/<int:sale_id>')

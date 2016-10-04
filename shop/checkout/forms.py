@@ -2,9 +2,11 @@
 """Checkout forms."""
 from flask_login import current_user
 from flask_wtf import Form
+
+from shop.checkout.models import PaymentProfile
 from shop.user.forms import AddressForm
 from shop.user.models import Address
-from wtforms import IntegerField, PasswordField, RadioField, StringField
+from wtforms import IntegerField, PasswordField, RadioField, StringField, BooleanField
 from wtforms.validators import DataRequired, Email, ValidationError
 
 
@@ -42,3 +44,27 @@ class CheckoutAddressForm(AddressForm):
         if address_exist:
             return True
         return False
+
+
+class CheckoutPaymentForm(Form):
+    """
+    Checkout payment form
+    """
+    payment_profile_id = IntegerField('Payment profile')
+    stripe_token = StringField('Stripe Token')
+
+    def validate(self):
+        initial_validation = super(CheckoutPaymentForm, self).validate()
+
+        if not initial_validation:
+            return False
+
+        if current_user.is_anonymous and self.payment_profile_id.data:
+            self.payment_profile_id.errors.append("A payment profile cannot belong to a guest user")
+            return False
+
+        if not current_user.is_anonymous and self.payment_profile_id.data:
+            payment_profile = PaymentProfile.get_by_id(self.payment_profile_id.data)
+            if payment_profile.party != current_user.party:
+                return False
+        return True
