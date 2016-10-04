@@ -8,6 +8,7 @@ Flask
 
 # Forms
 Flask-WTF
+wtforms-components
 
 # Deployment
 gunicorn
