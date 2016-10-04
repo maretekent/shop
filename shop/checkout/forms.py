@@ -60,11 +60,16 @@ class CheckoutPaymentForm(Form):
             return False
 
         if current_user.is_anonymous and self.payment_profile_id.data:
-            self.payment_profile_id.errors.append("A payment profile cannot belong to a guest user")
+            self.payment_profile_id.errors.append(
+                "A payment profile cannot belong to a guest user"
+            )
             return False
 
         if not current_user.is_anonymous and self.payment_profile_id.data:
             payment_profile = PaymentProfile.get_by_id(self.payment_profile_id.data)
-            if payment_profile.party != current_user.party:
+            if payment_profile.party.id != current_user.party.id:
+                self.payment_profile_id.errors.append(
+                    "Payment profile is invalid!"
+                )
                 return False
         return True
