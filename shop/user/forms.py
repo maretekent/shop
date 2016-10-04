@@ -161,3 +161,8 @@ class AccountForm(Form):
         'Email',
         render_kw={"placeholder": "Email"}
     )
+
+    phone = StringField(
+        'Phone Number',
+        render_kw={"placeholder": "Phone"}
+    )
