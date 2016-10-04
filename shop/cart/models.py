@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Product models."""
 import functools
+from datetime import date
 
 from flask import session
 from flask_login import current_user, user_logged_in
@@ -97,11 +98,13 @@ class Sale(Model):
     def currency_code(self):
         return self._values.get('currency.code')
 
-    def add_product(self, product_id, quantity):
+    def add_product(self, product_id, quantity, shipping_date, address_id):
         # check if SaleLine already exists
         sale_line = SaleLine.query.filter_by_domain([
             ('product', '=', product_id),
             ('sale', '=', self.id),
+            ('shipping_date', '=', shipping_date),
+            ('delivery_address', '=', address_id)
         ]).first()
         if sale_line:
             sale_line.quantity = quantity
@@ -116,7 +119,11 @@ class Sale(Model):
                 '_parent_sale.channel': current_channel.id,
                 '_parent_sale.party': current_channel.anonymous_customer.id,
                 '_parent_sale.currency': current_channel.currency,
-                'warehouse': current_channel.warehouse
+                'warehouse': current_channel.warehouse,
+                'delivery_address': address_id,
+
+                # XXX: Find better way to set default delivery date
+                'shipping_date': shipping_date or date.today(),
             }
             line_data.update(SaleLine.rpc.on_change_product(line_data))
             if line_data.get('taxes'):
@@ -220,9 +227,11 @@ class Cart(Model):
         return cart
 
     @require_cart_with_sale
-    def add_product(self, product_id, quantity):
+    def add_product(
+            self, product_id, quantity, shipping_date=None, address_id=None
+    ):
         self.refresh()
-        self.sale.add_product(product_id, quantity)
+        self.sale.add_product(product_id, quantity, shipping_date, address_id)
 
     def remove_sale_line(self, line_id):
         self.refresh()
