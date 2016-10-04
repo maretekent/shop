@@ -3,7 +3,8 @@
 from flask import Blueprint, abort, flash, redirect, request, url_for, jsonify
 from flask_babel import gettext as _, format_currency, format_number
 from flask_login import current_user, login_required
-from shop.cart.forms import AddtoCartForm, RemoveFromCartForm
+from shop.cart.forms import AddtoCartForm, RemoveFromCartForm, \
+    UpdateShippingAddressForm, UpdateShippingDateForm
 from shop.cart.models import Cart
 from shop.utils import render_theme_template as render_template
 
@@ -77,3 +78,31 @@ def empty_cart():
     cart = Cart.get_active()
     cart.clear()
     return redirect(url_for('cart.view_cart'))
+
+
+@blueprint.route('/update-shipping-address', methods=['POST'])
+def update_shipping_address():
+    form = UpdateShippingAddressForm()
+    if form.validate_on_submit():
+        cart = Cart.get_active()
+        cart.update_shipping_address(
+            form.line_id.data, form.address_id.data
+        )
+        flash(_("Address updated on item"), 'success')
+        return redirect(url_for('cart.view_cart'))
+    flash(_('Looks like address or item is invalid'), 'error')
+    return redirect(request.referrer)
+
+
+@blueprint.route('/update-shipping-date', methods=['POST'])
+def update_shipping_date():
+    form = UpdateShippingDateForm()
+    if form.validate_on_submit():
+        cart = Cart.get_active()
+        cart.update_shipping_date(
+            form.line_id.data, form.shipping_date.data
+        )
+        flash(_("Shipping date updated on item"), 'success')
+        return redirect(url_for('cart.view_cart'))
+    flash(_('Looks like date or item is invalid'), 'error')
+    return redirect(request.referrer)

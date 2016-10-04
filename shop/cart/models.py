@@ -50,10 +50,20 @@ class SaleLine(Model):
     unit_price = MoneyType('currency_code')
     amount = MoneyType('currency_code')
     description = StringType()
+    delivery_address = ModelType('party.address')
+    shipping_date = Date()
 
     @property
     def currency_code(self):
         return self._values.get('sale.currency.code')
+
+    def update_shipping_address(self, address_id):
+        self.delivery_address = address_id
+        self.save()
+
+    def update_shipping_date(self, shipping_date):
+        self.shipping_date = shipping_date
+        self.save()
 
 
 class Sale(Model):
@@ -221,3 +231,13 @@ class Cart(Model):
     def clear(self):
         self.sale = None
         self.save()
+
+    @require_cart_with_sale
+    def update_shipping_address(self, line_id, address_id):
+        line = SaleLine.get_by_id(line_id)
+        line.update_shipping_address(address_id)
+
+    @require_cart_with_sale
+    def update_shipping_date(self, line_id, shipping_date):
+        line = SaleLine.get_by_id(line_id)
+        line.update_shipping_date(shipping_date)
