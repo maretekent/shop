@@ -6,6 +6,7 @@ from flask_login import current_user, login_required
 from shop.cart.forms import AddtoCartForm, RemoveFromCartForm, \
     UpdateShippingAddressForm, UpdateShippingDateForm
 from shop.cart.models import Cart
+from shop.globals import current_context
 from shop.utils import render_theme_template as render_template
 
 blueprint = Blueprint(
@@ -22,19 +23,23 @@ def view_cart():
         if not cart.sale:
             return jsonify({'empty': True})
 
+        current_locale = current_context.get('language') or 'en_US'
         return jsonify({
             'cart': {
                 'lines': [{
+                    'id': l.id,
                     'product': l.product and l.product.name or None,
                     'quantity': format_number(l.quantity),
                     'unit': l.unit.symbol,
-                    'unit_price': l.unit_price.format(),
-                    'amount': l.amount.format(),
+                    'unit_price': l.unit_price.format(current_locale),
+                    'amount': l.amount.format(current_locale),
+                    'url': l.product.listing.get_absolute_url(),
+                    'image': l.product.image,
                 } for l in cart.sale.lines],
-                'empty': len(cart.sale.lines) > 0,
-                'total_amount': cart.sale.total_amount.format(),
-                'tax_amount': cart.sale.tax_amount.format(),
-                'untaxed_amount': cart.sale.untaxed_amount.format(),
+                'empty': len(cart.sale.lines) < 1,
+                'total_amount': cart.sale.total_amount.format(current_locale),
+                'tax_amount': cart.sale.tax_amount.format(current_locale),
+                'untaxed_amount': cart.sale.untaxed_amount.format(current_locale),
             }
         })
     return render_template('cart/cart.html', cart=cart)
