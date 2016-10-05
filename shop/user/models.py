@@ -34,6 +34,7 @@ class Address(Model):
 class ContactMechanism(Model):
     __model_name__ = 'party.contact_mechanism'
 
+    party = ModelType('party.party')
     type = StringType(required=True)
     value = StringType(required=True)
 
@@ -51,6 +52,12 @@ class Party(Model):
     contact_mechanisms = One2ManyType("party.contact_mechanism")
     addresses = One2ManyType("party.address")
     payment_profiles = One2ManyType("party.payment_profile")
+
+    def get_mechanism(self, name):
+        for mechanism in self.contact_mechanisms:
+            if mechanism.type == name:
+                return mechanism.value
+        return ''
 
 
 class User(UserMixin, Model):
@@ -71,6 +78,10 @@ class User(UserMixin, Model):
     def is_active(self):
         "For Flask login"
         return self.active
+
+    @property
+    def phone(self):
+        return self.party.get_mechanism('phone')
 
     @classmethod
     def find_user(cls, email):

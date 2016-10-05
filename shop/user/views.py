@@ -7,7 +7,7 @@ from flask import Blueprint, abort, flash, request, url_for
 from flask_login import current_user, login_required
 from shop.cart.models import Sale
 from shop.user.forms import AccountForm, AddressForm, ChangePasswordForm
-from shop.user.models import Address
+from shop.user.models import Address, ContactMechanism
 from shop.utils import render_theme_template as render_template
 from werkzeug import redirect
 
@@ -171,14 +171,30 @@ def orders():
 def account():
     """Render account details
     """
-
     form = AccountForm(
         request.form,
         name=current_user.name,
-        email=current_user.email
+        email=current_user.email,
+        phone=current_user.phone
     )
     if form.validate_on_submit():
         current_user.name = form.name.data
+        if form.phone.data:
+            # Search for existing phone
+            contact_mechanism = ContactMechanism.query.filter_by_domain([
+                ('party', '=', current_user.party.id),
+                ('type', '=', 'phone'),
+                ('value', '=', current_user.phone)
+            ]).first()
+            if contact_mechanism:
+                contact_mechanism.value = form.phone.data
+            else:
+                contact_mechanism = ContactMechanism(
+                    party=current_user.party.id,
+                    type='phone', value=form.phone.data
+                )
+            contact_mechanism.save()
+
         current_user.save()
         return redirect(url_for('user.account'))
 
