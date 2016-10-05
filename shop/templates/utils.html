@@ -33,8 +33,10 @@
            class="img img-responsive img-rounded">
     </div>
     <div class="content">
-      <h4>{{ name|safe|truncate(50) }}</h4>
-      <h5>{{ listing.product.price }}</h5>
+      {% if listing.unit_price < listing.product.list_price %}
+        <h5>{{ listing.product.list_price.format(current_locale) }}</h5>
+      {% endif %}
+        <h5>{{ listing.product.unit_price.format(current_locale) }}</h5>
     </div>
   </a>
 {% endmacro %}

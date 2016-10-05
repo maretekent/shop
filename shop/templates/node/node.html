@@ -41,17 +41,7 @@
   <div class="section-title"><h2>Products</h2></div>
   <ul class="clearfix">
     {% for listing in listings %}
-    <li class="col-xs-6 col-sm-3 col-md-2">
-      <a href="{{ listing.get_absolute_url() }}">
-        <div class="img-wrapper">
-          <img class="img img-responsive" src="{{ listing.product.image }}"/>
-        </div>
-        <div class="content">
-          <h4>{{ listing.product.name }}</h4>
-          <h5>{{ listing.product.list_price.format(current_locale) }}</h5>
-        </div>
-      </a>
-    </li>
+      {{ render_channel_list(listing) }}
     {% endfor %}
   </ul>
 </section>
