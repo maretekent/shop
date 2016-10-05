@@ -17,7 +17,7 @@ class AddtoCartForm(Form):
 
     quantity = FloatField('Quantity', default=1.0, validators=[DataRequired()])
     product = IntegerField('Product', validators=[DataRequired()])
-    shipping_date = DateField(
+    delivery_date = DateField(
         'Shipping Date',
         format="%Y-%m-%d",
         validators=[DateRange(min=date.today()), Optional()]
@@ -118,7 +118,7 @@ class UpdateShippingAddressForm(Form):
 class UpdateShippingDateForm(Form):
     "Updates shipping date"
 
-    shipping_date = DateField(
+    delivery_date = DateField(
         'Shipping Date',
         format="%Y-%m-%d",
         validators=[DateRange(min=date.today()), Optional()]

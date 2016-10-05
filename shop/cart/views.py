@@ -54,7 +54,7 @@ def add_to_cart():
         cart.add_product(
             product_id=form.product.data,
             quantity=form.quantity.data,
-            shipping_date=form.shipping_date.data,
+            delivery_date=form.delivery_date.data,
             address_id=form.address_id.data,
         )
         flash(_('Product has been added to cart'), 'success')
@@ -102,12 +102,12 @@ def update_shipping_address():
 
 
 @blueprint.route('/update-shipping-date', methods=['POST'])
-def update_shipping_date():
+def update_delivery_date():
     form = UpdateShippingDateForm()
     if form.validate_on_submit():
         cart = Cart.get_active()
-        cart.update_shipping_date(
-            form.line_id.data, form.shipping_date.data
+        cart.update_delivery_date(
+            form.line_id.data, form.delivery_date.data
         )
         flash(_("Shipping date updated on item"), 'success')
         return redirect(url_for('cart.view_cart'))

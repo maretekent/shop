@@ -52,7 +52,7 @@ class SaleLine(Model):
     amount = MoneyType('currency_code')
     description = StringType()
     delivery_address = ModelType('party.address')
-    shipping_date = Date()
+    delivery_date = Date()
 
     @property
     def currency_code(self):
@@ -62,8 +62,8 @@ class SaleLine(Model):
         self.delivery_address = address_id
         self.save()
 
-    def update_shipping_date(self, shipping_date):
-        self.shipping_date = shipping_date
+    def update_delivery_date(self, delivery_date):
+        self.delivery_date = delivery_date
         self.save()
 
 
@@ -98,12 +98,12 @@ class Sale(Model):
     def currency_code(self):
         return self._values.get('currency.code')
 
-    def add_product(self, product_id, quantity, shipping_date, address_id):
+    def add_product(self, product_id, quantity, delivery_date, address_id):
         # check if SaleLine already exists
         sale_line = SaleLine.query.filter_by_domain([
             ('product', '=', product_id),
             ('sale', '=', self.id),
-            ('shipping_date', '=', shipping_date),
+            ('delivery_date', '=', delivery_date),
             ('delivery_address', '=', address_id)
         ]).first()
         if sale_line:
@@ -123,7 +123,7 @@ class Sale(Model):
                 'delivery_address': address_id,
 
                 # XXX: Find better way to set default delivery date
-                'shipping_date': shipping_date or date.today(),
+                'delivery_date': delivery_date or date.today(),
             }
             line_data.update(SaleLine.rpc.on_change_product(line_data))
             if line_data.get('taxes'):
@@ -228,10 +228,10 @@ class Cart(Model):
 
     @require_cart_with_sale
     def add_product(
-            self, product_id, quantity, shipping_date=None, address_id=None
+            self, product_id, quantity, delivery_date=None, address_id=None
     ):
         self.refresh()
-        self.sale.add_product(product_id, quantity, shipping_date, address_id)
+        self.sale.add_product(product_id, quantity, delivery_date, address_id)
 
     def remove_sale_line(self, line_id):
         self.refresh()
@@ -247,6 +247,6 @@ class Cart(Model):
         line.update_shipping_address(address_id)
 
     @require_cart_with_sale
-    def update_shipping_date(self, line_id, shipping_date):
+    def update_delivery_date(self, line_id, delivery_date):
         line = SaleLine.get_by_id(line_id)
-        line.update_shipping_date(shipping_date)
+        line.update_delivery_date(delivery_date)
