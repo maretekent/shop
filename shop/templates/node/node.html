@@ -1,5 +1,7 @@
 {% extends theme("layout.html") %}
 
+{% from 'utils.html' import render_product_listing  %}
+
 {% block content %}
 
 <section id="breadcrumb" class="clearfix">
@@ -41,7 +43,7 @@
   <div class="section-title"><h2>Products</h2></div>
   <ul class="clearfix">
     {% for listing in listings %}
-      {{ render_channel_list(listing) }}
+      {{ render_product_listing(listing) }}
     {% endfor %}
   </ul>
 </section>

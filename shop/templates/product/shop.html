@@ -1,6 +1,6 @@
 {% extends theme("layout.html") %}
 
-{% from 'utils.html' import render_pagination, render_channel_list  %}
+{% from 'utils.html' import render_pagination, render_product_listing  %}
 
 {% block content %}
   <section class="products" id="products-collections">
@@ -28,7 +28,7 @@
     <ul class="clearfix">
       {% for product in new_arrivals %}
         <li class="col-xs-6 col-sm-3 col-md-2">
-          {{ render_channel_list(product, list_name="Products Master List") }}
+          {{ render_product_listing(product) }}
         </li>
       {% endfor %}
     </ul>
