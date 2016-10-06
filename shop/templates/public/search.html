@@ -1,6 +1,6 @@
 {% extends theme("layout.html") %}
 
-{% from 'utils.html' import render_pagination, render_channel_list  %}
+{% from 'utils.html' import render_pagination, render_product_listing  %}
 
 {% block content %}
   <section class="products" id="products-new-sellers">
@@ -9,7 +9,7 @@
     <ul class="clearfix">
       {% for listing in results.items %}
         <li class="col-xs-12 col-sm-6 col-md-3">
-          {{ render_channel_list(listing, list_name="Products Search List") }}
+          {{ render_product_listing(listing) }}
         </li>
         {% else %}
         <li>

@@ -12,7 +12,7 @@
   </div>
 {%- endmacro %}
 
-{% macro render_channel_list(listing, node=None, name=None, list_name=None) -%}
+{% macro render_product_listing(listing, node=None, name=None) -%}
   {% if not name %}
     {% if node and node.display == 'product.template' %}
       {% set name = listing.product.template.name %}
@@ -22,7 +22,7 @@
   {% endif %}
   <a href="{{ listing.get_absolute_url() }}"
      ga-product-link
-     data-ga-product-list="{{ node and node.name or list_name }}"
+     data-ga-product-list="{{ node and node.name or name }}"
      data-ga-event-label="Product Thumbnail"
      data-ga-product-id="{{ listing.product.id }}"
      data-ga-product-name="{{ name }}">
