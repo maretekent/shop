@@ -25,17 +25,21 @@ class LoginForm(Form):
             return False
 
         self.user = User.find_user(self.email.data)
+        message = None
         if not self.user:
-            self.email.errors.append('Unknown email')
+            message = 'Invalid login credentials'
+
+        elif not self.user.active:
+            message = 'User account is not activated'
+
+        elif not self.user.check_password(self.password.data):
+            message = 'Invalid login credentials'
+
+        if message:
+            # XXX:  Can't find better way to add global form error
+            self.email.errors.append(message)
             return False
 
-        if not self.user.check_password(self.password.data):
-            self.password.errors.append('Invalid password')
-            return False
-
-        if not self.user.active:
-            self.email.errors.append('User not activated')
-            return False
         return True
 
 
