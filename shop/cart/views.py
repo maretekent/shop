@@ -4,7 +4,7 @@ from flask import Blueprint, abort, flash, redirect, request, url_for, jsonify
 from flask_babel import gettext as _, format_currency, format_number
 from flask_login import current_user, login_required
 from shop.cart.forms import AddtoCartForm, RemoveFromCartForm, \
-    UpdateShippingAddressForm, UpdateShippingDateForm
+    UpdateShippingAddressForm, UpdateShippingDateForm, UpdateGiftMessageForm
 from shop.cart.models import Cart
 from shop.globals import current_context
 from shop.utils import render_theme_template as render_template
@@ -112,4 +112,18 @@ def update_delivery_date():
         flash(_("Shipping date updated on item"), 'success')
         return redirect(url_for('cart.view_cart'))
     flash(_('Looks like date or item is invalid'), 'error')
+    return redirect(request.referrer)
+
+
+@blueprint.route('/update-gift-message', methods=['POST'])
+def update_gift_message():
+    form = UpdateGiftMessageForm()
+    if form.validate_on_submit():
+        cart = Cart.get_active()
+        cart.update_gift_message(
+            form.line_id.data, form.gift_message.data
+        )
+        flash(_("Gift message has been updated on item"), 'success')
+        return redirect(url_for('cart.view_cart'))
+    flash(_('Looks like item is invalid'), 'error')
     return redirect(request.referrer)
