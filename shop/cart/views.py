@@ -72,8 +72,8 @@ def remove_from_cart():
             line_id=form.line_id.data
         )
         flash(_("Removed product from cart"), 'success')
-        return redirect(url_for('cart.view_cart'))
-    flash(_('Looks like the item is already deleted.'), 'error')
+    else:
+        flash(_('Looks like the item is already deleted.'), 'error')
     return redirect(request.referrer)
 
 
