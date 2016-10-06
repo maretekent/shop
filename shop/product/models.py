@@ -70,7 +70,7 @@ class Product(Model):
     __model_name__ = 'product.product'
 
     _eager_fields = set([
-        'template', 'variant_name', 'media', 'default_image.url'
+        'template', 'variant_name', 'default_image.url'
     ])
 
     code = StringType()
@@ -79,7 +79,6 @@ class Product(Model):
     long_description = StringType()
     uri = StringType()
     attributes = One2ManyType("product.product.attribute")
-    media = One2ManyType("product.media")
     cross_sells = One2ManyType('product.product')
 
     @property
@@ -92,7 +91,7 @@ class Product(Model):
 
     @property
     def images(self):
-        return map(lambda m: m.url, self.media)
+        return self.rpc.get_images_urls(self.id)
 
     @property
     def name(self):
@@ -270,12 +269,6 @@ class ProductAttributeSelectionOption(Model):
     __model_name__ = 'product.attribute.selection_option'
 
     name = StringType()
-
-
-class ProductMedia(Model):
-    __model_name__ = 'product.media'
-
-    url = StringType()
 
 
 class ProductUOM(Model):
