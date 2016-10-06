@@ -19,7 +19,7 @@ class AddtoCartForm(Form):
     product = IntegerField('Product', validators=[DataRequired()])
     delivery_date = DateField(
         'Shipping Date',
-        format="%Y-%m-%d",
+        format="%b %d, %Y",
         validators=[DateRange(min=date.today()), Optional()]
     )
     address_id = IntegerField('Shipping Address', validators=[Optional()])
