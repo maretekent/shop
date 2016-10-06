@@ -121,9 +121,7 @@ class Sale(Model):
                 '_parent_sale.currency': current_channel.currency,
                 'warehouse': current_channel.warehouse,
                 'delivery_address': address_id,
-
-                # XXX: Find better way to set default delivery date
-                'delivery_date': delivery_date or date.today(),
+                'delivery_date': delivery_date,
             }
             line_data.update(SaleLine.rpc.on_change_product(line_data))
             if line_data.get('taxes'):
