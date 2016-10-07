@@ -16,24 +16,7 @@ def require_cart_with_sale(function):
     def wrapper(*args, **kwargs):
         cart = Cart.get_active()
         if not cart.sale:
-            if current_user.is_anonymous:
-                party = current_channel.anonymous_customer
-            else:
-                party = current_user.party
-            sale_data = {
-                "party": party.id,
-                "invoice_address": None,
-                "shipment_address": None,
-                "company": current_channel.company,
-                "currency": current_channel.currency,
-                "is_cart": True,
-                "channel": current_channel.id,
-            }
-            sale_data.update(Sale.rpc.on_change_channel(sale_data))
-            sale = Sale(**{
-                k: v for k, v in sale_data.iteritems()
-                if '.' not in k
-            }).save()
+            sale = Cart.create_sale()
             cart.sale = sale.id
             cart.save()
         return function(*args, **kwargs)
@@ -143,13 +126,16 @@ class Cart(Model):
 
     @staticmethod
     @user_logged_in.connect
-    def update_user_cart(sender, user):
+    def login_event_handler(sender, user):
         """This method is triggered when a login event occurs.
         When a user logs in, all items in his guest cart should be added to his
         logged in or registered cart. If there is no such cart, it should be
         created.
         """
-        # There is a cart
+        Cart._login_event_handler(sender, user)
+
+    @classmethod
+    def _login_event_handler(cls, sender, user):
         guest_cart = Cart.find_cart(None)
         if guest_cart and guest_cart.sale and guest_cart.sale.lines:
             # Active cart is user's cart
@@ -223,6 +209,28 @@ class Cart(Model):
             domain.append(('sessionid', '=', session.sid))
         cart = Cart.query.filter_by_domain(domain).first()
         return cart
+
+    @classmethod
+    def create_sale(cls):
+        if current_user.is_anonymous:
+            party = current_channel.anonymous_customer
+        else:
+            party = current_user.party
+        sale_data = {
+            "party": party.id,
+            "invoice_address": None,
+            "shipment_address": None,
+            "company": current_channel.company,
+            "currency": current_channel.currency,
+            "is_cart": True,
+            "channel": current_channel.id,
+        }
+        sale_data.update(Sale.rpc.on_change_channel(sale_data))
+        sale = Sale(**{
+            k: v for k, v in sale_data.iteritems()
+            if '.' not in k
+        }).save()
+        return sale
 
     @require_cart_with_sale
     def add_product(
