@@ -36,6 +36,7 @@ class SaleLine(Model):
     description = StringType()
     delivery_address = ModelType('party.address')
     delivery_date = Date()
+    gift_message = StringType()
 
     @property
     def currency_code(self):
