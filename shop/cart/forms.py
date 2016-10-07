@@ -7,7 +7,7 @@ from shop.cart.models import SaleLine
 from shop.user.models import Address
 from shop.globals import current_cart
 from shop.product.models import Product
-from wtforms.fields import FloatField, IntegerField, DateField
+from wtforms.fields import FloatField, IntegerField, DateField, TextField
 from wtforms.validators import DataRequired, Optional
 from wtforms_components import DateRange
 
@@ -23,6 +23,7 @@ class AddtoCartForm(Form):
         validators=[DateRange(min=date.today()), Optional()]
     )
     address_id = IntegerField('Shipping Address', validators=[Optional()])
+    gift_message = TextField('Gift Message', validators=[Optional()])
 
     def validate(self):
         """Validate the form."""
@@ -127,6 +128,29 @@ class UpdateShippingDateForm(Form):
 
     def validate(self):
         initial_validation = super(UpdateShippingDateForm, self).validate()
+        if not initial_validation:
+            return False
+
+        sale_line = SaleLine.query.filter_by_domain(
+            [
+                ('sale', '=', current_cart.sale and current_cart.sale.id),
+                ('id', '=', self.line_id.data)
+            ]
+        ).first()
+        if not sale_line:
+            self.line_id.errors.append('Unkown sale line')
+            return False
+        return True
+
+
+class UpdateGiftMessageForm(Form):
+    "Updates Gift Message"
+
+    gift_message = TextField('Gift Message', validators=[Optional()])
+    line_id = IntegerField('SaleLine', validators=[DataRequired()])
+
+    def validate(self):
+        initial_validation = super(UpdateGiftMessageForm, self).validate()
         if not initial_validation:
             return False
 

@@ -49,6 +49,10 @@ class SaleLine(Model):
         self.delivery_date = delivery_date
         self.save()
 
+    def update_gift_message(self, gift_message):
+        self.gift_message = gift_message
+        self.save()
+
 
 class Sale(Model):
     __model_name__ = 'sale.sale'
@@ -256,3 +260,7 @@ class Cart(Model):
     def update_delivery_date(self, line_id, delivery_date):
         line = SaleLine.get_by_id(line_id)
         line.update_delivery_date(delivery_date)
+
+    def update_gift_message(self, line_id, gift_message):
+        line = SaleLine.get_by_id(line_id)
+        line.update_gift_message(gift_message)
