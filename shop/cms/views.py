@@ -40,7 +40,7 @@ def category(uri):
 
 
 @blueprint.route('/sitemap-index.xml')
-def sitemap_index():
+def render_xml_sitemap():
     """
     Returns a Sitemap Index Page
     """

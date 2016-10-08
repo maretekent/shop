@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
-from flask import (Blueprint, abort, current_app, flash, jsonify, redirect,
-                   request, url_for)
+from flask import (Blueprint, abort, current_app, flash, jsonify, make_response,
+                   redirect, request, url_for)
 from flask_babel import gettext as _
 from flask_login import login_required, login_user, logout_user
 from itsdangerous import BadSignature, SignatureExpired
@@ -245,6 +245,18 @@ def get_country_subdivisions(country_id):
             for s in subdivisions]
     }
     return jsonify(response)
+
+
+@blueprint.route('/sitemap-index.xml')
+def sitemap_index():
+    """
+    Returns a Sitemap Index Page
+    """
+    sitemap_xml = render_template('public/sitemap-index.xml')
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+
+    return response
 
 
 def xhr_safe_response(message, response, xhr_status_code):
