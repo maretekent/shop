@@ -92,6 +92,7 @@ def sign_in():
             )
             if user:
                 login_user(user)
+                cart_user_changed.send(current_app._get_current_object())
                 return redirect(
                     url_for('checkout.shipping_address')
                 )
