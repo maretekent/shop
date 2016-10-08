@@ -131,8 +131,8 @@ class TreeNode(Model):
         )
         return listings
 
-    def get_absolute_url(self):
-        return url_for('node.node', id=self.id, handle=self.slug)
+    def get_absolute_url(self, **kwargs):
+        return url_for('node.node', id=self.id, handle=self.slug, **kwargs)
 
     @classmethod
     def make_tree_crumbs(cls, node_id):
