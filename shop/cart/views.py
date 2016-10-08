@@ -72,6 +72,9 @@ def remove_from_cart():
             line_id=form.line_id.data
         )
         flash(_("Removed product from cart"), 'success')
+        if request.is_xhr or request.is_json:
+            return jsonify({"success": True})
+
         return redirect(url_for('cart.view_cart'))
     flash(_('Looks like the item is already deleted.'), 'error')
     return redirect(request.referrer)
