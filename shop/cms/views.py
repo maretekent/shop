@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """CMS views."""
-from flask import Blueprint, abort, redirect, url_for
+from flask import Blueprint, abort, make_response, redirect, url_for
+
 from shop.cms.models import Article, ArticleCategory
 from shop.utils import render_theme_template as render_template
 
@@ -43,7 +44,23 @@ def sitemap_index():
     """
     Returns a Sitemap Index Page
     """
-    return __doc__
+    articles =  Article.query.filter_by_domain(
+        [('state', '=', 'published')]
+    ).all()
+    nodes = []
+    for article in articles:
+        nodes.append(
+            {
+                'url_data': article.get_absolute_url(external=True),
+                'lastmod': article.published_on
+            }
+        )
+
+    sitemap_xml = render_template('public/sitemap.xml', nodes=nodes)
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+
+    return response
 
 
 @blueprint.route('/sitemap-<int:page>.xml')
