@@ -3,7 +3,7 @@ from shop.node.models import TreeNode
 from six import string_types
 
 
-def get_menuitem_link(data):
+def get_menuitem_link(data, external=False):
     """
     Return link to render menu item.
     """
@@ -21,5 +21,5 @@ def get_menuitem_link(data):
         model = ArticleCategory(values=data)
 
     if model:
-        return model.get_absolute_url()
+        return model.get_absolute_url(_external=external)
     return "#"

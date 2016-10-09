@@ -40,8 +40,8 @@ class ArticleCategory(Model):
     description = StringType()
     published_articles = One2ManyType('nereid.cms.article')
 
-    def get_absolute_url(self):
-        return url_for('pages.category', uri=self.unique_name)
+    def get_absolute_url(self, **kwargs):
+        return url_for('pages.category', uri=self.unique_name, **kwargs)
 
 
 class Article(Model):
@@ -53,5 +53,5 @@ class Article(Model):
     content = StringType()
     published_on = StringType()
 
-    def get_absolute_url(self):
-        return url_for('pages.page', uri=self.uri)
+    def get_absolute_url(self, **kwargs):
+        return url_for('pages.page', uri=self.uri, **kwargs)

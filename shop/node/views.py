@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Node views."""
-from flask import Blueprint, abort
+from flask import Blueprint, abort, make_response
 from shop.node.models import TreeNode
 from shop.utils import render_theme_template as render_template
 from shop.utils import dummy_products
@@ -75,11 +75,18 @@ def node(id=None, handle=None, page=1):
 
 
 @blueprint.route('/sitemap-index.xml')
-def sitemap_index():
+def render_xml_sitemap():
     """
-    Returns a Sitemap Index Page
+    Renders xml sitemap
     """
-    return __doc__
+    # till depth of 10
+    nodes = TreeNode.rpc.get_sitemap_nodes(9)
+
+    sitemap_xml = render_template('node/sitemap.xml', nodes=nodes)
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+
+    return response
 
 
 @blueprint.route('/sitemaps-<int:page>.xml')
