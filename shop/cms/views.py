@@ -56,7 +56,7 @@ def sitemap_index():
             }
         )
 
-    sitemap_xml = render_template('public/sitemap.xml', nodes=nodes)
+    sitemap_xml = render_template('cms/sitemap.xml', nodes=nodes)
     response = make_response(sitemap_xml)
     response.headers["Content-Type"] = "application/xml"
 
