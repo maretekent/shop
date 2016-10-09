@@ -51,6 +51,7 @@ class Article(Model):
     uri = StringType()
     title = StringType()
     content = StringType()
+    published_on = StringType()
 
     def get_absolute_url(self):
         return url_for('pages.page', uri=self.uri)
