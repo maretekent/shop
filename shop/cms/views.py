@@ -51,7 +51,7 @@ def render_xml_sitemap():
     for article in articles:
         nodes.append(
             {
-                'url_data': article.get_absolute_url(external=True),
+                'url_data': article.get_absolute_url(_external=True),
                 'lastmod': article.published_on
             }
         )
