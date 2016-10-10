@@ -28,6 +28,7 @@ class Address(Model):
     country = ModelType("country.country")
     subdivision = ModelType("country.subdivision")
     phone = StringType()
+    is_validated = BooleanType()
     full_address = StringType()
 
 
