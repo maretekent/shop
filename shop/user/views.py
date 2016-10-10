@@ -3,7 +3,7 @@
 from datetime import date
 
 from dateutil.relativedelta import relativedelta
-from flask import Blueprint, abort, flash, request, url_for
+from flask import Blueprint, abort, flash, jsonify, request, url_for
 from flask_login import current_user, login_required
 from shop.cart.models import Sale
 from shop.user.forms import AccountForm, AddressForm, ChangePasswordForm
@@ -82,8 +82,15 @@ def edit_address(address_id):
     if form.validate_on_submit():
         form.populate_obj(address)
         address.save()
+        if request.is_xhr or request.is_json:
+            return jsonify({
+                "full_address": address.full_address
+            })
         flash('Your address has been updated', 'success')
         return redirect(url_for('user.addresses'))
+
+    if form.errors and (request.is_xhr or request.is_json):
+        return jsonify(errors=form.errors), 400
 
     return render_template('users/address-edit.html', form=form, address=address)
 
