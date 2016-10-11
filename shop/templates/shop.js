@@ -1,5 +1,12 @@
 $(function () {
-  var Fulfil = {};
+  var Fulfil = {
+    csrfToken: "{{ csrf_token() }}",
+    urls: {}
+  };
+
+  // All the URLs this file needs to know
+  Fulfil.urls.view_cart = "{{ url_for('cart.view_cart') }}";
+  Fulfil.urls.remove_from_cart = "{{ url_for('cart.remove_from_cart') }}";
 
   // Helper methods for form
   Fulfil.form = {};
@@ -59,6 +66,49 @@ $(function () {
       }
     );
   };
+
+  /*
+   *
+   * Cart related logic
+   */
+   Fulfil.cart = {}
+
+   /*
+    * Refreshes the cart and updates Fulfil.cart.current_cart
+    * Also returns the request promise.
+    *
+    */
+   Fulfil.cart.refresh = function() {
+    console.debug("Refreshing Cart");
+    return $.ajax({
+      cache: false,
+      url: Fulfil.urls.view_cart,
+      dataType: "json",
+      success: function(data){
+        Fulfil.cart.current_cart = data.cart;
+      }
+    })
+   };
+
+   /*
+    * Delete a item from the cart.
+    *
+    */
+   Fulfil.cart.deleteItem = function(lineId) {
+    console.debug("Removing Line from Cart");
+    return $.ajax({
+      url: Fulfil.urls.remove_from_cart,
+      method: "POST",
+      data: {
+        "line_id": lineId,
+        "csrf_token": Fulfil.csrfToken
+       },
+       dataType: "json",
+       success: function() {
+         Fulfil.cart.refresh();
+       }
+    });
+   }
 
   window.Fulfil = Fulfil;
 });
