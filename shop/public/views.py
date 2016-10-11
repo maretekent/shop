@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
 from flask import (Blueprint, abort, current_app, flash, jsonify, make_response,
-                   redirect, request, url_for)
+                   redirect, request, url_for, make_response)
 from flask_babel import gettext as _
 from flask_login import login_required, login_user, logout_user
 from itsdangerous import BadSignature, SignatureExpired
@@ -34,6 +34,17 @@ def home():
         ]
     ).all()
     return render_template('public/home.html', banners=banners)
+
+
+@blueprint.route('/shop.js')
+def shop_js():
+    """
+    A Javascript utility file that has to be rendered.
+    Done this way because it needs url_for
+    """
+    response = make_response(render_template('shop.js'))
+    response.headers.set('Content-Type', 'application/javascript')
+    return response
 
 
 @blueprint.route('/login', methods=['GET', 'POST'])
