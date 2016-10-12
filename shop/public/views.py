@@ -55,10 +55,18 @@ def login():
     if request.method == 'POST':
         if form.validate_on_submit():
             login_user(form.user)
+            if request.is_xhr or request.is_json:
+                return jsonify({
+                    'message': 'You are logged in.'
+                })
             flash('You are logged in.', 'success')
             redirect_url = request.args.get('next') or url_for('public.home')
             return redirect(redirect_url)
         else:
+            if request.is_xhr or request.is_json:
+                return jsonify({
+                    'errors': form.errors
+                }), 400
             flash_errors(form)
     return render_template('public/login.html', form=form)
 

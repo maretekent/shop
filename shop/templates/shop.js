@@ -13,14 +13,22 @@ $(function () {
 
   /**
    * Helper method to change formSubmission to ajax
+   *
+   * @param formElement HTMLElement
+   * @param options Object with successCallback, errorCallback,
+   *                alwaysCallback, onSubmit as keys
    */
-  Fulfil.form.ajaxSubmit = function (
-    formElement, successCallback, errorCallback, alwaysCallback
-  ) {
+  Fulfil.form.ajaxSubmit = function (formElement, options) {
     var form = $(formElement);
+
+    options = options || {}
+
 
     form.on('submit', function (event) {
       event.preventDefault();
+
+      // Call onSubmit if function
+      $.isFunction(options.onSubmit) && options.onSubmit();
 
       $.ajax({
         'url': form.attr("action"),
@@ -28,9 +36,9 @@ $(function () {
         'data': form.serialize(),
         'dataType': "json"
       })
-        .done(successCallback)
-        .fail(errorCallback)
-        .always(alwaysCallback);
+        .done(options.successCallback)
+        .fail(options.errorCallback)
+        .always(options.alwaysCallback);
     });
   };
 
@@ -40,7 +48,7 @@ $(function () {
   Fulfil.form.showErrors = function (formElement, errorsObj) {
     var form = $(formElement);
 
-    $(errorsObj, function (key, value) {
+    $.each(errorsObj, function (key, value) {
       // TODO: show errors
     });
   };
@@ -49,22 +57,38 @@ $(function () {
    * Helper method to initialize login form
    */
   Fulfil.form.initLoginForm =  function (formElement) {
-    Fulfil.form.ajaxSubmit(
-      formElement,
-      function (result) {
+    var errorContainer = formElement.find('.error-message');
+
+    // by default hide error container
+    errorContainer.html('').hide();
+
+    var options = {
+      onSubmit: function () {
+        errorContainer.html('').hide();
+      },
+      successCallback: function (result) {
         location.reload();
       },
-      function (error) {
+      errorCallback: function (error) {
         if (error.status == 400) {
           if (!error.responseJSON.errors) {
             console.error("No 'errors' in response on bad request.");
           }
-          // bad request
-          Fulfil.form.showErrors(formElement, error.responseJSON.errors);
+
+          var errors = [];
+          $.each(error.responseJSON.errors, function (key, value) {
+            errors = errors.concat(value);
+          });
+
+          // Show errors in error container
+          errorContainer.html(errors.join(',')).show();
+          return;
         }
         console.log(error.statusText);
       }
-    );
+    };
+
+    Fulfil.form.ajaxSubmit(formElement, options);
   };
 
   /*
