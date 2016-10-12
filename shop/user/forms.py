@@ -67,6 +67,10 @@ class SubdivisionSelectField(SelectField):
         super(SubdivisionSelectField, self).__init__(*args, **kwargs)
         self.choices = []
 
+    # Override method in SelectField
+    def process_data(self, subdivision):
+        self.data = subdivision.id if subdivision else None
+
     def pre_validate(self, form):
         subdivisions = [s.id for s in Subdivision.query.filter_by(country=form.country.data).all()]
         if self.data not in subdivisions and len(subdivisions):
