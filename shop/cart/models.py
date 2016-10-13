@@ -6,7 +6,7 @@ from datetime import date
 from flask import session
 from flask_login import current_user, user_logged_in
 from fulfil_client.model import (Date, FloatType, ModelType, MoneyType,
-                                 One2ManyType, StringType)
+                                 One2ManyType, StringType, BooleanType, DecimalType)
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
 
@@ -37,6 +37,7 @@ class SaleLine(Model):
     delivery_address = ModelType('party.address')
     delivery_date = Date()
     gift_message = StringType()
+    shipment_cost = MoneyType('currency_code')
 
     @property
     def currency_code(self):
