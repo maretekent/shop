@@ -84,7 +84,7 @@ def edit_address(address_id):
         address.save()
         if request.is_xhr or request.is_json:
             return jsonify({
-                "full_address": address.full_address
+                "address": address._values
             })
         flash('Your address has been updated', 'success')
         return redirect(url_for('user.addresses'))
