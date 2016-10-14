@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """Checkout views."""
 import stripe
-from flask import Blueprint, abort, flash, redirect, request, session, url_for
+from flask import Blueprint, abort, flash, redirect, jsonify, request, session, url_for
 from flask_login import current_user, login_user, login_required
 from shop.cart.models import Sale
 from shop.checkout.forms import CheckoutAddressForm, CheckoutSignInForm, CheckoutPaymentForm
 from shop.checkout.models import (PaymentProfile, not_empty_cart,
                                   sale_has_non_guest_party)
 from shop.globals import current_cart, current_channel, current_app
+from shop.user.forms import AddressForm
 from shop.user.models import Address, Party, User
 from shop.utils import render_theme_template as render_template
 from shop.signals import cart_user_changed
@@ -188,6 +189,7 @@ def payment():
     cart = current_cart
     if not cart.sale.shipment_address:
         return redirect(url_for('checkout.shipping_address'))
+    address_form = AddressForm()
     form = CheckoutPaymentForm(request.form)
     if form.validate_on_submit():
         customer_id = form.payment_profile_id.data or None
@@ -220,8 +222,43 @@ def payment():
 
     return render_template(
         'checkout/payment.html',
-        form=form
+        form=form,
+        address_form=address_form
     )
+
+
+@blueprint.route('/billing-address', methods=['POST'])
+@login_required
+@sale_has_non_guest_party
+def billing_address():
+    form = AddressForm()
+    sale = current_cart.sale
+    billing_address = request.form.get('billing_address')
+    if billing_address:
+        billing_address = int(billing_address)
+        user_address = Address.get_by_id(billing_address)
+        if user_address.party == current_user.party:
+            sale.invoice_address = billing_address
+            sale.save()
+            return jsonify({
+                "address": sale.invoice_address._values
+            })
+        else:
+            return jsonify({
+                "errors": "The address does not belong to the current user"
+            })
+
+    if form.validate_on_submit():
+        address = Address(party=current_user.party.id)
+        form.populate_obj(address)
+        address.save()
+        sale = current_cart.sale
+        sale.invoice_address = address.id
+        sale.save()
+        return jsonify({
+            "address": address._values
+        })
+    return jsonify({"errors": form.errors})
 
 
 @login_required
