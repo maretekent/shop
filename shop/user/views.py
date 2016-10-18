@@ -123,7 +123,7 @@ def orders():
     """
     filter_by = request.args.get('filter_by', None)
     page = request.args.get('page', type=int) or None
-    per_page = request.args.get('per_page', type=int) or 24
+    per_page = request.args.get('per_page', type=int) or 10
 
     domain = [
         ('party', '=', current_user.party.id),
@@ -135,7 +135,7 @@ def orders():
     if filter_by == 'done':
         domain.append(('state', '=', 'done'))
 
-    elif filter_by == 'canceled':
+    elif filter_by == 'cancelled':
         domain.append(('state', '=', 'cancel'))
 
     elif filter_by == 'archived':
@@ -151,6 +151,12 @@ def orders():
         domain.append((
             'sale_date', '<', req_date
         ))
+
+    elif filter_by == 'open':
+        # All orders which are in a state of processing
+        domain.append(
+            ('state', '=', 'processing')
+        )
 
     else:
         domain.append([
