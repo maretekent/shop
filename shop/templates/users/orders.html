@@ -12,8 +12,8 @@
             {% set order_state = 'Recent orders' %}
           {% elif request.args.get('filter_by') == 'done' %}
             {% set order_state = 'Done orders' %}
-          {% elif request.args.get('filter_by') == 'canceled' %}
-            {% set order_state = 'Canceled orders' %}
+          {% elif request.args.get('filter_by') == 'cancelled' %}
+            {% set order_state = 'Cancelled orders' %}
           {% elif request.args.get('filter_by') == 'archived' %}
             {% set order_state = 'Archived orders' %}
           {% else %}
@@ -25,7 +25,7 @@
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
           <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ url_for('user.orders', filter_by="recent") }}">{{ 'Recent Orders' }}</a></li>
           <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ url_for('user.orders', filter_by="done") }}">{{ 'Done Orders' }}</a></li>
-          <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ url_for('user.orders', filter_by="canceled") }}">{{ 'Canceled Orders' }}</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ url_for('user.orders', filter_by="cancelled") }}">{{ 'Cancelled Orders' }}</a></li>
           <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ url_for('user.orders', filter_by="archived") }}">{{ 'Archived Orders' }}</a></li>
         </ul>
       </div>
@@ -74,7 +74,7 @@
                       {% elif sale.state in ("processing", "confirmed") %}
                       <span class="text-info">Processing</span>
                       {% elif sale.state == "cancel" %}
-                      <span class="text-danger">Canceled</span>
+                      <span class="text-danger">Cancelled</span>
                       {% endif %}
                     </div>
                   </div>
