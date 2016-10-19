@@ -12,7 +12,9 @@ def _find_cache():
 
 def _get_current_channel():
     from shop.public.models import Channel
-    return Channel.get_by_id(current_app.config['FULFIL_CHANNEL'])
+    return Channel.from_cache(
+        int(current_app.config['FULFIL_CHANNEL'])
+    )
 
 
 def _get_current_cart():

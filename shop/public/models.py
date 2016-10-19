@@ -19,7 +19,7 @@ class Channel(Model):
     currency = model.IntType()
     warehouse = model.IntType()
     # support_email = StringType()
-    payment_gateway = model.ModelType('payment_gateway.gateway')
+    payment_gateway = model.ModelType('payment_gateway.gateway', cache=True)
 
     @property
     def currency_code(self):
@@ -56,7 +56,7 @@ class Subdivision(Model):
     __model_name__ = 'country.subdivision'
 
     name = model.StringType()
-    country = model.ModelType("country.country")
+    country = model.ModelType("country.country", cache=True)
 
 
 class StaticFile(Model):
@@ -72,7 +72,7 @@ class Banner(Model):
     __model_name__ = 'nereid.cms.banner'
 
     name = model.StringType()
-    file = model.ModelType('nereid.static.file')
+    file = model.ModelType('nereid.static.file', cache=True)
     sequence = model.IntType()
     description = model.StringType()
     click_url = model.StringType()

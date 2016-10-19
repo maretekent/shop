@@ -78,8 +78,8 @@ class Product(Model):
     description = StringType()
     long_description = StringType()
     uri = StringType()
-    attributes = One2ManyType("product.product.attribute")
-    cross_sells = One2ManyType('product.product')
+    attributes = One2ManyType("product.product.attribute", cache=True)
+    cross_sells = One2ManyType('product.product', cache=True)
 
     @property
     def currency_code(self):
@@ -196,10 +196,10 @@ class ChannelListing(Model):
 class ProductVariationAttributes(Model):
     __model_name__ = 'product.variation_attributes'
 
-    attribute = ModelType('product.attribute')
+    attribute = ModelType('product.attribute', cache=True)
     sequence = IntType()
     widget = StringType()
-    template = ModelType('product.template')
+    template = ModelType('product.template', cache=True)
 
     def serialize(self):
         """
@@ -261,8 +261,10 @@ class ProductAttribute(Model):
 class ProductProductAttribute(Model):
     __model_name__ = 'product.product.attribute'
 
-    attribute = ModelType('product.attribute')
-    value_selection = ModelType('product.attribute.selection_option')
+    attribute = ModelType('product.attribute', cache=True)
+    value_selection = ModelType(
+        'product.attribute.selection_option', cache=True
+    )
 
 
 class ProductAttributeSelectionOption(Model):
