@@ -28,9 +28,9 @@ class SaleLine(Model):
 
     _eager_fields = set(['sale.currency.code'])
 
-    product = ModelType("product.product")
+    product = ModelType("product.product", cache=True)
     quantity = FloatType()
-    unit = ModelType("product.uom")
+    unit = ModelType("product.uom", cache=True)
     unit_price = MoneyType('currency_code')
     amount = MoneyType('currency_code')
     description = StringType()

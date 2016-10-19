@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """Product models."""
-import json
-
 from flask import url_for
 from fulfil_client.model import (MoneyType, IntType, ModelType, One2ManyType,
                                  StringType)
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
 from shop.utils import get_random_product
+from fulfil_client.client import loads, dumps
 
 
 class ProductTemplate(Model):
@@ -15,25 +14,44 @@ class ProductTemplate(Model):
     __model_name__ = 'product.template'
 
     name = StringType()
-    variation_attributes = One2ManyType("product.variation_attributes")
+    variation_attributes = One2ManyType(
+        "product.variation_attributes", cache=True
+    )
 
     @property
     def listings(self):
+        return self._get_listings()
+
+    def _get_listings(self):
         """
         Return the products (that are listed in the current channel) and
         active.
         """
-        return ChannelListing.query.filter_by_domain(
-            [
-                ('channel', '=', current_channel.id),
-                ('state', '=', 'active'),
-                ('product.template', '=', self.id),
-            ],
-        ).all()
+        key = "%s:%s:listing_ids" % (self.__model_name__, self.id)
+        if self.cache_backend.exists(key):
+            listing_ids = loads(self.cache_backend.get(key))
+            return ChannelListing.from_cache(listing_ids)
+        else:
+            listings = ChannelListing.query.filter_by_domain(
+                [
+                    ('channel', '=', current_channel.id),
+                    ('state', '=', 'active'),
+                    ('product.template', '=', self.id),
+                ],
+            ).all()
+            map(lambda l: l.store_in_cache(), listings)
+            self.cache_backend.set(key, dumps([l.id for l in listings]))
+            return listings
 
     def get_product_variation_data(self):
         """
         """
+        key = '%s:get_product_variation_data:%s' % (
+            self.__model_name__, self.id
+        )
+        if self.cache_backend.exists(key):
+            return loads(self.cache_backend.get(key))
+
         self.refresh()
         variation_attributes = map(
             lambda variation: variation.serialize(),
@@ -43,26 +61,24 @@ class ProductTemplate(Model):
         for listing in self.listings:
             product = listing.product
             product.refresh()  # Fetch record again
-            variant_data = product.serialize(purpose='variant_selection')
-            availability = listing.get_availability()
-            variant_data['inventory_status'] = availability['value']
-            variant_data['attributes'] = {}
+
+            data = product.serialize(purpose='variant_selection')
+            data['inventory_status'] = listing.get_availability()['value']
+            data['attributes'] = {}
+
             for variation in self.variation_attributes:
-                if variation.attribute.type_ == 'selection':
-                    # Selection option objects are obviously not serializable
-                    # So get the name
-                    variant_data['attributes'][variation.attribute.id] = \
-                        str(product.get_attribute_value(variation.attribute).id)
-                else:
-                    variant_data['attributes'][variation.attribute.name] = \
-                        product.get_attribute_value(variation.attribute)
-            variants.append(variant_data)
+                attribute = variation.attribute     # actual attribute
+                value = product.get_attribute_value(attribute)
+                data['attributes'][attribute.id] = value
+
+            variants.append(data)
 
         rv = {
             'variants': variants,
             'variation_attributes': variation_attributes,
         }
-        return json.dumps(rv)
+        self.cache_backend.set(key, dumps(rv))
+        return rv
 
 
 class Product(Model):
@@ -78,8 +94,8 @@ class Product(Model):
     description = StringType()
     long_description = StringType()
     uri = StringType()
-    attributes = One2ManyType("product.product.attribute")
-    cross_sells = One2ManyType('product.product')
+    attributes = One2ManyType("product.product.attribute", cache=True)
+    cross_sells = One2ManyType('product.product', cache=True)
 
     @property
     def currency_code(self):
@@ -91,7 +107,13 @@ class Product(Model):
 
     @property
     def images(self):
-        return self.rpc.get_images_urls(self.id)
+        key = '%s:images:%s' % (self.__model_name__, self.id)
+        if self.cache_backend.exists(key):
+            return loads(self.cache_backend.get(key))
+        else:
+            rv = self.rpc.get_images_urls(self.id)
+            self.cache_backend.set(key, dumps(rv))
+            return rv
 
     @property
     def name(self):
@@ -124,13 +146,16 @@ class Product(Model):
     def get_attribute_value(self, attribute, silent=True):
         for product_attr in self.attributes:
             if product_attr.attribute == attribute:
-                return getattr(
+                value = getattr(
                     product_attr,
                     'value_%s' % attribute.type_
                 )
+                if value and attribute.type_ == 'selection':
+                    value = value.id
+                return value
         else:
             if silent:
-                return True
+                return
             raise AttributeError(attribute.name)
 
     def serialize(self, purpose=None):
@@ -158,12 +183,21 @@ class ChannelListing(Model):
 
     @classmethod
     def from_slug(cls, slug):
-        return cls.query.filter_by_domain(
-            [
-                ('channel', '=', current_channel.id),
-                ('product_identifier', '=', slug),
-            ]
-        ).first()
+        key = '%s:from_slug:%s:%s' % (
+            cls.__model_name__, slug, current_channel.id
+        )
+        if cls.cache_backend.exists(key):
+            return cls.from_cache(loads(cls.cache_backend.get(key)))
+        else:
+            listing = cls.query.filter_by_domain(
+                [
+                    ('channel', '=', current_channel.id),
+                    ('product_identifier', '=', slug),
+                ]
+            ).first()
+            cls.cache_backend.set(key, listing.id)
+            listing.store_in_cache()
+            return listing
 
     @property
     def channel(self):
@@ -196,10 +230,10 @@ class ChannelListing(Model):
 class ProductVariationAttributes(Model):
     __model_name__ = 'product.variation_attributes'
 
-    attribute = ModelType('product.attribute')
+    attribute = ModelType('product.attribute', cache=True)
     sequence = IntType()
     widget = StringType()
-    template = ModelType('product.template')
+    template = ModelType('product.template', cache=True)
 
     def serialize(self):
         """
@@ -236,7 +270,9 @@ class ProductVariationAttributes(Model):
                 product = listing.product
                 product.refresh()
                 value = product.get_attribute_value(self.attribute)
-                options.add((value.id, value.name))
+                if value:
+                    option = ProductAttributeSelectionOption.from_cache(value)
+                    options.add((option.id, option.name))
         else:
             options = []
 
@@ -261,8 +297,10 @@ class ProductAttribute(Model):
 class ProductProductAttribute(Model):
     __model_name__ = 'product.product.attribute'
 
-    attribute = ModelType('product.attribute')
-    value_selection = ModelType('product.attribute.selection_option')
+    attribute = ModelType('product.attribute', cache=True)
+    value_selection = ModelType(
+        'product.attribute.selection_option', cache=True
+    )
 
 
 class ProductAttributeSelectionOption(Model):

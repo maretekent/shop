@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Product views."""
-from flask import Blueprint, abort, request
+from flask import Blueprint, abort, request, jsonify
 from shop.globals import current_channel
-from shop.product.models import ChannelListing
+from shop.product.models import ChannelListing, ProductTemplate
 from shop.utils import render_theme_template as render_template
 
 blueprint = Blueprint(
@@ -55,6 +55,13 @@ def product(handle):
         product=listing.product,
         node=node,
     )
+
+
+@blueprint.route('/get-variations')
+def get_variations():
+    template_id = request.args.get('template', type=int)
+    template = ProductTemplate.from_cache(template_id)
+    return jsonify(template.get_product_variation_data())
 
 
 @blueprint.route('/sitemaps/product-index.xml')

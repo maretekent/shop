@@ -5,6 +5,7 @@ from fulfil_client.model import IntType, StringType
 from shop.extensions import redis_store
 from shop.fulfilio import Model
 from shop.product.models import ChannelListing
+from fulfil_client.client import loads, dumps
 
 
 class TreeNode(Model):
@@ -136,7 +137,13 @@ class TreeNode(Model):
 
     @classmethod
     def make_tree_crumbs(cls, node_id):
-        return cls.rpc.make_shop_tree_crumbs(node_id)
+        key = '%s:make_tree_crumbs:%s' % (cls.__model_name__, node_id)
+        if cls.cache_backend.exists(key):
+            return loads(cls.cache_backend.get(key))
+        else:
+            rv = cls.rpc.make_shop_tree_crumbs(node_id)
+            cls.cache_backend.set(key, dumps(rv))
+            return rv
 
     @classmethod
     def from_slug(cls, slug):
