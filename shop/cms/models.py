@@ -3,6 +3,7 @@
 from flask import url_for
 from fulfil_client.model import One2ManyType, StringType
 from shop.fulfilio import Model
+from fulfil_client.client import loads, dumps
 
 
 class MenuItem(Model):
@@ -14,11 +15,24 @@ class MenuItem(Model):
     type_ = StringType()
 
     def get_tree(self, depth):
-        return self.rpc.get_menu_item(self.id, depth)
+        key = '%s:get_tree:%s:%s' % (self.__model_name__, self.id, depth)
+        if self.cache_backend.exists(key):
+            return loads(self.cache_backend.get(key))
+        else:
+            rv = self.rpc.get_menu_item(self.id, depth)
+            self.cache_backend.set(key, dumps(rv))
+            return rv
 
     @classmethod
     def get_nav(cls, code):
-        return cls.query.filter_by(code=code).first()
+        key = '%s:get_nav:%s' % (cls.__model_name__, code)
+        if cls.cache_backend.exists(key):
+            menu_item = cls.from_cache(loads(cls.cache_backend.get(key)))
+        else:
+            menu_item = cls.query.filter_by(code=code).first()
+            cls.cache_backend.set(key, dumps(menu_item.id))
+            menu_item.store_in_cache()
+        return menu_item
 
 
 class BannerCategory(Model):

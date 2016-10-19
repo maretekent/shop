@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """Product models."""
-import json
-
 from flask import url_for
 from fulfil_client.model import (MoneyType, IntType, ModelType, One2ManyType,
                                  StringType)
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
 from shop.utils import get_random_product
+from fulfil_client.client import loads, dumps
 
 
 class ProductTemplate(Model):
@@ -15,25 +14,44 @@ class ProductTemplate(Model):
     __model_name__ = 'product.template'
 
     name = StringType()
-    variation_attributes = One2ManyType("product.variation_attributes")
+    variation_attributes = One2ManyType(
+        "product.variation_attributes", cache=True
+    )
 
     @property
     def listings(self):
+        return self._get_listings()
+
+    def _get_listings(self):
         """
         Return the products (that are listed in the current channel) and
         active.
         """
-        return ChannelListing.query.filter_by_domain(
-            [
-                ('channel', '=', current_channel.id),
-                ('state', '=', 'active'),
-                ('product.template', '=', self.id),
-            ],
-        ).all()
+        key = "%s:%s:listing_ids" % (self.__model_name__, self.id)
+        if self.cache_backend.exists(key):
+            listing_ids = loads(self.cache_backend.get(key))
+            return ChannelListing.from_cache(listing_ids)
+        else:
+            listings = ChannelListing.query.filter_by_domain(
+                [
+                    ('channel', '=', current_channel.id),
+                    ('state', '=', 'active'),
+                    ('product.template', '=', self.id),
+                ],
+            ).all()
+            map(lambda l: l.store_in_cache(), listings)
+            self.cache_backend.set(key, dumps([l.id for l in listings]))
+            return listings
 
     def get_product_variation_data(self):
         """
         """
+        key = '%s:get_product_variation_data:%s' % (
+            self.__model_name__, self.id
+        )
+        if self.cache_backend.exists(key):
+            return loads(self.cache_backend.get(key))
+
         self.refresh()
         variation_attributes = map(
             lambda variation: variation.serialize(),
@@ -91,7 +109,13 @@ class Product(Model):
 
     @property
     def images(self):
-        return self.rpc.get_images_urls(self.id)
+        key = '%s:images:%s' % (self.__model_name__, self.id)
+        if self.cache_backend.exists(key):
+            return loads(self.cache_backend.get(key))
+        else:
+            rv = self.rpc.get_images_urls(self.id)
+            self.cache_backend.set(key, dumps(rv))
+            return rv
 
     @property
     def name(self):
@@ -158,12 +182,21 @@ class ChannelListing(Model):
 
     @classmethod
     def from_slug(cls, slug):
-        return cls.query.filter_by_domain(
-            [
-                ('channel', '=', current_channel.id),
-                ('product_identifier', '=', slug),
-            ]
-        ).first()
+        key = '%s:from_slug:%s:%s' % (
+            cls.__model_name__, slug, current_channel.id
+        )
+        if cls.cache_backend.exists(key):
+            return cls.from_cache(loads(cls.cache_backend.get(key)))
+        else:
+            listing = cls.query.filter_by_domain(
+                [
+                    ('channel', '=', current_channel.id),
+                    ('product_identifier', '=', slug),
+                ]
+            ).first()
+            cls.cache_backend.set(key, listing.id)
+            listing.store_in_cache()
+            return listing
 
     @property
     def channel(self):
