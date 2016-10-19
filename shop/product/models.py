@@ -61,26 +61,24 @@ class ProductTemplate(Model):
         for listing in self.listings:
             product = listing.product
             product.refresh()  # Fetch record again
-            variant_data = product.serialize(purpose='variant_selection')
-            availability = listing.get_availability()
-            variant_data['inventory_status'] = availability['value']
-            variant_data['attributes'] = {}
+
+            data = product.serialize(purpose='variant_selection')
+            data['inventory_status'] = listing.get_availability()['value']
+            data['attributes'] = {}
+
             for variation in self.variation_attributes:
-                if variation.attribute.type_ == 'selection':
-                    # Selection option objects are obviously not serializable
-                    # So get the name
-                    variant_data['attributes'][variation.attribute.id] = \
-                        str(product.get_attribute_value(variation.attribute).id)
-                else:
-                    variant_data['attributes'][variation.attribute.name] = \
-                        product.get_attribute_value(variation.attribute)
-            variants.append(variant_data)
+                attribute = variation.attribute     # actual attribute
+                value = product.get_attribute_value(attribute)
+                data['attributes'][attribute.id] = value
+
+            variants.append(data)
 
         rv = {
             'variants': variants,
             'variation_attributes': variation_attributes,
         }
-        return json.dumps(rv)
+        self.cache_backend.set(key, dumps(rv))
+        return rv
 
 
 class Product(Model):
@@ -148,13 +146,16 @@ class Product(Model):
     def get_attribute_value(self, attribute, silent=True):
         for product_attr in self.attributes:
             if product_attr.attribute == attribute:
-                return getattr(
+                value = getattr(
                     product_attr,
                     'value_%s' % attribute.type_
                 )
+                if value and attribute.type_ == 'selection':
+                    value = value.id
+                return value
         else:
             if silent:
-                return True
+                return
             raise AttributeError(attribute.name)
 
     def serialize(self, purpose=None):
@@ -269,7 +270,9 @@ class ProductVariationAttributes(Model):
                 product = listing.product
                 product.refresh()
                 value = product.get_attribute_value(self.attribute)
-                options.add((value.id, value.name))
+                if value:
+                    option = ProductAttributeSelectionOption.from_cache(value)
+                    options.add((option.id, option.name))
         else:
             options = []
 

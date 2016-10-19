@@ -1,15 +1,17 @@
 $(function () {
   var Fulfil = {
     csrfToken: "{{ csrf_token() }}",
-    urls: {}
+    urls: {},
+    form: {},
+    cart: {},
+    user: {},
+    product: {}
   };
 
   // All the URLs this file needs to know
   Fulfil.urls.view_cart = "{{ url_for('cart.view_cart') }}";
   Fulfil.urls.remove_from_cart = "{{ url_for('cart.remove_from_cart') }}";
-
-  // Helper methods for form
-  Fulfil.form = {};
+  Fulfil.urls.getVariations = "{{ url_for('products.get_variations') }}";
 
   /**
    * Helper method to change formSubmission to ajax
@@ -94,8 +96,10 @@ $(function () {
   /*
    *
    * Cart related logic
+   * ==================
+   *
    */
-   Fulfil.cart = {}
+
 
    /*
     * Refreshes the cart and updates Fulfil.cart.current_cart
@@ -133,6 +137,68 @@ $(function () {
        }
     });
    }
+
+  /*
+   *
+   * Product related logic
+   * =====================
+   *
+   */
+
+  /*
+   *
+   * Fetch variation data for a product template
+   *
+   */
+  Fulfil.product.getVariations = function(templateId) {
+    return $.ajax({
+      url: Fulfil.urls.getVariations,
+      method: "GET",
+      data: {
+        "template": templateId
+       },
+       dataType: "json",
+       success: function(data) {
+         Fulfil.product.loadVariations(data);
+       }
+    });
+  };
+
+  /*
+   * Load the variation data locally to serve more
+   * requests.
+   */
+  Fulfil.product.loadVariations = function(variationData) {
+    Fulfil.product.variationData = variationData;
+  };
+
+  /*
+   * Given a set of attributes, return a variant
+   * that fits the attributes
+   *
+   */
+  Fulfil.product.findMatchingVariant = function(attributeSelection) {
+    return _.find(Fulfil.product.variationData['variants'], function(variant) {
+      return _.isEqual(variant.attributes, attributeSelection)
+    });
+  };
+
+  /*
+   * Return the data of the variant with id
+   *
+   */
+  Fulfil.product.getVariant = function(variantId) {
+    return _.find(Fulfil.product.variationData['variants'], function(variant) {
+      return (variant.id == variantId) ;
+    });
+  };
+
+  /*
+   *
+   * User related logic
+   * ==================
+   *
+   */
 
   window.Fulfil = Fulfil;
 });
