@@ -98,6 +98,8 @@ def register_context_processors(app):
 
 
 def register_filters(app):
+    from fulfil_client.client import dumps
     app.jinja_env.filters.update({
         'get_menuitem_link': get_menuitem_link,
+        'json': dumps,
     })
