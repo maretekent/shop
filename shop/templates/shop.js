@@ -30,7 +30,9 @@ $(function () {
       event.preventDefault();
 
       // Call onSubmit if function
-      $.isFunction(options.onSubmit) && options.onSubmit();
+      if ($.isFunction(options.onSubmit)) {
+        options.onSubmit(event);
+      }
 
       $.ajax({
         'url': form.attr("action"),
