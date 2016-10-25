@@ -68,6 +68,7 @@ class Sale(Model):
     total_amount = MoneyType('currency_code')
     tax_amount = MoneyType('currency_code')
     untaxed_amount = MoneyType('currency_code')
+    total_shipment_cost = MoneyType('currency_code')
     lines = One2ManyType("sale.line")
     invoices = One2ManyType("account.invoice")
     sale_date = Date()
