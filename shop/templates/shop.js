@@ -5,7 +5,8 @@ $(function () {
     form: {},
     cart: {},
     user: {},
-    product: {}
+    product: {},
+    address: {}
   };
 
   // All the URLs this file needs to know
@@ -193,6 +194,40 @@ $(function () {
     return _.find(Fulfil.product.variationData['variants'], function(variant) {
       return (variant.id == variantId) ;
     });
+  };
+
+  /*
+   *
+   * Address related logic
+   * =====================
+   *
+   */
+
+  /*
+   * Return list of all available countries
+   */
+  Fulfil.address.getCountries = function() {
+    return $.getJSON('{{ url_for("public.get_countries") }}');
+  };
+
+  /*
+   * Helper method to fill country options in select field
+   */
+  Fulfil.address.fillCountriesOpts = function(selectField, currentValue) {
+    selectField.html('');
+    return Fulfil.address.getCountries()
+      .success(function (data) {
+        var optionsHtml = '';
+        $.each(data.result, function(i, country){
+          optionsHtml +=
+            '<option value="'+ country.id +'">' + country.name + '</option>';
+        });
+        selectField.html(optionsHtml);
+
+        if (currentValue) {
+          $(selectField).val(currentValue).change();
+        }
+      });
   };
 
   /*
