@@ -224,4 +224,4 @@ def order(sale_id):
     if sale.party.id != current_user.party.id:
         # Order does not belong to the user
         abort(403)
-    return render_template('user/order.html', sale=sale)
+    return render_template('users/order.html', sale=sale)
