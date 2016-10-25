@@ -195,8 +195,9 @@ class ChannelListing(Model):
                     ('product_identifier', '=', slug),
                 ]
             ).first()
-            cls.cache_backend.set(key, listing.id)
-            listing.store_in_cache()
+            if listing:
+                cls.cache_backend.set(key, listing.id)
+                listing.store_in_cache()
             return listing
 
     @property
