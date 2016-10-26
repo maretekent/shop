@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """CMS models."""
-from flask import url_for
+from flask import url_for, current_app
 from fulfil_client.model import One2ManyType, StringType
 from shop.fulfilio import Model
 from fulfil_client.client import loads, dumps
@@ -20,7 +20,9 @@ class MenuItem(Model):
             return loads(self.cache_backend.get(key))
         else:
             rv = self.rpc.get_menu_item(self.id, depth)
-            self.cache_backend.set(key, dumps(rv))
+            self.cache_backend.set(
+                key, dumps(rv), current_app.config['REDIS_EX']
+            )
             return rv
 
     @classmethod
@@ -30,7 +32,9 @@ class MenuItem(Model):
             menu_item = cls.from_cache(loads(cls.cache_backend.get(key)))
         else:
             menu_item = cls.query.filter_by(code=code).first()
-            cls.cache_backend.set(key, dumps(menu_item.id))
+            cls.cache_backend.set(
+                key, dumps(menu_item.id), current_app.config['REDIS_EX']
+            )
             menu_item.store_in_cache()
         return menu_item
 

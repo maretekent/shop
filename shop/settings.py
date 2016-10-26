@@ -28,6 +28,8 @@ class Config(object):
     REDIS_URL = 'redis://redis:6379/0'
     if 'REDIS_URL' in os.environ:
         REDIS_URL = os.environ.get('REDIS_URL')
+    # Cache expiry in seconds. By default 10 minutes
+    REDIS_EX = int(os.environ.get('REDIS_EX', 10 * 60))
 
     STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
     STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
