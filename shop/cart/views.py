@@ -33,13 +33,15 @@ def view_cart():
                     'unit': l.unit.symbol,
                     'unit_price': l.unit_price.format(current_locale),
                     'amount': l.amount.format(current_locale),
-                    'url': l.product.listing.get_absolute_url(),
+                    'url': l.product and l.product.listing and l.product.listing.get_absolute_url(),
                     'image': l.product.image,
+                    'is_shipping_line': True if l.shipment_cost else False
                 } for l in cart.sale.lines],
                 'empty': len(cart.sale.lines) < 1,
                 'total_amount': cart.sale.total_amount.format(current_locale),
                 'tax_amount': cart.sale.tax_amount.format(current_locale),
                 'untaxed_amount': cart.sale.untaxed_amount.format(current_locale),
+                'total_shipment_cost': cart.sale.total_shipment_cost.format(current_locale)
             }
         })
     return render_template('cart/cart.html', cart=cart)
