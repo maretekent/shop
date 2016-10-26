@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Product models."""
-from flask import url_for
+from flask import url_for, current_app
 from fulfil_client.model import (MoneyType, IntType, ModelType, One2ManyType,
                                  StringType)
 from shop.fulfilio import Model, ShopQuery
@@ -40,7 +40,10 @@ class ProductTemplate(Model):
                 ],
             ).all()
             map(lambda l: l.store_in_cache(), listings)
-            self.cache_backend.set(key, dumps([l.id for l in listings]))
+            self.cache_backend.set(
+                key, dumps([l.id for l in listings]),
+                ex=current_app.config['REDIS_EX']
+            )
             return listings
 
     def get_product_variation_data(self):
@@ -77,7 +80,10 @@ class ProductTemplate(Model):
             'variants': variants,
             'variation_attributes': variation_attributes,
         }
-        self.cache_backend.set(key, dumps(rv))
+        self.cache_backend.set(
+            key, dumps(rv),
+            ex=current_app.config['REDIS_EX'],
+        )
         return rv
 
 
@@ -112,7 +118,10 @@ class Product(Model):
             return loads(self.cache_backend.get(key))
         else:
             rv = self.rpc.get_images_urls(self.id)
-            self.cache_backend.set(key, dumps(rv))
+            self.cache_backend.set(
+                key, dumps(rv),
+                ex=current_app.config['REDIS_EX'],
+            )
             return rv
 
     @property
@@ -196,7 +205,10 @@ class ChannelListing(Model):
                 ]
             ).first()
             if listing:
-                cls.cache_backend.set(key, listing.id)
+                cls.cache_backend.set(
+                    key, listing.id,
+                    ex=current_app.config['REDIS_EX']
+                )
                 listing.store_in_cache()
             return listing
 

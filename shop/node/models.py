@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Node models."""
-from flask import url_for
+from flask import url_for, current_app
 from fulfil_client.model import IntType, StringType
 from shop.extensions import redis_store
 from shop.fulfilio import Model
@@ -109,7 +109,10 @@ class TreeNode(Model):
                 templates.append(listing['product.template'])
 
             # Add the listings to the sorted set in redis
-            redis_store.zadd(key, listings.index(listing), listing['id'])
+            redis_store.zadd(
+                key, listings.index(listing), listing['id'],
+            )
+        redis_store.expire(key, current_app.config['REDIS_EX'])
 
     def get_listings(self, page, per_page=None):
         """
