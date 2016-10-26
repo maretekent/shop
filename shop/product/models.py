@@ -236,8 +236,13 @@ class ChannelListing(Model):
     def get_availability(self):
         return self.rpc.get_availability(self.id)
 
-    def get_absolute_url(self):
-        return url_for('products.product', handle=self.product_identifier)
+    def get_absolute_url(self, node=None):
+        kwargs = {
+            'handle': self.product_identifier
+        }
+        if node is not None:
+            kwargs['node'] = node
+        return url_for('products.product', **kwargs)
 
 
 class ProductVariationAttributes(Model):
