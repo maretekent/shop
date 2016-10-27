@@ -28,16 +28,28 @@ def view_cart():
             'cart': {
                 'lines': [{
                     'id': l.id,
+                    'product_id': l.product and l.product.id,
                     'product': l.product and l.product.name or None,
+                    'product_identifier': l.product and l.product.listing and \
+                        l.product.listing.product_identifier,
                     'quantity': format_number(l.quantity),
+                    'gift_message': l.gift_message or None,
                     'unit': l.unit.symbol,
                     'unit_price': l.unit_price.format(current_locale),
                     'amount': l.amount.format(current_locale),
-                    'url': l.product and l.product.listing and l.product.listing.get_absolute_url(),
+                    'url': l.product and l.product.listing and \
+                        l.product.listing.get_absolute_url(),
                     'image': l.product.image,
+                    'delivery_address': (l.delivery_address and \
+                        l.delivery_address._values) or \
+                        (cart.sale.shipment_address and \
+                        cart.sale.shipment_address._values),
                     'is_shipping_line': True if l.shipment_cost else False
                 } for l in cart.sale.lines],
                 'empty': len(cart.sale.lines) < 1,
+                'size': cart.size,
+                'has_shipping': True if cart.sale.total_shipment_cost \
+                    else False,
                 'total_amount': cart.sale.total_amount.format(current_locale),
                 'tax_amount': cart.sale.tax_amount.format(current_locale),
                 'untaxed_amount': cart.sale.untaxed_amount.format(current_locale),
@@ -59,6 +71,8 @@ def add_to_cart():
             delivery_date=form.delivery_date.data,
             address_id=form.address_id.data,
         )
+        if request.is_xhr or request.is_json:
+            return jsonify({"message": "Item successfully added to cart."})
         flash(_('Product has been added to cart'), 'success')
         return redirect(url_for('cart.view_cart'))
     flash('Could not add product to cart.', 'error')
@@ -75,7 +89,7 @@ def remove_from_cart():
         )
         flash(_("Removed product from cart"), 'success')
         if request.is_xhr or request.is_json:
-            return jsonify({"success": True})
+            return jsonify({"message": "Item successfully removed from cart."})
 
         return redirect(url_for('cart.view_cart'))
     flash(_('Looks like the item is already deleted.'), 'error')
@@ -89,6 +103,8 @@ def empty_cart():
     """
     cart = Cart.get_active()
     cart.clear()
+    if request.is_xhr or request.is_json:
+        return jsonify({"message": "Cart successfully emptied."})
     return redirect(url_for('cart.view_cart'))
 
 
@@ -100,8 +116,11 @@ def update_shipping_address():
         cart.update_shipping_address(
             form.line_id.data, form.address_id.data
         )
+        if request.is_xhr or request.is_json:
+            return jsonify({"message": "Shipping address updated."})
         flash(_("Address updated on item"), 'success')
         return redirect(url_for('cart.view_cart'))
+
     flash(_('Looks like address or item is invalid'), 'error')
     return redirect(request.referrer)
 
@@ -114,6 +133,8 @@ def update_delivery_date():
         cart.update_delivery_date(
             form.line_id.data, form.delivery_date.data
         )
+        if request.is_xhr or request.is_json:
+            return jsonify({"message": "Shipping date updated."})
         flash(_("Shipping date updated on item"), 'success')
         return redirect(url_for('cart.view_cart'))
     flash(_('Looks like date or item is invalid'), 'error')
@@ -129,6 +150,8 @@ def update_gift_message():
             form.line_id.data, form.gift_message.data
         )
         flash(_("Gift message has been updated on item"), 'success')
+        if request.is_xhr or request.is_json:
+            return jsonify({"message": "Gift message updated."})
         return redirect(url_for('cart.view_cart'))
     flash(_('Looks like item is invalid'), 'error')
     return redirect(request.referrer)

@@ -231,6 +231,16 @@ $(function () {
   };
 
   /*
+   * Return a list of all addresses of the user
+   */
+   Fulfil.address.getAddresses = function() {
+     return $.getJSON(
+       '{{ url_for("user.addresses") }}',
+       {csrf_token: Fulfil.csrfToken}
+     );
+   };
+
+  /*
    *
    * User related logic
    * ==================
