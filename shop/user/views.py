@@ -36,6 +36,8 @@ def change_password():
 def addresses():
     """List Addresses."""
     addresses = current_user.get_addresses()
+    if request.is_xhr or request.is_json:
+        return jsonify(addresses=[address._values for address in addresses])
     return render_template('users/addresses.html', addresses=addresses)
 
 
