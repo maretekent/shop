@@ -40,10 +40,8 @@ def view_cart():
                     'url': l.product and l.product.listing and \
                         l.product.listing.get_absolute_url(),
                     'image': l.product.image,
-                    'delivery_address': (l.delivery_address and \
-                        l.delivery_address._values) or \
-                        (cart.sale.shipment_address and \
-                        cart.sale.shipment_address._values),
+                    'delivery_address': l.delivery_address and \
+                        l.delivery_address._values,
                     'is_shipping_line': True if l.shipment_cost else False
                 } for l in cart.sale.lines],
                 'empty': len(cart.sale.lines) < 1,
