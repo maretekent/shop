@@ -169,7 +169,7 @@ class TreeNode(Model):
                 else:
                     raise Exception("Node with slug %s not found" % slug)
             else:
-                ids = [cls.cache_backend.get(key)]
+                ids = [int(cls.cache_backend.get(key))]
         return cls.from_cache(ids[0])
 
 
