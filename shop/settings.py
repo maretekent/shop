@@ -20,6 +20,9 @@ class Config(object):
     FULFIL_API_KEY = os.environ.get('FULFIL_API_KEY')
     FULFIL_CHANNEL = os.environ.get('FULFIL_CHANNEL')
 
+    # IMGIX CDN https://example.imgix.net
+    IMGIX_CDN = os.environ.get('IMGIX_CDN')
+
     if 'FULFIL_ROOT_NAV' in os.environ:
         FULFIL_ROOT_NAV = os.environ['FULFIL_ROOT_NAV']
     if 'FULFIL_FOOTER_NAV' in os.environ:

@@ -168,3 +168,18 @@ def render_email(
         message['Cc'] = Header(unicode(cc), 'ISO-8859-1')
 
     return message
+
+
+def imgixify(images):
+    "Replace fulfil cdn url with imgix cdn"
+    imgix_cdn = current_app.config.get('IMGIX_CDN')
+    if not imgix_cdn:
+        return images
+
+    fulfil_subdomain = current_app.config.get('FULFIL_SUBDOMAIN')
+    fulfil_cdn = 'https://cdn.fulfil.io/%s' % fulfil_subdomain
+
+    res = []
+    for image in images:
+        res.append(image.replace(fulfil_cdn, imgix_cdn, 1))
+    return res

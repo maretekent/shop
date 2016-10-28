@@ -5,7 +5,7 @@ from fulfil_client.model import (MoneyType, IntType, ModelType, One2ManyType,
                                  StringType)
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
-from shop.utils import get_random_product
+from shop.utils import get_random_product, imgixify
 from fulfil_client.client import loads, dumps
 
 
@@ -109,7 +109,10 @@ class Product(Model):
 
     @property
     def image(self):
-        return self._values.get('default_image.url')
+        image = self._values.get('default_image.url')
+        if image:
+            return imgixify([image])[0]
+        return image
 
     @property
     def images(self):
@@ -118,6 +121,7 @@ class Product(Model):
             return loads(self.cache_backend.get(key))
         else:
             rv = self.rpc.get_images_urls(self.id)
+            rv = imgixify(rv)
             self.cache_backend.set(
                 key, dumps(rv),
                 ex=current_app.config['REDIS_EX'],
