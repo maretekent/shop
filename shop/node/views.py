@@ -45,7 +45,7 @@ def node(id=None, handle=None, page=1):
 
     Shows both the sub nodes and products under it.
     """
-    per_page = 10
+    per_page = 12
 
     if id:
         node = TreeNode.query.get(id)
