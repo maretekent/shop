@@ -15,6 +15,7 @@ class ProductTemplate(Model):
 
     name = StringType()
     media = One2ManyType("product.media", cache=True)
+    products = One2ManyType("product.product", cache=True)
     variation_attributes = One2ManyType(
         "product.variation_attributes", cache=True
     )
@@ -62,9 +63,14 @@ class ProductTemplate(Model):
                     ('channel', '=', current_channel.id),
                     ('state', '=', 'active'),
                     ('product.template', '=', self.id),
+                    ('product.active', '=', True),
                 ],
             ).all()
             map(lambda l: l.store_in_cache(), listings)
+            listings = sorted(
+                listings,
+                key=lambda l: self.products.index(l.product)
+            )
             self.cache_backend.set(
                 key, dumps([l.id for l in listings]),
                 ex=current_app.config['REDIS_EX']
