@@ -10,7 +10,9 @@ from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil,
 from shop.filters import get_menuitem_link
 from shop.globals import current_channel, current_cart, current_context
 from shop.settings import ProdConfig
-from shop.utils import render_theme_template as render_template
+from shop.utils import (
+    render_theme_template as render_template, url_for_other_page
+)
 
 
 def create_app(config_object=ProdConfig):
@@ -94,6 +96,7 @@ def register_context_processors(app):
         'get_nav': MenuItem.get_nav,
         'make_tree_crumbs': TreeNode.make_tree_crumbs,
         'get_node': TreeNode.from_slug,
+        'url_for_other_page': url_for_other_page,
     })
 
 

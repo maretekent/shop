@@ -14,13 +14,38 @@ class ProductTemplate(Model):
     __model_name__ = 'product.template'
 
     name = StringType()
+    media = One2ManyType("product.media", cache=True)
     variation_attributes = One2ManyType(
         "product.variation_attributes", cache=True
     )
 
     @property
+    def lowest_price(self):
+        return min([
+            listing.unit_price for listing in self.listings
+        ])
+
+    @property
+    def highest_price(self):
+        return max([
+            listing.unit_price for listing in self.listings
+        ])
+
+    @property
     def listings(self):
         return self._get_listings()
+
+    @property
+    def image(self):
+        if self.media:
+            image = self.media[0].url
+            return imgixify([image])[0]
+        else:
+            # Iterate through listings to find an image
+            for listing in self.listings:
+                image = listing.product.image
+                if image:
+                    return image
 
     def _get_listings(self):
         """
@@ -335,3 +360,9 @@ class ProductUOM(Model):
     __model_name__ = 'product.uom'
 
     symbol = StringType()
+
+
+class ProductMedia(Model):
+    __model_name__ = 'product.media'
+
+    url = StringType()
