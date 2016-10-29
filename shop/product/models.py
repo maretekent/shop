@@ -20,6 +20,18 @@ class ProductTemplate(Model):
     )
 
     @property
+    def lowest_price(self):
+        return min([
+            listing.unit_price for listing in self.listings
+        ])
+
+    @property
+    def highest_price(self):
+        return max([
+            listing.unit_price for listing in self.listings
+        ])
+
+    @property
     def listings(self):
         return self._get_listings()
 
