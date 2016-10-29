@@ -50,3 +50,6 @@ premailer
 
 # Payment gateway stripe
 stripe
+
+# Script
+Flask-Script
