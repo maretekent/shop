@@ -14,6 +14,8 @@ class ProductTemplate(Model):
     __model_name__ = 'product.template'
 
     name = StringType()
+    description = StringType()
+    long_description = StringType()
     media = One2ManyType("product.media", cache=True)
     products = One2ManyType("product.product", cache=True)
     variation_attributes = One2ManyType(
