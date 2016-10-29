@@ -96,7 +96,6 @@ class TreeNode(Model):
         listings = sorted(
             listings,
             key=lambda l: product_ids.index(l['product']),
-            reverse=True,
         )
         # Add the listings to the sorted set in redis
         for position, listing in enumerate(listings):
