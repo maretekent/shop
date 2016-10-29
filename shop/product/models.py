@@ -210,6 +210,10 @@ class Product(Model):
             'rec_name': self.name,
             'name': self.name,
             'code': self.code,
+            'description': self.description or self.template.description or "",
+            'long_description': (
+                self.long_description or self.templte.long_description or ""
+            ),
             'price': "%s" % self.list_price,  # TODO: Format Currency
             'image_urls': [{
                 'large': self.image,
