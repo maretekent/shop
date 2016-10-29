@@ -3,7 +3,7 @@
 from flask import Blueprint, abort, make_response
 from shop.node.models import TreeNode
 from shop.utils import render_theme_template as render_template
-from shop.utils import dummy_products
+from shop.utils import dummy_products, Pagination
 
 blueprint = Blueprint(
     'node', __name__,
@@ -57,7 +57,14 @@ def node(id=None, handle=None, page=1):
     if not node:
         abort(404)
 
-    listings = node.get_listings(page, per_page)
+    if node.display == 'product.template':
+        templates = node.get_templates(page, per_page)
+        pagination = Pagination(page, per_page, node.templates_count)
+        listings = []
+    else:
+        listings = node.get_listings(page, per_page)
+        pagination = Pagination(page, per_page, node.listings_count)
+        templates = []
 
     top_sellers = []
     if not listings:
@@ -69,7 +76,9 @@ def node(id=None, handle=None, page=1):
         'node/node.html',
         node=node,
         listings=listings,
+        templates=templates,
         top_sellers=top_sellers,
+        pagination=pagination,
         page=page
     )
 

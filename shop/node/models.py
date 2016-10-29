@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Node models."""
+import sys
 from flask import url_for, current_app
 from fulfil_client.model import IntType, StringType
 from shop.extensions import redis_store
 from shop.fulfilio import Model
-from shop.product.models import ChannelListing
+from shop.product.models import ChannelListing, ProductTemplate
 from fulfil_client.client import loads, dumps
 
 
@@ -35,6 +36,18 @@ class TreeNode(Model):
         return 10
 
     @property
+    def templates_count(self):
+        return redis_store.zcount(
+            self.templates_key, 0, sys.maxint
+        )
+
+    @property
+    def listings_count(self):
+        return redis_store.zcount(
+            self.listings_key, 0, sys.maxint
+        )
+
+    @property
     def has_children(self):
         return len(self._values['children']) > 0
 
@@ -54,23 +67,9 @@ class TreeNode(Model):
             [('parent', '=', None)]
         ).all()
 
-    def _get_items(self):
+    def _cache_items(self):
         """
-        Return the items on the node. If the node displays templates, then
-        the items are templates. If the node displays products, then the
-        items are products.
-
-        This method does a lot of expensive network requests, so the results
-        are cached for performance.
-        """
-        key = '%s:%s:listings' % (self.__model_name__, self.id)
-
-        if not redis_store.exists(key):
-            self._cache_node_listing(key)
-
-    def _cache_node_listing(self, key):
-        """
-        A special method to cache and save listings
+        A special method to cache and save listings and templates
         """
         node_products = TreeProductRel.rpc.search_read(
             [
@@ -99,41 +98,69 @@ class TreeNode(Model):
             key=lambda l: product_ids.index(l['product']),
             reverse=True,
         )
-
-        templates = []      # A list to avoid duplicates
-
-        for listing in listings:
-            if self.display == 'product.template':
-                if listing['product.template'] in templates:
-                    continue
-                templates.append(listing['product.template'])
-
-            # Add the listings to the sorted set in redis
+        # Add the listings to the sorted set in redis
+        for position, listing in enumerate(listings):
             redis_store.zadd(
-                key, listings.index(listing), listing['id'],
+                self.listings_key, position, listing['id'],
             )
-        redis_store.expire(key, current_app.config['REDIS_EX'])
+
+        # Now store templates
+        templates = []      # A list to avoid duplicates
+        for listing in listings:
+            if listing['product.template'] in templates:
+                continue
+            templates.append(listing['product.template'])
+        for position, template in enumerate(templates):
+            redis_store.zadd(
+                self.templates_key, position, template,
+            )
+
+        # Set the cache
+        redis_store.expire(self.listings_key, current_app.config['REDIS_EX'])
+        redis_store.expire(self.templates_key, current_app.config['REDIS_EX'])
+
+    @property
+    def listings_key(self):
+        return '%s:%s:listings' % (self.__model_name__, self.id)
+
+    @property
+    def templates_key(self):
+        return '%s:%s:templates' % (self.__model_name__, self.id)
 
     def get_listings(self, page, per_page=None):
         """
         Get the products or templates (hence items) in this node.
         """
-        key = '%s:%s:listings' % (self.__model_name__, self.id)
+        return map(
+            lambda l: ChannelListing.from_cache(int(l)),
+            self._get_items(self.listings_key, page, per_page)
+        )
 
+    def get_templates(self, page, per_page=None):
+        """
+        Get the products or templates (hence items) in this node.
+        """
+        return map(
+            lambda t: ProductTemplate.from_cache(int(t)),
+            self._get_items(self.templates_key, page, per_page)
+        )
+
+    def _get_items(self, key, page, per_page):
+        """
+        Return paginated items from the sorted set
+        referred by the key. It could be templates or listings, this
+        method does not care.
+        """
         if not redis_store.exists(key):
-            self._cache_node_listing(key)
+            self._cache_items()
 
         if per_page is None:
             per_page = self.products_per_page
 
         start = (page - 1) * per_page
-        end = start + per_page
+        end = start + per_page - 1
 
-        listings = map(
-            lambda l: ChannelListing.from_cache(int(l)),
-            redis_store.zrange(key, start, end)
-        )
-        return listings
+        return redis_store.zrange(key, start, end)
 
     def get_absolute_url(self, **kwargs):
         return url_for('node.node', id=self.id, handle=self.slug, **kwargs)
