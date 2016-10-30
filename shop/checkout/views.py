@@ -98,7 +98,9 @@ def sign_in():
                     url_for('checkout.shipping_address')
                 )
             else:
-                return redirect(request.referrer)
+                form.password.errors.append(
+                    "Username or password is incorrect"
+                )
 
     return render_template(
         'checkout/sign_in.html',
