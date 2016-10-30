@@ -171,12 +171,23 @@ class Product(Model):
 
     @property
     def listing(self):
-        return ChannelListing.query.filter_by_domain(
-            [
-                ('product', '=', self.id),
-                ('channel', '=', current_channel.id)
-            ]
-        ).first()
+        key = '%s:listing:%s' % (self.__model_name__, self.id)
+        if self.cache_backend.exists(key):
+            return ChannelListing.from_cache(
+                int(self.cache_backend.get(key))
+            )
+        else:
+            listing = ChannelListing.query.filter_by_domain(
+                [
+                    ('product', '=', self.id),
+                    ('channel', '=', current_channel.id)
+                ]
+            ).first()
+            self.cache_backend.set(
+                key, listing.id,
+                ex=current_app.config['REDIS_EX'],
+            )
+            return listing
 
     def get_absolute_url(self):
         return url_for('products.product', handle=self.uri)

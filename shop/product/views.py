@@ -45,7 +45,7 @@ def product(handle):
         abort(404)
 
     if 'node' in request.args:
-        node = TreeNode.query.get(request.args.get('node', type=int))
+        node = TreeNode.from_cache(request.args.get('node', type=int))
     else:
         node = None
 
