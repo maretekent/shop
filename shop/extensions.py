@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Extensions module. Each extension is initialized in the app factory located in app.py."""
-from flask.ext.themes2 import Themes
+from flask_themes2 import Themes
 from flask_babel import Babel
 from flask_cache import Cache
 from flask_debugtoolbar import DebugToolbarExtension
