@@ -28,5 +28,6 @@ setup(
         'stripe',
         'six',
         'python-dateutil',
+        'cached-property',
     ]
 )

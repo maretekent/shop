@@ -7,6 +7,7 @@ from flask import session
 from flask_login import current_user, user_logged_in
 from fulfil_client.model import (Date, FloatType, ModelType, MoneyType,
                                  One2ManyType, StringType, BooleanType, DecimalType)
+from cached_property import cached_property
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
 
@@ -59,7 +60,7 @@ class SaleLine(Model):
 class Sale(Model):
     __model_name__ = 'sale.sale'
 
-    _eager_fields = set(['currency.code'])
+    _eager_fields = set(['currency.code', 'lines'])
 
     number = StringType()
     party = ModelType("party.party")
@@ -69,7 +70,6 @@ class Sale(Model):
     tax_amount = MoneyType('currency_code')
     untaxed_amount = MoneyType('currency_code')
     total_shipment_cost = MoneyType('currency_code')
-    lines = One2ManyType("sale.line")
     invoices = One2ManyType("account.invoice")
     sale_date = Date()
     state = StringType()
@@ -87,6 +87,12 @@ class Sale(Model):
     @property
     def currency_code(self):
         return self._values.get('currency.code')
+
+    @cached_property
+    def lines(self):
+        return SaleLine.query.filter_by_domain([
+            ('sale', '=', self.id),
+        ]).all()
 
     def add_product(self, product_id, quantity, delivery_date, address_id):
         # check if SaleLine already exists
@@ -127,9 +133,15 @@ class Sale(Model):
 class Cart(Model):
     __model_name__ = 'nereid.cart'
 
+    _eager_fields = {'sale', }
+
     sessionid = StringType()
-    sale = ModelType("sale.sale")
     user = ModelType("nereid.user")
+
+    @cached_property
+    def sale(self):
+        if self._values.get('sale'):
+            return Sale.get_by_id(self._values['sale'])
 
     @staticmethod
     @user_logged_in.connect
