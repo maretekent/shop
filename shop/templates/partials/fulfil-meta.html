@@ -1,0 +1,8 @@
+<meta itemprop="fulfil-subdomain" content="{{ current_app.config.get('FULFIL_SUBDOMAIN') }}"/>
+{% if product %}
+<meta itemprop="product.product" content="{{ product.id }}" />
+<meta itemprop="product.template" content="{{ product.template.id }}" />
+{% endif %}
+{% if node %}
+<meta itemprop="product.tree_node" content="{{ node.id }}" />
+{% endif %}
