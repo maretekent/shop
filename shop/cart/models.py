@@ -15,10 +15,11 @@ from shop.globals import current_channel
 def require_cart_with_sale(function):
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
-        cart = Cart.get_active()
+        cart = args[0]
         if not cart.sale:
             sale = Cart.create_sale()
-            cart.sale = sale.id
+            del cart.sale       # Delete cached property
+            cart._values['sale'] = sale.id
             cart.save()
         return function(*args, **kwargs)
     return wrapper
