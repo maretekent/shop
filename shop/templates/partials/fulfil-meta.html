@@ -3,6 +3,12 @@
 <meta itemprop="product.product" content="{{ product.id }}" />
 <meta itemprop="product.template" content="{{ product.template.id }}" />
 {% endif %}
+{% if listing %}
+<meta itemprop="product.product.channel_listing" content="{{ listing.id }}" />
+{% endif %}
 {% if node %}
 <meta itemprop="product.tree_node" content="{{ node.id }}" />
+{% endif %}
+{% if current_cart and current_cart.sale %}
+<meta itemprop="sale.sale" content="{{ current_cart.sale.id }}" />
 {% endif %}
