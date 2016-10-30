@@ -214,7 +214,7 @@ class Product(Model):
             'long_description': (
                 self.long_description or self.templte.long_description or ""
             ),
-            'price': "%s" % self.list_price,  # TODO: Format Currency
+            'price': "%s" % self.list_price.format(),
             'image_urls': self.images,
         }
 
