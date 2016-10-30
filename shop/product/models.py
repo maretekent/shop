@@ -183,10 +183,11 @@ class Product(Model):
                     ('channel', '=', current_channel.id)
                 ]
             ).first()
-            self.cache_backend.set(
-                key, listing.id,
-                ex=current_app.config['REDIS_EX'],
-            )
+            if listing:
+                self.cache_backend.set(
+                    key, listing.id,
+                    ex=current_app.config['REDIS_EX'],
+                )
             return listing
 
     def get_absolute_url(self):
