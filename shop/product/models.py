@@ -215,11 +215,7 @@ class Product(Model):
                 self.long_description or self.templte.long_description or ""
             ),
             'price': "%s" % self.list_price,  # TODO: Format Currency
-            'image_urls': [{
-                'large': self.image,
-                'thumbnail': self.image,
-                'regular': self.image,
-            }],
+            'image_urls': self.images,
         }
 
 
