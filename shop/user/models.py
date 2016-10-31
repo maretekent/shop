@@ -122,6 +122,11 @@ class User(UserMixin, Model):
             party = Party(name=self.name)
             party.save()
             self.party = party.id
+            ContactMechanism(
+                party=party.id,
+                value=self.email,
+                type='email',
+            ).save()
         super(User, self).save()
 
     @classmethod
