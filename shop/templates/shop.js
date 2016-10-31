@@ -5,6 +5,7 @@ $(function () {
     form: {},
     cart: {},
     user: {},
+    ux: {},
     product: {},
     address: {}
   };
@@ -239,6 +240,15 @@ $(function () {
        {csrf_token: Fulfil.csrfToken}
      );
    };
+
+   Fulfil.ux.notify = function(message, level, title) {
+      if (!level) {
+        level = 'info'
+      };
+      if (toastr) {
+        toastr[level](message, title);
+      }
+   }
 
   /*
    *
