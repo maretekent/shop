@@ -194,6 +194,9 @@ def payment():
     cart = current_cart
     if not cart.sale.shipment_address:
         return redirect(url_for('checkout.shipping_address'))
+
+    cart.sale.prepare_for_payment()
+
     address_form = AddressForm()
     form = CheckoutPaymentForm(request.form)
     if form.validate_on_submit():
