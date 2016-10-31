@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """Product models."""
 import functools
-from datetime import date
 
 from flask import session
 from flask_login import current_user, user_logged_in
 from fulfil_client.model import (Date, FloatType, ModelType, MoneyType,
-                                 One2ManyType, StringType, BooleanType, DecimalType)
+                                 One2ManyType, StringType)
 from flask_babel import format_number
 from cached_property import cached_property
 from shop.fulfilio import Model, ShopQuery
@@ -17,6 +16,7 @@ def require_cart_with_sale(function):
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
         cart = args[0]
+        cart.sanitise()
         if not cart.sale:
             sale = Cart.create_sale()
             del cart.sale       # Delete cached property
@@ -338,3 +338,12 @@ class Cart(Model):
         if self.sale.shipment_address:
             data['shipment_address'] = self.sale.shipment_address._values
         return data
+
+    def sanitise(self):
+        """This method verifies that the cart is valid
+        """
+        if not self.sale:
+            return
+        if self.sale.state != 'draft':
+            self.sale = None
+        self.save()
