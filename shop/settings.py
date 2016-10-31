@@ -23,6 +23,9 @@ class Config(object):
     # IMGIX CDN https://example.imgix.net
     IMGIX_CDN = os.environ.get('IMGIX_CDN')
 
+    # Google tag manager
+    GOOGLE_TAG_MANAGER = os.environ.get('GOOGLE_TAG_MANAGER')
+
     if 'FULFIL_ROOT_NAV' in os.environ:
         FULFIL_ROOT_NAV = os.environ['FULFIL_ROOT_NAV']
     if 'FULFIL_FOOTER_NAV' in os.environ:

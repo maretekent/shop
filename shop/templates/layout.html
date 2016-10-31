@@ -42,6 +42,8 @@
 
 </head>
 <body class="{% block body_class %}{% endblock %}">
+{% include theme('partials/google-tag-manager.html') %}
+
 {% block body %}
 <header id="header" class="header">
   {% block header %}
