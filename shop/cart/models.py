@@ -318,6 +318,9 @@ class Cart(Model):
             'total_amount': self.sale.total_amount.format(current_locale),
             'tax_amount': self.sale.tax_amount.format(current_locale),
             'untaxed_amount': self.sale.untaxed_amount.format(current_locale),
+            'untaxed_without_shipping': (
+                self.sale.untaxed_amount - self.sale.total_shipment_cost
+            ).format(current_locale),
             'total_shipment_cost': self.sale.total_shipment_cost.format(
                 current_locale),
             'shipment_address': None,
