@@ -29,5 +29,6 @@ setup(
         'six',
         'python-dateutil',
         'cached-property',
+        'python-geoip-geolite2',
     ]
 )

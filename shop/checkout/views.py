@@ -118,7 +118,10 @@ def shipping_address():
     if current_user.is_anonymous and cart.sale.shipment_address:
         address = cart.sale.shipment_address
 
-    address_form = CheckoutAddressForm(object=address)
+    address_form = CheckoutAddressForm(
+        object=address,
+        country=CheckoutAddressForm.guess_country_id()
+    )
     if address_form.validate_on_submit():
         if address_form.address.data:
             # Registered user has chosen an existing address

@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """User forms."""
+from flask import request
 from flask_login import current_user
 from flask_wtf import Form
-from shop.public.models import Country, Subdivision
+from shop.public.models import Country
 from shop.user.models import User
 from wtforms import PasswordField, SelectField, StringField
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
                                 ValidationError)
+from geoip import geolite2
 
 
 class RegisterForm(Form):
@@ -72,9 +74,12 @@ class SubdivisionSelectField(SelectField):
         self.data = subdivision.id if subdivision else None
 
     def pre_validate(self, form):
-        subdivisions = [s.id for s in Subdivision.query.filter_by(country=form.country.data).all()]
+        country = Country.from_cache(form.country.data)
+        subdivisions = [s.id for s in country.subdivisions]
         if self.data not in subdivisions and len(subdivisions):
-            raise ValidationError("Subdivision is not valid for the selected country.")
+            raise ValidationError(
+                "Subdivision is not valid for the selected country."
+            )
 
 
 class AddressForm(Form):
@@ -116,6 +121,35 @@ class AddressForm(Form):
         'Phone',
         render_kw={"placeholder": "e.g. +1234556"}
     )
+
+    @classmethod
+    def get_ip_address(cls):
+        return request.environ.get(
+            'HTTP_X_REAL_IP',
+            request.headers.get(
+                'X-Forwarded-For',
+                request.remote_addr
+            )
+        )
+
+    @classmethod
+    def guess_country_code(cls):
+        """
+        Guess country from IP address
+        """
+        ip_address = cls.get_ip_address()
+        match = geolite2.lookup(ip_address)
+        country_code = 'US'
+        if match is not None:
+            country_code = match.country or 'US'
+        return country_code
+
+    @classmethod
+    def guess_country_id(cls):
+        code = cls.guess_country_code()
+        if code:
+            country = Country.from_code(code)
+            return country
 
 
 class ChangePasswordForm(Form):

@@ -55,7 +55,11 @@ def create_address():
     """
     address_name = "" if current_user.is_anonymous else \
         current_user.name
-    form = AddressForm(request.form, name=address_name)
+    form = AddressForm(
+        request.form,
+        name=address_name,
+        country=AddressForm.guess_country_id()
+    )
 
     if form.validate_on_submit():
         address = Address(party=current_user.party.id)
