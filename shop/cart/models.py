@@ -154,6 +154,13 @@ class Sale(Model):
 
         return sale_line
 
+    def prepare_for_payment(self):
+        """Makes cart sale ready for payment.
+        Helpful when you want to make sure shipping is properly applied
+        before payment.
+        """
+        pass
+
 
 class Cart(Model):
     __model_name__ = 'nereid.cart'
