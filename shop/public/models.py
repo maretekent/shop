@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Public models."""
 
+from flask import current_app
 from fulfil_client import model
 from shop.fulfilio import Model
+from fulfil_client.client import loads, dumps
 
 
 class Channel(Model):
@@ -42,13 +44,53 @@ class Country(Model):
 
     @classmethod
     def get_list(cls):
-        # TODO: Implement a cache
-        return cls.query.all()
+        key = '%s:get_list' % (cls.__model_name__,)
+        if cls.cache_backend.exists(key):
+            countries = cls.from_cache(
+                loads(cls.cache_backend.get(key))
+            )
+        else:
+            countries = cls.query.all()
+            map(lambda s: s.store_in_cache(), countries)
+            cls.cache_backend.set(
+                key, dumps([c.id for c in countries]),
+                ex=current_app.config['REDIS_EX'],
+            )
+        return countries
+
+    @classmethod
+    def from_code(cls, code):
+        code = code.upper()
+        key = '%s:from_code:%s' % (cls.__model_name__, code)
+        if cls.cache_backend.exists(key):
+            return cls.from_cache(int(cls.cache_backend.get(key)))
+        else:
+            country = cls.query.filter_by_domain([
+                ('code', 'ilike', code)
+            ]).first()
+            if country:
+                country.store_in_cache()
+                cls.cache_backend.set(
+                    key, country.id,
+                    ex=current_app.config['REDIS_EX'],
+                )
+            return country
 
     @property
     def subdivisions(self):
-        # TODO: Implement a cache
-        return Subdivision.query.filter_by(country=self.id).all()
+        key = '%s:subdivisions:%s' % (self.__model_name__, self.id)
+        if self.cache_backend.exists(key):
+            subdivisions = Subdivision.from_cache(
+                loads(self.cache_backend.get(key))
+            )
+        else:
+            subdivisions = Subdivision.query.filter_by(country=self.id).all()
+            map(lambda s: s.store_in_cache(), subdivisions)
+            self.cache_backend.set(
+                key, dumps([s.id for s in subdivisions]),
+                ex=current_app.config['REDIS_EX'],
+            )
+        return subdivisions
 
 
 class Subdivision(Model):
