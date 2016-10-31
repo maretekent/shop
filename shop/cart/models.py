@@ -7,9 +7,10 @@ from flask import session
 from flask_login import current_user, user_logged_in
 from fulfil_client.model import (Date, FloatType, ModelType, MoneyType,
                                  One2ManyType, StringType, BooleanType, DecimalType)
+from flask_babel import format_number
 from cached_property import cached_property
 from shop.fulfilio import Model, ShopQuery
-from shop.globals import current_channel
+from shop.globals import current_channel, current_context
 
 
 def require_cart_with_sale(function):
@@ -56,6 +57,29 @@ class SaleLine(Model):
     def update_gift_message(self, gift_message):
         self.gift_message = gift_message
         self.save()
+
+    def serialize(self):
+        current_locale = current_context.get('language') or 'en_US'
+        data = {
+            'id': self.id,
+            'product_id': self.product and self.product.id,
+            'product': self.product and self.product.name or None,
+            'product_identifier': self.product and self.product.listing and \
+                self.product.listing.product_identifier,
+            'quantity': format_number(self.quantity),
+            'gift_message': self.gift_message or None,
+            'unit': self.unit.symbol,
+            'unit_price': self.unit_price.format(current_locale),
+            'amount': self.amount.format(current_locale),
+            'url': self.product and self.product.listing and \
+                self.product.listing.get_absolute_url(),
+            'image': self.product.image,
+            'delivery_address': None,
+            'is_shipping_line': True if self.shipment_cost else False
+        }
+        if self.delivery_address:
+            data['delivery_address'] = self.delivery_address._values
+        return data
 
 
 class Sale(Model):
@@ -280,3 +304,27 @@ class Cart(Model):
     def update_gift_message(self, line_id, gift_message):
         line = SaleLine.get_by_id(line_id)
         line.update_gift_message(gift_message)
+
+    def serialize(self):
+        if not self.sale:
+            return {
+                'empty': True,
+            }
+        current_locale = current_context.get('language') or 'en_US'
+        data = {
+            'empty': self.is_empty,
+            'size': self.size,
+            'has_shipping': bool(self.sale.total_shipment_cost),
+            'total_amount': self.sale.total_amount.format(current_locale),
+            'tax_amount': self.sale.tax_amount.format(current_locale),
+            'untaxed_amount': self.sale.untaxed_amount.format(current_locale),
+            'total_shipment_cost': self.sale.total_shipment_cost.format(
+                current_locale),
+            'shipment_address': None,
+        }
+        data['lines'] = [
+            line.serialize() for line in self.sale.lines
+        ]
+        if self.sale.shipment_address:
+            data['shipment_address'] = self.sale.shipment_address._values
+        return data

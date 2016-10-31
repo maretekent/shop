@@ -20,40 +20,7 @@ def view_cart():
     "Display shopping cart"
     cart = Cart.get_active()
     if request.is_xhr or request.is_json:
-        if not cart.sale:
-            return jsonify({'empty': True})
-
-        current_locale = current_context.get('language') or 'en_US'
-        return jsonify({
-            'cart': {
-                'lines': [{
-                    'id': l.id,
-                    'product_id': l.product and l.product.id,
-                    'product': l.product and l.product.name or None,
-                    'product_identifier': l.product and l.product.listing and \
-                        l.product.listing.product_identifier,
-                    'quantity': format_number(l.quantity),
-                    'gift_message': l.gift_message or None,
-                    'unit': l.unit.symbol,
-                    'unit_price': l.unit_price.format(current_locale),
-                    'amount': l.amount.format(current_locale),
-                    'url': l.product and l.product.listing and \
-                        l.product.listing.get_absolute_url(),
-                    'image': l.product.image,
-                    'delivery_address': l.delivery_address and \
-                        l.delivery_address._values,
-                    'is_shipping_line': True if l.shipment_cost else False
-                } for l in cart.sale.lines],
-                'empty': len(cart.sale.lines) < 1,
-                'size': cart.size,
-                'has_shipping': True if cart.sale.total_shipment_cost \
-                    else False,
-                'total_amount': cart.sale.total_amount.format(current_locale),
-                'tax_amount': cart.sale.tax_amount.format(current_locale),
-                'untaxed_amount': cart.sale.untaxed_amount.format(current_locale),
-                'total_shipment_cost': cart.sale.total_shipment_cost.format(current_locale)
-            }
-        })
+        return jsonify({'cart': cart.serialize()})
     return render_template('cart/cart.html', cart=cart)
 
 
