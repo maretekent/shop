@@ -119,6 +119,11 @@ class Sale(Model):
             ('sale', '=', self.id),
         ]).all()
 
+    @cached_property
+    def items_total(self):
+        "Item total without tax and shipping"
+        return self.untaxed_amount - self.total_shipment_cost
+
     def add_product(self, product_id, quantity, delivery_date, address_id):
         # check if SaleLine already exists
         sale_line = SaleLine.query.filter_by_domain([

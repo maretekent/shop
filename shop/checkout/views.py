@@ -197,7 +197,9 @@ def payment():
 
     cart.sale.prepare_for_payment()
 
-    address_form = AddressForm()
+    address_form = AddressForm(
+        country=AddressForm.guess_country_id()
+    )
     form = CheckoutPaymentForm(request.form)
     if form.validate_on_submit():
         customer_id = form.payment_profile_id.data or None

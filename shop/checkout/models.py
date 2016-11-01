@@ -47,4 +47,6 @@ class PaymentProfile(Model):
     party = ModelType('party.party')
     gateway = ModelType('payment_gateway.gateway')
     last_4_digits = StringType()
+    expiry_month = StringType()
+    expiry_year = StringType()
     rec_name = StringType()
