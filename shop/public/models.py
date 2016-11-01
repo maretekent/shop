@@ -58,6 +58,18 @@ class Country(Model):
             )
         return countries
 
+    def store_in_cache(self):
+        """
+        Store the code in the cache for easy cache
+        based retreival.
+        """
+        super(Country, self).store_in_cache()
+        key = '%s:from_code:%s' % (self.__model_name__, self.code)
+        self.cache_backend.set(
+            key, self.id,
+            ex=current_app.config['REDIS_EX'],
+        )
+
     @classmethod
     def from_code(cls, code):
         code = code.upper()
@@ -70,10 +82,6 @@ class Country(Model):
             ]).first()
             if country:
                 country.store_in_cache()
-                cls.cache_backend.set(
-                    key, country.id,
-                    ex=current_app.config['REDIS_EX'],
-                )
             return country
 
     @property
@@ -92,13 +100,28 @@ class Country(Model):
             )
         return subdivisions
 
+    def get_subdivision(self, code):
+        """
+        Get a subdivision given the code
+        """
+        code = code.upper()
+        for subdivision in self.subdivisions:
+            if subdivision.code.upper() == code:
+                return subdivision
+
 
 class Subdivision(Model):
 
     __model_name__ = 'country.subdivision'
+    _eager_fields = set(['code'])
 
     name = model.StringType()
     country = model.ModelType("country.country", cache=True)
+
+    @property
+    def code(self):
+        if self._values.get('code'):
+            return self._values['code'].split('-')[-1]
 
 
 class StaticFile(Model):

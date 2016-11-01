@@ -3,6 +3,7 @@
 import pytest
 from shop.app import create_app
 from shop.settings import TestConfig
+from shop.extensions import redis_store
 from shop.user.models import User
 from webtest import TestApp
 
@@ -18,6 +19,8 @@ def app():
         pytest.fail("Tests cannot be run on %s." % subdomain)
     ctx = _app.test_request_context()
     ctx.push()
+
+    redis_store.flushall()
 
     yield _app
 
