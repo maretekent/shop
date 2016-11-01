@@ -223,7 +223,7 @@ $(function () {
         var optionsHtml = '';
         $.each(data.result, function(i, country){
           optionsHtml +=
-            '<option value="'+ country.id +'">' + country.name + '</option>';
+            '<option value="'+ country.code +'">' + country.name + '</option>';
         });
         selectField.html(optionsHtml);
 
@@ -314,6 +314,54 @@ $(function () {
         toastr[level](message, title);
       }
    }
+
+  /**
+   * Helper method to init form with countries
+   */
+  Fulfil.address._initForm = function (formElm) {
+    var countryField = formElm.find('select[name="country"]');
+    var subdivisionField = formElm.find('select[name="subdivision"]');
+
+    // On change of country
+    countryField.change(function () {
+      // Clear options as soon as country change
+      subdivisionField.empty();
+
+      var reqUrl = "/countries/" + $(this).val() +"/subdivisions";
+      $.getJSON(reqUrl, function(data){
+        $.each(data.result, function(_, subdivision) {
+          subdivisionField
+            .append($("<option></option>")
+              .attr("value", subdivision.code)
+              .attr("code", subdivision.code)
+              .text(subdivision.name));
+        });
+        if (subdivisionField.data('value')) {
+          // If data-value set that as field value and clear.
+          // This is helpful in setting value of subdivision without waiting
+          // for subdivison options to load.
+          subdivisionField.val(subdivisionField.data('value'));
+          subdivisionField.data('value', null);
+        }
+        subdivisionField.triggerHandler("change");
+      });
+    });
+
+    // Countries are loaded by jinja template, just trigger onChange to load
+    // subdivisions
+    countryField.change();
+  };
+
+  Fulfil.address.initForm = function (selector, noGoogleInit) {
+    $(selector).each(function () {
+      Fulfil.address._initForm($(this));
+    });
+  };
+
+  Fulfil.address.updateAddress = function (addressId, addressFormData) {
+    var action_url = "/my/addresses/" + addressId + "/edit";
+    return $.post(action_url, addressFormData);
+  };
 
   /*
    *
