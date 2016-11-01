@@ -58,3 +58,6 @@ shop/static/libs/
 
 # Local runner scripts
 run.py
+
+# Env vars
+env.sh
