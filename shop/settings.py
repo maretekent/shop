@@ -46,6 +46,11 @@ class Config(object):
         REDIS_URL = os.environ.get('REDIS_URL')
     # Cache expiry in seconds. By default 10 minutes
     REDIS_EX = int(os.environ.get('REDIS_EX', 10 * 60))
+    CELERY_BROKER_URL = REDIS_URL
+    CELERY_RESULT_BACKEND = REDIS_URL
+    CELERY_IMPORTS = [
+        'shop.jobs'
+    ]
 
     STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
     STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')

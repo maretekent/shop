@@ -53,3 +53,7 @@ stripe
 
 # Script
 Flask-Script
+
+# Celery
+Celery
+Flask-Celery-Helper

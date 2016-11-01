@@ -7,7 +7,7 @@ from shop.cms.models import MenuItem
 from shop.node.models import TreeNode
 from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil,
                              login_manager, redis_store, sentry, session,
-                             themes)
+                             themes, celery)
 from shop.filters import get_menuitem_link, cdnify
 from shop.globals import current_channel, current_cart, current_context
 from shop.settings import ProdConfig
@@ -58,6 +58,10 @@ def register_extensions(app):
     # Set the session redis needed for Flask Session
     app.config['SESSION_REDIS'] = redis_store._redis_client
     session.init_app(app)
+
+    # Initialize the celery app
+    celery.init_app(app)
+
     return None
 
 
