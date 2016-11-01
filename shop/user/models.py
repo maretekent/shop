@@ -16,8 +16,8 @@ class Address(Model):
     """
     An address of a user
     """
-
     __model_name__ = 'party.address'
+    _eager_fields = set(['full_address'])
 
     party = ModelType('party.party')
     name = StringType(required=True)
@@ -29,7 +29,10 @@ class Address(Model):
     subdivision = ModelType("country.subdivision")
     phone = StringType()
     validation_status = StringType()
-    full_address = StringType()
+
+    @property
+    def full_address(self):
+        return self._values.get('full_address', '').replace('\r\n', ', ')
 
 
 class ContactMechanism(Model):
