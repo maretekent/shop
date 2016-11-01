@@ -34,6 +34,12 @@ class Address(Model):
     def full_address(self):
         return self._values.get('full_address', '').replace('\r\n', ', ')
 
+    def serialize(self):
+        values = self._values.copy()
+        values['country'] = self.country and self.country.code
+        values['subdivision'] = self.subdivision and self.subdivision.code
+        return values
+
 
 class ContactMechanism(Model):
     __model_name__ = 'party.contact_mechanism'
