@@ -45,14 +45,15 @@ class TestLoginForm:
         """Unknown username."""
         form = LoginForm(email='unknown@hello.com', password='example')
         assert form.validate() is False
-        assert 'Unknown email' in form.email.errors
+        assert 'Invalid login credentials' in form.email.errors
 
     def test_validate_invalid_password(self, user):
         """Invalid password."""
         user.set_password('example')
         form = LoginForm(email=user.email, password='wrongpassword')
         assert form.validate() is False
-        assert 'Invalid password' in form.password.errors
+        assert form.errors
+        assert 'Invalid login credentials' in form.email.errors
 
     def test_validate_inactive_user(self, user):
         """Inactive user."""
@@ -62,4 +63,4 @@ class TestLoginForm:
         # Correct username and password, but user is not activated
         form = LoginForm(email=user.email, password='example')
         assert form.validate() is False
-        assert 'User not activated' in form.email.errors
+        assert 'User account is not activated' in form.email.errors
