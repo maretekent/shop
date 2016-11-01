@@ -318,7 +318,7 @@ $(function () {
   /**
    * Helper method to init form with countries
    */
-  Fulfil.address._initForm = function (formElm) {
+  Fulfil.address._initForm = function (formElm, noGoogleInit) {
     var countryField = formElm.find('select[name="country"]');
     var subdivisionField = formElm.find('select[name="subdivision"]');
 
@@ -350,6 +350,10 @@ $(function () {
     // Countries are loaded by jinja template, just trigger onChange to load
     // subdivisions
     countryField.change();
+
+    if (!noGoogleInit) {
+      Fulfil.address.googlePlaceInitForm(formElm);
+    }
   };
 
   Fulfil.address.initForm = function (selector, noGoogleInit) {
@@ -361,6 +365,55 @@ $(function () {
   Fulfil.address.updateAddress = function (addressId, addressFormData) {
     var action_url = "/my/addresses/" + addressId + "/edit";
     return $.post(action_url, addressFormData);
+  };
+
+  /**
+   * Helper method to convert google place to address object
+   */
+  Fulfil.address.googlePlaceToAddress = function (place) {
+    var parsedPlaceObj = {};
+    // place to object
+    $.each(place.address_components, function (i, elm) {
+      $.each(elm.types, function (i, type) {
+        parsedPlaceObj[type] = {
+          long_name: elm.long_name,
+          short_name: elm.short_name,
+        };
+      });
+    });
+
+    var addressData = {};
+    addressData.street = [
+      parsedPlaceObj.street_number.long_name,
+      parsedPlaceObj.route.long_name,
+    ].join(', ');
+    addressData.city = parsedPlaceObj.locality.long_name;
+    addressData.subdivision =
+      parsedPlaceObj.administrative_area_level_1.short_name;
+    addressData.country = parsedPlaceObj.country.short_name;
+    addressData.zip = parsedPlaceObj.postal_code.long_name;
+
+    return addressData;
+  };
+
+  Fulfil.address.googlePlaceInitForm = function (formElm) {
+    var inputElm = formElm.find('input[name="street"]');
+    var autocomplete = new google.maps.places.Autocomplete(inputElm[0], {
+      types: ['geocode']
+    });
+    autocomplete.addListener('place_changed', function () {
+      var addressData =
+        Fulfil.address.googlePlaceToAddress(autocomplete.getPlace());
+      $.each(addressData, function (fname, value) {
+        if (fname == 'subdivision') {
+          formElm.find('[name="' + fname + '"]').val(value)
+            .data('value', value);
+        }
+        else {
+          formElm.find('[name="' + fname + '"]').val(value).change();
+        }
+      });
+    });
   };
 
   /*
