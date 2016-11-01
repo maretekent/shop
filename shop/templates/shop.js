@@ -223,7 +223,7 @@ $(function () {
         var optionsHtml = '';
         $.each(data.result, function(i, country){
           optionsHtml +=
-            '<option value="'+ country.id +'">' + country.name + '</option>';
+            '<option value="'+ country.code +'">' + country.name + '</option>';
         });
         selectField.html(optionsHtml);
 
@@ -314,6 +314,152 @@ $(function () {
         toastr[level](message, title);
       }
    }
+
+  /**
+   * Helper method to validate an address
+   */
+  Fulfil.address.validateAddress = function (addressId) {
+    var formData = {
+      'address_id': addressId,
+      'csrf_token': Fulfil.csrfToken,
+    };
+    return $.post('{{ url_for("validate_address") }}', formData)
+      .success(function (result) {
+        var res = {};
+        switch(result.validation_result.dpv_match_code) {
+          case 'Y':
+            // Confirmed; entire address was DPV confirmed deliverable.
+            res.state = 'valid';
+            res.message = 'Address good for delivery.';
+            break;
+          case 'N':
+            // Not Confirmed; address could not be DPV confirmed as deliverable.
+            res.state = 'invalid';
+            res.message = 'Invalid address';
+            break;
+          case 'S':
+          case 'D':
+            // S - Confirmed By Dropping Secondary; address was DPV confirmed by
+            // dropping secondary info (apartment, suite, etc.).
+            // D — Confirmed - Missing Secondary Info; the address was DPV
+            // confirmed, but it is missing secondary information
+            // (apartment, suite, etc.).
+            res.state = 'invalid';
+            res.message = 'Appartment/Suite information is missing or invalid';
+            break;
+          default:
+            // The address was not submitted for DPV. This is usually because
+            // the address does not have a ZIP Code and a +4 add-on code, or
+            // the address has already been determined to be Not Deliverable
+            // (only returned as part of the XML response).
+            res.state = 'invalid';
+            res.message = 'Invalid Address';
+            break;
+        }
+        result.processed_validation_status = res;
+      });
+  };
+
+  /**
+   * Helper method to init form with countries
+   */
+  Fulfil.address._initForm = function (formElm, noGoogleInit) {
+    var countryField = formElm.find('select[name="country"]');
+    var subdivisionField = formElm.find('select[name="subdivision"]');
+
+    // On change of country
+    countryField.change(function () {
+      // Clear options as soon as country change
+      subdivisionField.empty();
+
+      var reqUrl = "/countries/" + $(this).val() +"/subdivisions";
+      $.getJSON(reqUrl, function(data){
+        $.each(data.result, function(_, subdivision) {
+          subdivisionField
+            .append($("<option></option>")
+              .attr("value", subdivision.code)
+              .attr("code", subdivision.code)
+              .text(subdivision.name));
+        });
+        if (subdivisionField.data('value')) {
+          // If data-value set that as field value and clear.
+          // This is helpful in setting value of subdivision without waiting
+          // for subdivison options to load.
+          subdivisionField.val(subdivisionField.data('value'));
+          subdivisionField.data('value', null);
+        }
+        subdivisionField.triggerHandler("change");
+      });
+    });
+
+    // Countries are loaded by jinja template, just trigger onChange to load
+    // subdivisions
+    countryField.change();
+
+    if (!noGoogleInit) {
+      Fulfil.address.googlePlaceInitForm(formElm);
+    }
+  };
+
+  Fulfil.address.initForm = function (selector, noGoogleInit) {
+    $(selector).each(function () {
+      Fulfil.address._initForm($(this));
+    });
+  };
+
+  Fulfil.address.updateAddress = function (addressId, addressFormData) {
+    var action_url = "/my/addresses/" + addressId + "/edit";
+    return $.post(action_url, addressFormData);
+  };
+
+  /**
+   * Helper method to convert google place to address object
+   */
+  Fulfil.address.googlePlaceToAddress = function (place) {
+    var parsedPlaceObj = {};
+    // place to object
+    $.each(place.address_components, function (i, elm) {
+      $.each(elm.types, function (i, type) {
+        parsedPlaceObj[type] = {
+          long_name: elm.long_name,
+          short_name: elm.short_name,
+        };
+      });
+    });
+
+    var addressData = {};
+    addressData.street = [
+      parsedPlaceObj.street_number.long_name,
+      parsedPlaceObj.route.long_name,
+    ].join(', ');
+    addressData.city = parsedPlaceObj.locality.long_name;
+    addressData.subdivision =
+      parsedPlaceObj.administrative_area_level_1.short_name;
+    addressData.country = parsedPlaceObj.country.short_name;
+    addressData.zip = parsedPlaceObj.postal_code.long_name;
+
+    return addressData;
+  };
+
+  Fulfil.address.googlePlaceInitForm = function (formElm) {
+    var inputElm = formElm.find('input[name="street"]');
+    var autocomplete = new google.maps.places.Autocomplete(inputElm[0], {
+      types: ['geocode']
+    });
+    autocomplete.addListener('place_changed', function () {
+      var addressData =
+        Fulfil.address.googlePlaceToAddress(autocomplete.getPlace());
+      $.each(addressData, function (fname, value) {
+        if (fname == 'subdivision') {
+          formElm.find('[name="' + fname + '"]').val(value)
+            .data('value', value);
+        }
+        else {
+          formElm.find('[name="' + fname + '"]').val(value).change();
+        }
+      });
+    });
+  };
 
   /*
    *

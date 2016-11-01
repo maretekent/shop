@@ -5,7 +5,7 @@
 {% block account_content %}
   <h1>Edit address</h1>
   <br/>
-  <form class="form form-register client-validate" method="POST" action="" role="form">
+  <form class="form form-register client-validate fulfil-address-form" method="POST" action="" role="form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     {% for field in form %}
       {{ render_field(field) }}
@@ -17,13 +17,4 @@
 {% block js %}
   {{ super() }}
   <script src="{{ url_for('user.static', filename='libs/jquery-validation/dist/jquery.validate.min.js') }}"></script>
-  <script src="{{ url_for('user.static', filename='js/address-form.js') }}"></script>
-  <script>
-    $(document).ready( function () {
-      // Select subdivision from address
-      $("select#subdivision").change(function () {
-        $("select#subdivision option[value='{{ address.subdivision.id }}']").attr('selected', true);
-      });
-    });
-  </script>
 {% endblock js %}

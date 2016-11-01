@@ -39,7 +39,7 @@
       </h4>
       <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
-          <form class="form form-register" method="POST" role="form">
+          <form class="form form-register fulfil-address-form" method="POST" role="form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div class="form-group">
                 {{address_form.name.label}}
@@ -85,5 +85,4 @@
 {% block js %}
   {{ super() }}
   <script src="{{ url_for('user.static', filename='libs/jquery-validation/dist/jquery.validate.min.js') }}"></script>
-  <script src="{{ url_for('user.static', filename='js/address-form.js') }}"></script>
 {% endblock js %}
