@@ -199,7 +199,13 @@ class Cart(Model):
             user_cart = Cart.get_active()
             # Transfer lines from guest cart to user cart
             for line in guest_cart.sale.lines:
-                user_cart.add_product(line.product.id, line.quantity)
+                user_cart.add_product(
+                    line.product.id,
+                    line.quantity,
+                    None,
+                    current_user.party.default_address and \
+                    current_user.party.default_address.id
+                )
             # Clear the old cart
             guest_cart.clear()
 
