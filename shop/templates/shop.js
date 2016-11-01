@@ -316,6 +316,51 @@ $(function () {
    }
 
   /**
+   * Helper method to validate an address
+   */
+  Fulfil.address.validateAddress = function (addressId) {
+    var formData = {
+      'address_id': addressId,
+      'csrf_token': Fulfil.csrfToken,
+    };
+    return $.post('{{ url_for("validate_address") }}', formData)
+      .success(function (result) {
+        var res = {};
+        switch(result.validation_result.dpv_match_code) {
+          case 'Y':
+            // Confirmed; entire address was DPV confirmed deliverable.
+            res.state = 'valid';
+            res.message = 'Address good for delivery.';
+            break;
+          case 'N':
+            // Not Confirmed; address could not be DPV confirmed as deliverable.
+            res.state = 'invalid';
+            res.message = 'Invalid address';
+            break;
+          case 'S':
+          case 'D':
+            // S - Confirmed By Dropping Secondary; address was DPV confirmed by
+            // dropping secondary info (apartment, suite, etc.).
+            // D — Confirmed - Missing Secondary Info; the address was DPV
+            // confirmed, but it is missing secondary information
+            // (apartment, suite, etc.).
+            res.state = 'invalid';
+            res.message = 'Appartment/Suite information is missing or invalid';
+            break;
+          default:
+            // The address was not submitted for DPV. This is usually because
+            // the address does not have a ZIP Code and a +4 add-on code, or
+            // the address has already been determined to be Not Deliverable
+            // (only returned as part of the XML response).
+            res.state = 'invalid';
+            res.message = 'Invalid Address';
+            break;
+        }
+        result.processed_validation_status = res;
+      });
+  };
+
+  /**
    * Helper method to init form with countries
    */
   Fulfil.address._initForm = function (formElm, noGoogleInit) {
