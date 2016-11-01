@@ -223,12 +223,17 @@ def payment():
             # Save sale to a local variable as confirm method clears the sale
             sale = cart.sale
             cart.confirm()
-            return redirect(url_for(
+            confirmation_url = url_for(
                 'checkout.order',
                 sale_id=sale.id,
                 confirmation=True,
                 access_code=sale.guest_access_code,
-            ))
+            )
+            if request.is_xhr or request.is_json:
+                return jsonify({
+                    "confirmation_url": confirmation_url
+                })
+            return redirect(confirmation_url)
 
     return render_template(
         'checkout/payment.html',
