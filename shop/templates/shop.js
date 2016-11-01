@@ -3,7 +3,7 @@ $(function () {
     csrfToken: "{{ csrf_token() }}",
     urls: {},
     form: {},
-    cart: {},
+    cart: {"stripe": {}},
     user: {},
     ux: {},
     product: {},
@@ -14,6 +14,8 @@ $(function () {
   Fulfil.urls.view_cart = "{{ url_for('cart.view_cart') }}";
   Fulfil.urls.remove_from_cart = "{{ url_for('cart.remove_from_cart') }}";
   Fulfil.urls.getVariations = "{{ url_for('products.get_variations') }}";
+  Fulfil.urls.payUsingProfile = "{{ url_for('checkout.payment') }}";
+  Fulfil.urls.setBillingAddress = "{{ url_for('checkout.billing_address') }}";
 
   /**
    * Helper method to change formSubmission to ajax
@@ -239,6 +241,69 @@ $(function () {
        '{{ url_for("user.addresses") }}',
        {csrf_token: Fulfil.csrfToken}
      );
+   };
+
+   /*
+   * Create a stripe token using card data and address
+   */
+   Fulfil.cart.stripe.createToken = function(card, address, callback) {
+     if (typeof Stripe === 'undefined') {
+       console.debug("Stripe.js is not added");
+       return;
+     }
+     Stripe.setPublishableKey("{{ current_channel.payment_gateway.stripe_publishable_key }}");
+     Stripe.card.createToken({
+       'number': card.number,
+       'cvc': card.cvc,
+       'exp_month': card.exp_month,
+       'exp_year': card.exp_year,
+       'name': card.name,
+       'address_zip': address.zip,
+       'address_line1': address.street,
+       'address_line2': address.streetbis,
+       'address_city': address.city,
+       'address_state': address.subdivision,
+       'address_country': address.country
+     }, callback);
+   };
+
+   /*
+   * Pay using stripe payment profile or token
+   */
+   Fulfil.cart.payUsingProfile = function(profile, amount) {
+    return $.ajax({
+      url: Fulfil.urls.payUsingProfile,
+      method: "POST",
+      data: {
+        "payment_profile_id": profile.payment_profile_id,
+        "stripe_token": profile.stripe_token,
+        "amount": amount,
+        "csrf_token": Fulfil.csrfToken
+       },
+       dataType: "json"
+    });
+   };
+
+   /*
+   * Set billing address
+   */
+   Fulfil.cart.setBillingAddress = function(address) {
+    return $.ajax({
+      url: Fulfil.urls.setBillingAddress,
+      method: "POST",
+      data: {
+        "billing_address": address.billing_address,
+        "name": address.name,
+        "street": address.street,
+        "streetbis": address.streetbis,
+        "city": address.city,
+        "zip": address.zip,
+        "country": address.country,
+        "subdivision": address.subdivision,
+        "csrf_token": Fulfil.csrfToken
+       },
+       dataType: "json"
+    });
    };
 
    Fulfil.ux.notify = function(message, level, title) {
