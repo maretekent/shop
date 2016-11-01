@@ -8,7 +8,7 @@ $(document).ready(function(){
         $.each(data.result, function(_, subdivision) {
           $("select#subdivision")
             .append($("<option></option>")
-              .attr("value", subdivision.id)
+              .attr("value", subdivision.code)
               .attr("code", subdivision.code)
               .text(subdivision.name));
         });

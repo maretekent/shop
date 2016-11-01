@@ -3,7 +3,7 @@
 from flask import request
 from flask_login import current_user
 from flask_wtf import Form
-from shop.public.models import Country
+from shop.public.models import Country, Subdivision
 from shop.user.models import User
 from wtforms import PasswordField, SelectField, StringField
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
@@ -53,15 +53,28 @@ class RegisterForm(Form):
 
 class CountrySelectField(SelectField):
     def __init__(self, *args, **kwargs):
+        if 'choices' not in kwargs:
+            kwargs['choices'] = self.get_choices()
         super(CountrySelectField, self).__init__(*args, **kwargs)
-        self.choices = [
-            (country.id, country.name)
+
+    def get_choices(self):
+        return [
+            (country.code, country.name)
             for country in Country.get_list()
         ]
 
-    # Override method in SelectField
     def process_data(self, country):
-        self.data = country.id if country else None
+        """
+        Process the Python data applied to this field and
+        store the result.
+
+        This will be called during form construction by the form’s
+        kwargs or obj argument.
+        """
+        if isinstance(country, Country):
+            self.data = country.code
+        else:
+            self.data = country
 
 
 class SubdivisionSelectField(SelectField):
@@ -69,14 +82,29 @@ class SubdivisionSelectField(SelectField):
         super(SubdivisionSelectField, self).__init__(*args, **kwargs)
         self.choices = []
 
-    # Override method in SelectField
     def process_data(self, subdivision):
-        self.data = subdivision.id if subdivision else None
+        """
+        Process the Python data applied to this field and
+        store the result.
+
+        This will be called during form construction by the form’s
+        kwargs or obj argument.
+        """
+        if isinstance(subdivision, Subdivision):
+            self.data = subdivision.code
+        else:
+            self.data = subdivision
 
     def pre_validate(self, form):
-        country = Country.from_cache(form.country.data)
-        subdivisions = [s.id for s in country.subdivisions]
-        if self.data not in subdivisions and len(subdivisions):
+        if form.country.data is None:
+            return None
+        country = Country.from_code(form.country.data)
+        if not country:
+            raise ValidationError(
+                "Country code is not valid."
+            )
+        subdivision = country.get_subdivision(self.data)
+        if not subdivision:
             raise ValidationError(
                 "Subdivision is not valid for the selected country."
             )
@@ -110,17 +138,36 @@ class AddressForm(Form):
     country = CountrySelectField(
         'Country',
         validators=[DataRequired()],
-        coerce=int
+        coerce=unicode
     )
     subdivision = SubdivisionSelectField(
         'State/Province/Region',
         validators=[DataRequired()],
-        coerce=int
+        coerce=unicode
     )
     phone = StringField(
         'Phone',
         render_kw={"placeholder": "e.g. +1234556"}
     )
+
+    @property
+    def country_id(self):
+        if not self.country.data:
+            return
+        country = Country.from_code(self.country.data)
+        if country:
+            return country.id
+
+    @property
+    def subdivision_id(self):
+        if not self.subdivision.data:
+            return
+        country = Country.from_code(self.country.data)
+        if not country:
+            return
+        subdivision = country.get_subdivision(self.subdivision.data)
+        if subdivision:
+            return subdivision.id
 
     @classmethod
     def get_ip_address(cls):
@@ -138,18 +185,28 @@ class AddressForm(Form):
         Guess country from IP address
         """
         ip_address = cls.get_ip_address()
+        if ip_address is None:
+            return
         match = geolite2.lookup(ip_address)
         country_code = 'US'
         if match is not None:
             country_code = match.country or 'US'
         return country_code
 
-    @classmethod
-    def guess_country_id(cls):
-        code = cls.guess_country_code()
-        if code:
-            country = Country.from_code(code)
-            return country
+    def __init__(self, *args, **kwargs):
+        if 'country' not in kwargs:
+            kwargs['country'] = self.guess_country_code()
+        super(AddressForm, self).__init__(*args, **kwargs)
+
+    def populate(self, address):
+        """
+        Populate the given address model instance with data
+        from the form.
+        """
+        for field in ['name', 'street', 'streetbis', 'zip', 'city', 'phone']:
+            setattr(address, field, getattr(self, field).data)
+        address.country = self.country_id
+        address.subdivision = self.subdivision_id
 
 
 class ChangePasswordForm(Form):
