@@ -187,6 +187,21 @@ def imgixify(images):
     return res
 
 
+def cdnify(url):
+    "CDNify a url"
+    cdn_url = current_app.config.get('CDN')
+    version = current_app.config.get('VERSION')
+    if not cdn_url or not url or not url.startswith('/'):
+        # Only urls relative to root can be changes
+        return url
+
+    res_url = "%s%s" % (cdn_url, url)
+    if version:
+        # TODO: Handle query params in url
+        res_url += '?version=%s' % version
+    return res_url
+
+
 class Pagination(object):
 
     def __init__(self, page, per_page, total_count):

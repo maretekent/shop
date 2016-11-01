@@ -23,6 +23,13 @@ class Config(object):
     # IMGIX CDN https://example.imgix.net
     IMGIX_CDN = os.environ.get('IMGIX_CDN')
 
+    # CDN https://iu23hu823i.cloudfront.net
+    CDN = os.environ.get('FULFIL_SHOP_CDN')
+
+    # Current version of shop
+    # Used in logs and cache invalidation
+    VERSION = os.environ.get('FULFIL_SHOP_VERSION')
+
     # Google tag manager
     GOOGLE_TAG_MANAGER = os.environ.get('GOOGLE_TAG_MANAGER')
 

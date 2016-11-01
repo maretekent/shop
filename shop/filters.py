@@ -1,5 +1,6 @@
 from shop.cms.models import Article, ArticleCategory
 from shop.node.models import TreeNode
+from shop.utils import cdnify as cdnifier
 from six import string_types
 
 
@@ -23,3 +24,7 @@ def get_menuitem_link(data, external=False):
     if model:
         return model.get_absolute_url(_external=external)
     return "#"
+
+
+def cdnify(url):
+    return cdnifier(url)

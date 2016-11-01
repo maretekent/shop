@@ -7,7 +7,7 @@ from shop.node.models import TreeNode
 from shop.extensions import (babel, cache, csrf_protect, debug_toolbar, fulfil,
                              login_manager, redis_store, sentry, session,
                              themes)
-from shop.filters import get_menuitem_link
+from shop.filters import get_menuitem_link, cdnify
 from shop.globals import current_channel, current_cart, current_context
 from shop.settings import ProdConfig
 from shop.utils import (
@@ -103,6 +103,7 @@ def register_context_processors(app):
 def register_filters(app):
     from fulfil_client.client import dumps
     app.jinja_env.filters.update({
+        'cdnify': cdnify,
         'get_menuitem_link': get_menuitem_link,
         'json': dumps,
     })
