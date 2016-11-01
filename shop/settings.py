@@ -33,6 +33,9 @@ class Config(object):
     # Google tag manager
     GOOGLE_TAG_MANAGER = os.environ.get('GOOGLE_TAG_MANAGER')
 
+    # Google tag manager
+    GOOGLE_MAPS_API_TOKEN = os.environ.get('GOOGLE_MAPS_API_TOKEN')
+
     if 'FULFIL_ROOT_NAV' in os.environ:
         FULFIL_ROOT_NAV = os.environ['FULFIL_ROOT_NAV']
     if 'FULFIL_FOOTER_NAV' in os.environ:

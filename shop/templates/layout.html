@@ -143,6 +143,9 @@
 {% assets "js_all" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
+  {% if current_app.config.get('GOOGLE_MAPS_API_TOKEN') %}
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ current_app.config.get('GOOGLE_MAPS_API_TOKEN') }}&libraries=places"></script>
+  {% endif %}
     <script type="text/javascript" src="{{ url_for('public.shop_js') }}"></script>
     <script>
       $(function () {
