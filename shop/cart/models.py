@@ -302,8 +302,7 @@ class Cart(Model):
         SaleLine.rpc.delete([line_id])
 
     def clear(self):
-        self.sale = None
-        self.save()
+        Cart.rpc.write([self.id], {'sale': None})
 
     @require_cart_with_sale
     def update_shipping_address(self, line_id, address_id):
