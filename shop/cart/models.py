@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Product models."""
 import functools
+from datetime import date
 
 from flask import session
 from flask_login import current_user, user_logged_in
@@ -205,12 +206,13 @@ class Cart(Model):
     def confirm(self):
         "Move order to confirmation state"
         sale = self.sale
+        sale.sale_date = date.today()
+        sale.save()
+
         Sale.rpc.quote([sale.id])
         Sale.rpc.confirm([sale.id])
 
-        # TODO: Set sale_date to today
-        self.sale = None
-        self.save()
+        self.clear()
 
     @property
     def size(self):
