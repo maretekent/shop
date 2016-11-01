@@ -255,15 +255,14 @@ def get_countries():
     return jsonify(response)
 
 
-@blueprint.route('/countries/<int:country_id>/subdivisions')
-def get_country_subdivisions(country_id):
-    country = Country(id=country_id)
-    subdivisions = country.subdivisions
+@blueprint.route('/countries/<country_code>/subdivisions')
+def get_country_subdivisions(country_code):
+    country = Country.from_code(country_code)
     response = {
-        "result":
-        [{"name": s.name,
-          "id": s.id}
-            for s in subdivisions]
+        "result": [
+            {"name": s.name, "code": s.code, "id": s.id}
+            for s in country.subdivisions
+        ]
     }
     return jsonify(response)
 

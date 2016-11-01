@@ -58,12 +58,11 @@ def create_address():
     form = AddressForm(
         request.form,
         name=address_name,
-        country=AddressForm.guess_country_id()
     )
 
     if form.validate_on_submit():
         address = Address(party=current_user.party.id)
-        form.populate_obj(address)
+        form.populate(address)
         address.save()
         flash("The new address has been added to your address book", 'success')
         return redirect(url_for('user.addresses'))
@@ -86,7 +85,7 @@ def edit_address(address_id):
 
     form = AddressForm(request.form, obj=address)
     if form.validate_on_submit():
-        form.populate_obj(address)
+        form.populate(address)
         address.save()
         if request.is_xhr or request.is_json:
             return jsonify({
