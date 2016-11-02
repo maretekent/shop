@@ -100,6 +100,7 @@ class Sale(Model):
     sale_date = Date()
     state = StringType()
     currency = StringType()
+    promo_code = StringType()
 
     #: This access code will be cross checked if the user is guest for a match
     #: to optionally display the order to an user who has not authenticated
@@ -166,6 +167,11 @@ class Sale(Model):
         before payment.
         """
         pass
+
+    def apply_promo_code(self, promo_code):
+        Sale.rpc.write([self.id], {'promo_code': promo_code})
+        Sale.rpc.draft([self.id])
+        Sale.rpc.apply_promotion([self.id])
 
 
 class Cart(Model):
@@ -353,3 +359,7 @@ class Cart(Model):
         if self.sale.state != 'draft':
             self.sale = None
         self.save()
+
+    @require_cart_with_sale
+    def apply_promo_code(self, promo_code):
+        self.sale.apply_promo_code(promo_code)

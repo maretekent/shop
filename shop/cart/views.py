@@ -120,3 +120,10 @@ def update_gift_message():
         return redirect(url_for('cart.view_cart'))
     flash(_('Looks like item is invalid'), 'error')
     return redirect(request.referrer)
+
+
+@blueprint.route('/apply-promo-code', methods=["POST"])
+def apply_promo_code():
+    cart = Cart.get_active()
+    cart.apply_promo_code(request.form.get('promo_code'))
+    return jsonify(success=True)
