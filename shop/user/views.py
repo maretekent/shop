@@ -64,8 +64,14 @@ def create_address():
         address = Address(party=current_user.party.id)
         form.populate(address)
         address.save()
+
+        if request.is_xhr or request.is_json:
+            return jsonify(address.serialize())
         flash("The new address has been added to your address book", 'success')
         return redirect(url_for('user.addresses'))
+
+    if form.errors and (request.is_xhr or request.is_json):
+        return jsonify(errors=form.errors), 400
 
     return render_template('users/address-form.html', form=form)
 
