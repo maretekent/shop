@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
 from flask import Flask, current_app
+from werkzeug.contrib.fixers import ProxyFix
 from shop.assets import assets
 from shop.cms.models import MenuItem
 from shop.node.models import TreeNode
@@ -34,6 +35,10 @@ def create_app(config_object=ProdConfig):
     register_errorhandlers(app)
     register_context_processors(app)
     register_filters(app)
+
+    num_proxies = int(app.config['NUM_PROXIES'])
+    if num_proxies:
+        app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies)
     return app
 
 
