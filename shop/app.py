@@ -36,9 +36,9 @@ def create_app(config_object=ProdConfig):
     register_context_processors(app)
     register_filters(app)
 
-    num_proxies = int(app.config['NUM_PROXIES'])
+    num_proxies = app.config.get('NUM_PROXIES')
     if num_proxies:
-        app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies)
+        app.wsgi_app = ProxyFix(app.wsgi_app, int(num_proxies))
     return app
 
 
