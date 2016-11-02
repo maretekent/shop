@@ -230,6 +230,16 @@ $(function () {
         if (currentValue) {
           $(selectField).val(currentValue).change();
         }
+        else if (selectField.data('value')) {
+          // If data-value set that as field value and clear.
+          // This is helpful in setting value of field without waiting
+          // for countries options to load.
+          selectField.val(selectField.data('value'));
+          selectField.data('value', null);
+        }
+
+        // Trigger change of countries
+        selectField.change();
       });
   };
 
