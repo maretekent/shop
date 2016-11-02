@@ -63,6 +63,9 @@ class ProdConfig(Config):
     DEBUG = False
     DEBUG_TB_ENABLED = False  # Disable Debug toolbar
 
+    # Cache files for 24 hours
+    SEND_FILE_MAX_AGE_DEFAULT = 60 * 60 * 24
+
 
 class DevConfig(Config):
     """Development configuration."""
