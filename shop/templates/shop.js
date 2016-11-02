@@ -230,6 +230,16 @@ $(function () {
         if (currentValue) {
           $(selectField).val(currentValue).change();
         }
+        else if (selectField.data('value')) {
+          // If data-value set that as field value and clear.
+          // This is helpful in setting value of field without waiting
+          // for countries options to load.
+          selectField.val(selectField.data('value'));
+          selectField.data('value', null);
+        }
+
+        // Trigger change of countries
+        selectField.change();
       });
   };
 
@@ -372,8 +382,10 @@ $(function () {
       // Clear options as soon as country change
       subdivisionField.empty();
 
+      if (!$(this).val()) return;
+
       var reqUrl = "/countries/" + $(this).val() +"/subdivisions";
-      $.getJSON(reqUrl, function(data){
+      $.getJSON(reqUrl, function(data) {
         $.each(data.result, function(_, subdivision) {
           subdivisionField
             .append($("<option></option>")
@@ -394,7 +406,14 @@ $(function () {
 
     // Countries are loaded by jinja template, just trigger onChange to load
     // subdivisions
-    countryField.change();
+    if (countryField.val()) {
+      countryField.change();
+    }
+
+    // Load countries if not already loaded
+    if (countryField.find('option').length === 0) {
+      Fulfil.address.fillCountriesOpts(countryField);
+    }
 
     if (!noGoogleInit) {
       Fulfil.address.googlePlaceInitForm(formElm);
