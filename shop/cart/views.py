@@ -38,8 +38,13 @@ def add_to_cart():
         )
         if request.is_xhr or request.is_json:
             return jsonify({"message": "Item successfully added to cart."})
+
         flash(_('Product has been added to cart'), 'success')
         return redirect(url_for('cart.view_cart'))
+
+    if form.errors and (request.is_xhr or request.is_json):
+        return jsonify(errors=form.errors), 400
+
     flash('Could not add product to cart.', 'error')
     return redirect(request.referrer)
 
@@ -52,11 +57,15 @@ def remove_from_cart():
         cart.remove_sale_line(
             line_id=form.line_id.data
         )
-        flash(_("Removed product from cart"), 'success')
         if request.is_xhr or request.is_json:
             return jsonify({"message": "Item successfully removed from cart."})
 
+        flash(_("Removed product from cart"), 'success')
         return redirect(url_for('cart.view_cart'))
+
+    if form.errors and (request.is_xhr or request.is_json):
+        return jsonify(errors=form.errors), 400
+
     flash(_('Looks like the item is already deleted.'), 'error')
     return redirect(request.referrer)
 
@@ -83,8 +92,12 @@ def update_shipping_address():
         )
         if request.is_xhr or request.is_json:
             return jsonify({"message": "Shipping address updated."})
+
         flash(_("Address updated on item"), 'success')
         return redirect(url_for('cart.view_cart'))
+
+    if form.errors and (request.is_xhr or request.is_json):
+        return jsonify(errors=form.errors), 400
 
     flash(_('Looks like address or item is invalid'), 'error')
     return redirect(request.referrer)
@@ -100,8 +113,13 @@ def update_delivery_date():
         )
         if request.is_xhr or request.is_json:
             return jsonify({"message": "Shipping date updated."})
+
         flash(_("Shipping date updated on item"), 'success')
         return redirect(url_for('cart.view_cart'))
+
+    if form.errors and (request.is_xhr or request.is_json):
+        return jsonify(errors=form.errors), 400
+
     flash(_('Looks like date or item is invalid'), 'error')
     return redirect(request.referrer)
 
@@ -114,10 +132,15 @@ def update_gift_message():
         cart.update_gift_message(
             form.line_id.data, form.gift_message.data
         )
-        flash(_("Gift message has been updated on item"), 'success')
         if request.is_xhr or request.is_json:
             return jsonify({"message": "Gift message updated."})
+
+        flash(_("Gift message has been updated on item"), 'success')
         return redirect(url_for('cart.view_cart'))
+
+    if form.errors and (request.is_xhr or request.is_json):
+        return jsonify(errors=form.errors), 400
+
     flash(_('Looks like item is invalid'), 'error')
     return redirect(request.referrer)
 
