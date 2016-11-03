@@ -148,6 +148,11 @@ class Product(Model):
         return image
 
     @property
+    def nodes(self):
+        # TODO: Return a list of nodes that this product belongs to
+        return []
+
+    @property
     def images(self):
         key = '%s:images:%s' % (self.__model_name__, self.id)
         if self.cache_backend.exists(key):
@@ -190,8 +195,10 @@ class Product(Model):
                 )
             return listing
 
-    def get_absolute_url(self):
-        return url_for('products.product', handle=self.uri)
+    def get_absolute_url(self, **kwargs):
+        return url_for(
+            'products.product', handle=self.uri, **kwargs
+        )
 
     def get_related_products(self):
         """

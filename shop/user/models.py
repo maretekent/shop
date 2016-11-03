@@ -93,6 +93,16 @@ class User(UserMixin, Model):
     def phone(self):
         return self.party.get_mechanism('phone')
 
+    @property
+    def first_name(self):
+        if self.name:
+            return self.name.split(' ')[0]
+
+    @property
+    def last_name(self):
+        if self.name:
+            return self.name.split(' ')[-1]
+
     @classmethod
     def find_user(cls, email):
         """
