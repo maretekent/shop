@@ -47,6 +47,15 @@ class TestUser:
         assert user.check_password('foobarbaz123') is True
         assert user.check_password('barfoobaz') is False
 
+    def test_name_parts(self):
+        user = User(
+            name='John Doe',
+            email='foo2@bar.com'
+        )
+        user.save()
+        assert user.first_name == 'John'
+        assert user.last_name == 'Doe'
+
 
 @pytest.mark.usefixtures('app')
 class TestCountry:
