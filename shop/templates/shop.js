@@ -16,6 +16,7 @@ $(function () {
   Fulfil.urls.getVariations = "{{ url_for('products.get_variations') }}";
   Fulfil.urls.payUsingProfile = "{{ url_for('checkout.payment') }}";
   Fulfil.urls.setBillingAddress = "{{ url_for('checkout.billing_address') }}";
+  Fulfil.urls.applyPromoCode = "{{ url_for('cart.apply_promo_code') }}";
 
   /**
    * Helper method to change formSubmission to ajax
@@ -479,6 +480,21 @@ $(function () {
       });
     });
   };
+
+  /*
+   * Apply promo code to cart
+   */
+   Fulfil.cart.applyPromoCode = function(promoCode) {
+    return $.ajax({
+      url: Fulfil.urls.applyPromoCode,
+      method: "POST",
+      data: {
+        "promo_code": promoCode,
+        "csrf_token": Fulfil.csrfToken
+       },
+       dataType: "json"
+    });
+   };
 
   /*
    *
