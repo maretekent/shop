@@ -190,8 +190,10 @@ class Product(Model):
                 )
             return listing
 
-    def get_absolute_url(self):
-        return url_for('products.product', handle=self.uri)
+    def get_absolute_url(self, **kwargs):
+        return url_for(
+            'products.product', handle=self.uri, **kwargs
+        )
 
     def get_related_products(self):
         """
