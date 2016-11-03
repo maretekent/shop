@@ -92,6 +92,8 @@ def edit_address(address_id):
     form = AddressForm(request.form, obj=address)
     if form.validate_on_submit():
         form.populate(address)
+        if request.form.get('skip_validation', None):
+            address.validation_status = 'skipped'
         address.save()
         if request.is_xhr or request.is_json:
             return jsonify({
