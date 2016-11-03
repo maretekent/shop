@@ -260,7 +260,7 @@ def billing_address():
 
     if form.validate_on_submit():
         address = Address(party=current_user.party.id)
-        form.populate_obj(address)
+        form.populate(address)
         address.save()
         sale = current_cart.sale
         sale.invoice_address = address.id
