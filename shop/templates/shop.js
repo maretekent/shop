@@ -463,6 +463,10 @@ $(function () {
 
   Fulfil.address.googlePlaceInitForm = function (formElm) {
     var inputElm = formElm.find('input[name="street"]');
+    if (!google) {
+      console.info('Google maps token missing.');
+      return;
+    }
     var autocomplete = new google.maps.places.Autocomplete(inputElm[0], {
       types: ['geocode']
     });
