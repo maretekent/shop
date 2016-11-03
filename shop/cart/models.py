@@ -225,7 +225,12 @@ class Cart(Model):
         # TODO: Assuming every item has same unit
         if self.is_empty:
             return 0
-        return sum(map(lambda l: l.quantity, self.sale.lines))
+        return sum(
+            map(
+                lambda l: l.quantity,
+                filter(lambda l: not l.shipment_cost, self.sale.lines)
+            )
+        )
 
     @property
     def is_empty(self):
