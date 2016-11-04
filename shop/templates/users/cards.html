@@ -1,0 +1,38 @@
+{% extends theme('layout-my-account.html') %}
+
+{% block account_content %}
+  <div class="container-fluid">
+    <h1>Saved Cards</h1>
+    <br/>
+    <!-- Addresses -->
+    {% for card in cards %}
+      <div class="row">
+        <div class="col-xs-6">
+          <label for="profile_{{ loop.index }}">
+            Card ending in {{ card.last_4_digits }}<br/>
+            <small>Expiring on {{ card.expiry_month }}/{{ card.expiry_year }}</small>
+          </label>
+        </div>
+        <div class="col-xs-6">
+          <div class="pull-right">
+            <form action="{{ url_for('user.deactivate_card', card_id=card.id) }}"
+                  method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit"
+                      class="btn btn-sm btn-danger">
+                      <i class="fa fa-trash" aria-hidden="true">&nbsp;</i>
+                      Remove
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="row text-center">
+      <a class="btn btn-primary" href="{{ url_for('user.create_address') }}">Add new card</a>
+    </div>
+    <br/>
+  </div>
+
+{% endblock account_content %}

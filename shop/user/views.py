@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from flask import Blueprint, abort, flash, jsonify, request, url_for
 from flask_login import current_user, login_required
 from shop.cart.models import Sale
+from shop.checkout.models import PaymentProfile
 from shop.user.forms import AccountForm, AddressForm, ChangePasswordForm
 from shop.user.models import Address, ContactMechanism
 from shop.utils import render_theme_template as render_template
@@ -243,3 +244,44 @@ def order(sale_id):
         # Order does not belong to the user
         abort(403)
     return render_template('users/order.html', sale=sale)
+
+
+@login_required
+@blueprint.route('/cards')
+def cards():
+    """
+    List all cards(payment_profiles) of the current user
+    """
+    cards = current_user.party.payment_profiles
+    return render_template('users/cards.html', cards=cards)
+
+
+@login_required
+@blueprint.route('/cards/new', methods=["GET", "POST"])
+def create_card():
+    """
+    Create a card for the current user
+    """
+    # TODO: Add logic to create a card
+    return render_template('users/new-card.html')
+
+
+@login_required
+@blueprint.route('/cards/<int:card_id>/deactivate', methods=["POST"])
+def deactivate_card(card_id):
+    """
+    Deactivate the specified card of the current user
+    :param: card_id ID of the card
+    """
+    card = PaymentProfile.query.filter_by_domain(
+        [
+            ('id', '=', card_id),
+            ('party', '=', current_user.party.id)
+        ]
+    )
+    if card.first():
+        card.archive()
+        flash("Card removed", 'success')
+        return redirect(url_for('user.cards'))
+    else:
+        abort(404)
