@@ -107,6 +107,8 @@ def listing_to_dict(listing):
     Return a JSON serializable dictionary representing the product with
     Klaviyo's key value pairs.
     """
+    if not (listing and listing.product):
+        return {}
     product = listing.product
     return {
         'Title': product.name,
@@ -122,14 +124,18 @@ def listing_to_dict(listing):
 
 
 def sale_to_dict(sale):
+    lines = filter(
+        lambda line: line.product and line.product.listing,
+        sale.lines
+    )
     return {
         '$event_id': sale.id,
         '$value': sale.total_amount.amount,
         'Items': [
             sale_line_to_dict(line)
-            for line in sale.lines
+            for line in lines
         ],
-        'ItemNames': [line.product.name for line in sale.lines]
+        'ItemNames': [line.product.name for line in lines]
     }
 
 
