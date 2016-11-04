@@ -56,8 +56,7 @@ def create_address():
     address_name = "" if current_user.is_anonymous else \
         current_user.name
     form = AddressForm(
-        request.form,
-        name=address_name,
+        name=address_name
     )
 
     if form.validate_on_submit():
@@ -70,8 +69,11 @@ def create_address():
         flash("The new address has been added to your address book", 'success')
         return redirect(url_for('user.addresses'))
 
-    if form.errors and (request.is_xhr or request.is_json):
-        return jsonify(errors=form.errors), 400
+    elif request.is_xhr or request.is_json:
+        return jsonify({
+            "error": form.errors,
+            "message": "Could not create address."
+        })
 
     return render_template('users/address-form.html', form=form)
 
