@@ -113,7 +113,7 @@ def listing_to_dict(listing):
         'ItemId': product.id,
         'Categories': [node.name for node in product.nodes],
         'ImageUrl': product.image,
-        'Url': product.get_absolute_url(_external=True),
+        'Url': listing.get_absolute_url(_external=True),
         'Metadata': {
             'Price': listing.unit_price.amount,
             'CompareAtPrice': product.list_price.amount,
@@ -141,7 +141,7 @@ def sale_line_to_dict(line):
         'Quantity': line.quantity,
         'ItemPrice': line.unit_price.amount,
         'RowTotal': line.amount.amount,
-        'ProductURL': product.get_absolute_url(_external=True),
+        'ProductURL': product.listing.get_absolute_url(_external=True),
         'ImageURL': product.image,
         # 'ProductCategories' : ["Fiction", "Children"]
     }
