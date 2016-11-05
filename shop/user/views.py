@@ -173,7 +173,7 @@ def orders():
     elif filter_by == 'open':
         # All orders which are in a state of processing
         domain.append(
-            ('state', '=', 'processing')
+            ('state', 'in', ['confirmed', 'processing'])
         )
 
     else:
