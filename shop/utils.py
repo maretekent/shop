@@ -238,7 +238,9 @@ class Pagination(object):
 
 
 def url_for_other_page(page):
-    args = request.view_args.copy()
+    args = request.args.to_dict(flat=True)
+    view_args = request.view_args.copy()
+    args.update(view_args)
     args['page'] = page
     return url_for(request.endpoint, **args)
 
