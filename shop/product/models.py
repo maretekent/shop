@@ -176,6 +176,11 @@ class Product(Model):
         return ProductTemplate.from_cache(self._values['template'])
 
     @property
+    def brand(self):
+        # To be implemented
+        return None
+
+    @property
     def listing(self):
         key = '%s:listing:%s' % (self.__model_name__, self.id)
         if self.cache_backend.exists(key):
