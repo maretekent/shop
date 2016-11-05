@@ -3,6 +3,7 @@
 Helper utilities and decorators.
 """
 from math import ceil
+import simplejson as json
 
 from email import Charset, Encoders
 from email.header import Header
@@ -240,3 +241,10 @@ def url_for_other_page(page):
     args = request.view_args.copy()
     args['page'] = page
     return url_for(request.endpoint, **args)
+
+
+class json_ld_dict(dict):
+    def __html__(self):
+        return (
+            """<script type="application/ld+json">{0}</script>"""
+        ).format(json.dumps(self))
