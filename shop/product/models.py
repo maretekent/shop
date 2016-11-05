@@ -5,8 +5,9 @@ from fulfil_client.model import (MoneyType, IntType, ModelType, One2ManyType,
                                  StringType)
 from shop.fulfilio import Model, ShopQuery
 from shop.globals import current_channel
-from shop.utils import get_random_product, imgixify
+from shop.utils import get_random_product, imgixify, json_ld_dict
 from fulfil_client.client import loads, dumps
+from cached_property import cached_property
 
 
 class ProductTemplate(Model):
@@ -290,13 +291,55 @@ class ChannelListing(Model):
         return ShopQuery(cls.rpc, cls)
 
     def get_availability(self):
+        """
+        It is recommended to use the availability property than directly
+        call this method, which will always result in a web services call.
+        """
         return self.rpc.get_availability(self.id)
+
+    @cached_property
+    def availability(self):
+        return self.get_availability()
 
     def get_absolute_url(self, node=None, **kwargs):
         kwargs['handle'] = self.product_identifier
         if node is not None:
             kwargs['node'] = node
         return url_for('products.product', **kwargs)
+
+    @property
+    def json_ld(self):
+        return json_ld_dict({
+            '@context': 'http://schema.org',
+            '@type': 'Product',
+            'description': self.product.description,
+            'name': self.product.name,
+            'sku': self.product.code,
+            'image': self.product.image,
+            'offers': {
+                '@type': 'Offer',
+                'availability': 'http://schema.org/InStock',
+                'url': self.get_absolute_url(_external=True),
+                'price': '%0.2f' % self.unit_price,
+                'priceCurrency': self.unit_price.currency,
+            },
+        })
+
+    def get_tree_crumbs_json_ld(self, node):
+        """
+        Return a JSON+LD for tree node and crumbs
+        """
+        node_tree = node.tree_crumbs_json_ld
+        node_tree['itemListElement'].append({
+            '@type': 'ListItem',
+            'position': len(node_tree['itemListElement']) + 1,
+            'item': {
+                '@id': self.get_absolute_url(_external=True),
+                'name': self.product.name,
+                'image': self.product.image,
+            }
+        })
+        return node_tree
 
 
 class ProductVariationAttributes(Model):

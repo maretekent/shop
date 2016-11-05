@@ -6,6 +6,7 @@ from fulfil_client.model import IntType, StringType
 from shop.extensions import redis_store
 from shop.fulfilio import Model
 from shop.product.models import ChannelListing, ProductTemplate
+from shop.utils import json_ld_dict
 from fulfil_client.client import loads, dumps
 
 
@@ -173,6 +174,28 @@ class TreeNode(Model):
             rv = cls.rpc.make_shop_tree_crumbs(node_id)
             cls.cache_backend.set(key, dumps(rv))
             return rv
+
+    @property
+    def tree_crumbs_json_ld(self):
+        items = []
+        for position, data_title_pair in enumerate(
+                self.make_tree_crumbs(self.id), start=1):
+            data, title = data_title_pair
+            node = TreeNode(values=data)
+            items.append({
+                '@type': 'ListItem',
+                'position': position,
+                'item': {
+                    '@id': node.get_absolute_url(_external=True),
+                    'name': title,
+                    'image': node.image,
+                }
+            })
+        return json_ld_dict({
+            '@context': 'http://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': items,
+        })
 
     @classmethod
     def from_slug(cls, slug):
