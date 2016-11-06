@@ -197,7 +197,7 @@ class Product(Model):
         # To be implemented
         return None
 
-    @property
+    @cached_property
     def listing(self):
         key = '%s:listing:%s' % (self.__model_name__, self.id)
         if self.cache_backend.exists(key):

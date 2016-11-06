@@ -11,6 +11,9 @@ from flask_session import Session
 from flask_wtf.csrf import CsrfProtect
 from raven.contrib.flask import Sentry
 from redis import StrictRedis
+from flask.ext.celery import Celery
+
+celery = Celery()
 
 csrf_protect = CsrfProtect()
 login_manager = LoginManager()
@@ -22,3 +25,4 @@ sentry = Sentry()
 babel = Babel()
 redis_store = FlaskRedis.from_custom_provider(StrictRedis)
 session = Session()
+celery = Celery()

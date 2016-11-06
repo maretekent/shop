@@ -10,6 +10,8 @@ from flask_script.commands import Clean, ShowUrls
 from shop.app import create_app
 from shop.extensions import redis_store
 from shop.settings import DevConfig, ProdConfig
+from celery import current_app
+from celery.bin import worker as celery_worker
 
 CONFIG = ProdConfig if os.environ.get('SHOP_ENV') == 'prod' else DevConfig
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -23,6 +25,19 @@ def _make_context():
     """Return context dict for a shell session so you can access app, db, and the User model by default."""
     from shop.user.models import User
     return {'app': app, 'User': User}
+
+
+@manager.command
+def warm_cache():
+    from shop.jobs import cache_nodes, cache_templates
+    cache_nodes()
+    cache_templates()
+
+
+@manager.command
+def worker():
+    app = current_app._get_current_object()
+    celery_worker.worker(app=app).run(loglevel='DEBUG')
 
 
 @manager.command
