@@ -74,7 +74,7 @@ class SaleLine(Model):
             'amount': self.amount.format(current_locale),
             'url': self.product and self.product.listing and \
                 self.product.listing.get_absolute_url(),
-            'image': self.product.image,
+            'image': self.product.available_image,
             'delivery_address': None,
             'is_shipping_line': True if self.shipment_cost else False
         }

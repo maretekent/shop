@@ -160,12 +160,29 @@ class Product(Model):
             return loads(self.cache_backend.get(key))
         else:
             rv = self.rpc.get_images_urls(self.id)
+            if not rv and self.available_image:
+                rv = [self.available_image]
             rv = imgixify(rv)
             self.cache_backend.set(
                 key, dumps(rv),
                 ex=current_app.config['REDIS_EX'],
             )
             return rv
+
+    @cached_property
+    def available_image(self):
+        if self.image:
+            return self.image
+        if self.template.image:
+            return self.template.image
+
+    @cached_property
+    def available_description(self):
+        return self.description or self.template.description
+
+    @cached_property
+    def available_long_description(self):
+        return self.long_description or self.template.long_description
 
     @property
     def name(self):
@@ -235,10 +252,8 @@ class Product(Model):
             'rec_name': self.name,
             'name': self.name,
             'code': self.code,
-            'description': self.description or self.template.description or "",
-            'long_description': (
-                self.long_description or self.template.long_description or ""
-            ),
+            'description': self.available_description or "",
+            'long_description': self.available_long_description or "",
             'price': "%s" % self.list_price.format(),
             'image_urls': self.images,
         }
