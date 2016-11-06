@@ -50,7 +50,13 @@ class Country(Model):
                 loads(cls.cache_backend.get(key))
             )
         else:
-            countries = cls.query.all()
+            enabled = current_app.config.get('ENABLED_COUNTRIES', [])
+            if enabled:
+                countries = cls.query.filter_by_domain([
+                    ('code', 'in', enabled)
+                ]).all()
+            else:
+                countries = cls.query.all()
             map(lambda s: s.store_in_cache(), countries)
             cls.cache_backend.set(
                 key, dumps([c.id for c in countries]),
