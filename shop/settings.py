@@ -60,6 +60,13 @@ class Config(object):
         os.path.join(APP_DIR, 'themes/'),
     ]
 
+    # A list of country codes, an empty list or None fetches all countries
+    # (default behavior)
+    #
+    # Unlike most other attributes this expects a list of country codes.
+    # This attribute is not meant to be sent over env variables.
+    ENABLED_COUNTRIES = []
+
 
 class ProdConfig(Config):
     """Production configuration."""
