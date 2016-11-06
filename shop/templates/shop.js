@@ -449,8 +449,8 @@ $(function () {
 
     var addressData = {};
     addressData.street = [
-      parsedPlaceObj.street_number.long_name,
-      parsedPlaceObj.route.long_name,
+      parsedPlaceObj.street_number.short_name,
+      parsedPlaceObj.route.short_name,
     ].join(' ');
     addressData.city = parsedPlaceObj.locality.long_name;
     addressData.subdivision =
