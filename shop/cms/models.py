@@ -2,7 +2,7 @@
 """CMS models."""
 from flask import url_for, current_app
 from fulfil_client.model import One2ManyType, StringType
-from shop.fulfilio import Model
+from shop.fulfilio import Model, ShopQuery
 from fulfil_client.client import loads, dumps
 
 
@@ -70,6 +70,10 @@ class Article(Model):
     title = StringType()
     content = StringType()
     published_on = StringType()
+
+    @classmethod
+    def get_shop_query(cls):
+        return ShopQuery(cls.rpc, cls)
 
     def get_absolute_url(self, **kwargs):
         return url_for('pages.page', uri=self.uri, **kwargs)
