@@ -147,7 +147,8 @@ def sale_line_to_dict(line):
         'Quantity': line.quantity,
         'ItemPrice': line.unit_price.amount,
         'RowTotal': line.amount.amount,
-        'ProductURL': product.listing.get_absolute_url(_external=True),
+        'ProductURL': product.listing and \
+            product.listing.get_absolute_url(_external=True),
         'ImageURL': product.image,
         # 'ProductCategories' : ["Fiction", "Children"]
     }
