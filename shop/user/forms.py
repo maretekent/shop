@@ -5,7 +5,7 @@ from flask_login import current_user
 from flask_wtf import Form
 from shop.public.models import Country, Subdivision
 from shop.user.models import User
-from wtforms import PasswordField, SelectField, StringField
+from wtforms import PasswordField, SelectField, StringField, BooleanField
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
                                 ValidationError)
 from geoip import geolite2
@@ -110,15 +110,32 @@ class SubdivisionSelectField(SelectField):
             )
 
 
+class RequiredIf(DataRequired):
+    def __init__(self, field_name, field_value=True, *args, **kwargs):
+        self.field_name = field_name
+        self.field_value = field_value
+        super(RequiredIf, self).__init__(*args, **kwargs)
+
+    def __call__(self, form, field):
+        other_field = form._fields.get(self.field_name)
+        if other_field is None:
+            raise Exception(
+                'no field named "%s" in form' % self.field_name
+            )
+        if other_field.data == self.field_value:
+            super(RequiredIf, self).__call__(form, field)
+
+
 class AddressForm(Form):
     name = StringField(
         'Name',
         validators=[DataRequired()],
         render_kw={"placeholder": "e.g. John Doe"}
     )
+    is_minimal = BooleanField('Is minimal address ?', default=False)
     street = StringField(
         'Address Line 1',
-        validators=[DataRequired()],
+        validators=[RequiredIf('is_minimal', False)],
         render_kw={"placeholder": "Street address, P.O. box, company name, c/o"}
     )
     streetbis = StringField(
@@ -127,22 +144,22 @@ class AddressForm(Form):
     )
     zip = StringField(
         'Post Code',
-        validators=[DataRequired()],
+        validators=[RequiredIf('is_minimal', False)],
         render_kw={"placeholder": "e.g. 560100"}
     )
     city = StringField(
         'City',
-        validators=[DataRequired()],
+        validators=[RequiredIf('is_minimal', False)],
         render_kw={"placeholder": "e.g. Los Angeles, Beverly Hills."}
     )
     country = CountrySelectField(
         'Country',
-        validators=[DataRequired()],
+        validators=[RequiredIf('is_minimal', False)],
         coerce=unicode
     )
     subdivision = SubdivisionSelectField(
         'State/Province/Region',
-        validators=[DataRequired()],
+        validators=[RequiredIf('is_minimal', False)],
         coerce=unicode
     )
     phone = StringField(

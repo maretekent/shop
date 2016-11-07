@@ -74,6 +74,15 @@ class TestAddressForm:
         empty_form = AddressForm()
         assert empty_form.validate() is False
 
+    def test_minimal_form(self, app):
+        form = AddressForm(
+            name="Sharoon Thomas",
+            is_minimal=True,
+        )
+        assert form.validate()
+        assert form.country_id is None
+        assert form.subdivision_id is None
+
     def test_complete_form(self, app):
         form = AddressForm(
             name="Sharoon Thomas",
