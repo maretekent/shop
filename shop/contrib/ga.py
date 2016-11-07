@@ -107,7 +107,7 @@ def listing_to_dict(listing, position=None, list=None):
 
 def product_to_dict(product, position=None, list=None):
     res = {
-        'id': product.id,
+        'id': product.code,
         'name': product.template.name,
         'variant': product.name,
         'price': product.list_price.amount,
