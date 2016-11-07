@@ -30,5 +30,6 @@ setup(
         'python-dateutil',
         'cached-property',
         'python-geoip-geolite2',
+        'newrelic',
     ]
 )

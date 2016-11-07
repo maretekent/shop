@@ -39,6 +39,16 @@ def create_app(config_object=ProdConfig):
     num_proxies = app.config.get('NUM_PROXIES')
     if num_proxies:
         app.wsgi_app = ProxyFix(app.wsgi_app, int(num_proxies))
+
+    if app.config.get('NEWRELIC_KEY'):
+        try:
+            import newrelic.agent
+        except ImportError:
+            pass
+        else:
+            newrelic.agent.initialize(app.config.get('NEWRELIC_KEY'))
+            app.wsgi_app = newrelic.agent.WSGIApplicationWrapper(app.wsgi_app)
+
     return app
 
 

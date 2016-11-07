@@ -78,6 +78,8 @@ class ProdConfig(Config):
     # Cache files for 24 hours
     SEND_FILE_MAX_AGE_DEFAULT = 60 * 60 * 24
 
+    NEWRELIC_KEY = os.environ.get('NEWRELIC_KEY')
+
 
 class DevConfig(Config):
     """Development configuration."""
