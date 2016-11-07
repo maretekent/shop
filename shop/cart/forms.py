@@ -8,14 +8,17 @@ from shop.user.models import Address
 from shop.globals import current_cart
 from shop.product.models import Product
 from wtforms.fields import FloatField, IntegerField, DateField, TextField
-from wtforms.validators import DataRequired, Optional
+from wtforms.validators import DataRequired, Optional, NumberRange
 from wtforms_components import DateRange
 
 
 class AddtoCartForm(Form):
     "A simple add to cart form"
 
-    quantity = FloatField('Quantity', default=1.0, validators=[DataRequired()])
+    quantity = FloatField(
+        'Quantity', default=1.0,
+        validators=[DataRequired(), NumberRange(min=1.0)]
+    )
     product = IntegerField('Product', validators=[DataRequired()])
     delivery_date = DateField(
         'Shipping Date',
