@@ -6,4 +6,7 @@
    <sitemap>
       <loc>{{ url_for('pages.sitemap_index', _external=true) }}</loc>
    </sitemap>
+   <sitemap>
+      <loc>{{ url_for('products.sitemap_index', _external=true) }}</loc>
+   </sitemap>
    </sitemapindex>
