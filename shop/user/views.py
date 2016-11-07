@@ -69,11 +69,11 @@ def create_address():
         flash("The new address has been added to your address book", 'success')
         return redirect(url_for('user.addresses'))
 
-    elif request.is_xhr or request.is_json:
+    elif form.errors and (request.is_xhr or request.is_json):
         return jsonify({
             "error": form.errors,
             "message": "Could not create address."
-        })
+        }), 400
 
     return render_template('users/address-form.html', form=form)
 
