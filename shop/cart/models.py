@@ -251,7 +251,12 @@ class Cart(Model):
         ]
         if not current_user.is_anonymous:
             domain = [
-                ('user', '=', current_user.id)
+                ('user', '=', current_user.id),
+                [
+                    'OR',
+                    [('sale.party', '=', current_user.party.id)],
+                    [('sale', '=', None)],
+                ]
             ]
         cart = Cart.query.filter_by_domain(domain).first()
         if not cart:
