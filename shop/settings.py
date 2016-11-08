@@ -67,6 +67,9 @@ class Config(object):
     # This attribute is not meant to be sent over env variables.
     ENABLED_COUNTRIES = []
 
+    # Sentry configuration to send additional parameters when errors
+    # are sent
+    SENTRY_USER_ATTRS = ['name', 'email']
 
 class ProdConfig(Config):
     """Production configuration."""
