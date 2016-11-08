@@ -3,6 +3,7 @@
 import stripe
 from flask import Blueprint, abort, flash, redirect, jsonify, request, session, url_for
 from flask_login import current_user, login_user, login_required
+from fulfil_client import ServerError
 from shop.cart.models import Sale
 from shop.checkout.forms import CheckoutAddressForm, CheckoutSignInForm, CheckoutPaymentForm
 from shop.checkout.models import (PaymentProfile, not_empty_cart,
@@ -199,11 +200,24 @@ def payment():
     if form.validate_on_submit():
         customer_id = form.payment_profile_id.data or None
         if not customer_id:
-            customer_id = PaymentProfile.rpc.create_profile_using_stripe_token(
-                current_user.party.id,
-                current_channel.payment_gateway.id,
-                form.stripe_token.data,
-            )
+            try:
+                customer_id = PaymentProfile.rpc.create_profile_using_stripe_token(
+                    current_user.party.id,
+                    current_channel.payment_gateway.id,
+                    form.stripe_token.data,
+                )
+            except ServerError as exc:
+                if exc and 'message' in exc[0]:
+                    message = exc[0]['message']
+                else:
+                    message = "Your Card has been declined, please try again."
+                if request.is_xhr or request.is_json:
+                    return jsonify({
+                        'message': message
+                    }), 402
+                else:
+                    flash(message, 'error')
+                    return redirect(request.referrer)
         try:
             Sale.rpc.add_sale_payment(
                 current_cart.sale.id,
