@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Node views."""
-from flask import Blueprint, abort, make_response
+from flask import Blueprint, abort, make_response, url_for
 from shop.node.models import TreeNode
 from shop.utils import render_theme_template as render_template
 from shop.utils import dummy_products, Pagination
@@ -84,23 +84,49 @@ def node(id=None, handle=None, page=1):
 
 
 @blueprint.route('/sitemap-index.xml')
-def render_xml_sitemap():
+def sitemap_index():
     """
-    Renders xml sitemap
+    Renders sitemap index
     """
-    # till depth of 10
-    nodes = TreeNode.rpc.get_sitemap_nodes(9)
+    # TODO: Implement pagination
+    sitemaps = [
+        {
+            'loc': url_for(
+                'node.sitemap',
+                page=1,
+                _external=True
+            )
+        }
+    ]
 
-    sitemap_xml = render_template('node/sitemap.xml', nodes=nodes)
+    sitemap_xml = render_template(
+        'partials/sitemap-index.xml',
+        sitemaps=sitemaps
+    )
     response = make_response(sitemap_xml)
     response.headers["Content-Type"] = "application/xml"
 
     return response
 
 
-@blueprint.route('/sitemaps-<int:page>.xml')
+@blueprint.route('/sitemap-<int:page>.xml')
 def sitemap(page):
     """
     Returns a specific page of the sitemap
     """
-    return __doc__
+    # TODO: Implement pagination
+    tree_nodes = TreeNode.query.all()
+
+    urls = []
+    for node in tree_nodes:
+        urls.append(
+            {
+            'loc': node.get_absolute_url(_external=True)
+            }
+        )
+
+    sitemap_xml = render_template('partials/sitemap.xml', urls=urls)
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+
+    return response

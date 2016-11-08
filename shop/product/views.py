@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Product views."""
-from flask import Blueprint, abort, request, jsonify
+from flask import Blueprint, abort, make_response, request, jsonify, url_for
 from shop.globals import current_channel
 from shop.product.models import ChannelListing, ProductTemplate
 from shop.utils import render_theme_template as render_template
@@ -64,17 +64,51 @@ def get_variations():
     return jsonify(template.get_product_variation_data())
 
 
-@blueprint.route('/sitemaps/product-index.xml')
+@blueprint.route('/sitemaps/sitemap-index.xml')
 def sitemap_index():
+    shop_query = ChannelListing.get_shop_query().filter_by_domain([
+        ('channel', '=', current_channel.id),
+    ])
+    paginate = shop_query.paginate(per_page=100)
+    sitemaps = []
+    for x in xrange(1, paginate.pages + 1):
+        sitemaps.append(
+            {
+                'loc': url_for(
+                    'products.sitemap',
+                    page=x,
+                    _external=True
+                )
+            }
+        )
+    sitemap_xml = render_template(
+        'partials/sitemap-index.xml',
+        sitemaps=sitemaps
+    )
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+
+    return response
+
+@blueprint.route('/sitemaps/sitemap-<int:page>.xml')
+def sitemap(page=1):
     """
     Returns a Sitemap Index Page
     """
-    return __doc__
+    shop_query = ChannelListing.get_shop_query().filter_by_domain([
+        ('channel', '=', current_channel.id),
+    ])
+    # Default per_page 100, a max size of 10Mb is advised otherwise
+    paginate = shop_query.paginate(page=page, per_page=100)
+    urls = []
+    for product in paginate.items:
+        urls.append(
+            {
+                'loc': product.get_absolute_url(_external=True)
+            }
+        )
+    sitemap_xml = render_template('partials/sitemap.xml', urls=urls)
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
 
-
-@blueprint.route('/sitemaps/product-<int:page>.xml')
-def sitemap(page):
-    """
-    Returns a specific page of the sitemap
-    """
-    return __doc__
+    return response

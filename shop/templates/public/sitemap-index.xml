@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
    <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
    <sitemap>
-      <loc>{{ url_for('node.render_xml_sitemap', _external=true) }}</loc>
+      <loc>{{ url_for('node.sitemap_index', _external=true) }}</loc>
    </sitemap>
    <sitemap>
-      <loc>{{ url_for('pages.render_xml_sitemap', _external=true) }}</loc>
+      <loc>{{ url_for('pages.sitemap_index', _external=true) }}</loc>
+   </sitemap>
+   <sitemap>
+      <loc>{{ url_for('products.sitemap_index', _external=true) }}</loc>
    </sitemap>
    </sitemapindex>

@@ -40,23 +40,29 @@ def category(uri):
 
 
 @blueprint.route('/sitemap-index.xml')
-def render_xml_sitemap():
+def sitemap_index():
     """
-    Returns a Sitemap Index Page
+    Returns a Sitemap Index Page of articles
     """
-    articles =  Article.query.filter_by_domain(
-        [('state', '=', 'published')]
-    ).all()
-    nodes = []
-    for article in articles:
-        nodes.append(
+    shop_query = Article.get_shop_query().filter_by_domain([
+        ('state', '=', 'published'),
+    ])
+    paginate = shop_query.paginate(per_page=100)
+    sitemaps = []
+    for x in xrange(1, paginate.pages + 1):
+        sitemaps.append(
             {
-                'url_data': article.get_absolute_url(_external=True),
-                'lastmod': article.published_on
+                'loc': url_for(
+                    'pages.sitemap',
+                    page=x,
+                    _external=True
+                )
             }
         )
-
-    sitemap_xml = render_template('cms/sitemap.xml', nodes=nodes)
+    sitemap_xml = render_template(
+        'partials/sitemap-index.xml',
+        sitemaps=sitemaps
+    )
     response = make_response(sitemap_xml)
     response.headers["Content-Type"] = "application/xml"
 
@@ -68,4 +74,22 @@ def sitemap(page):
     """
     Returns a specific page of the sitemap
     """
-    return __doc__
+    shop_query = Article.get_shop_query().filter_by_domain([
+        ('state', '=', 'published'),
+    ])
+    # Default per_page 100, a max size of 10Mb is advised otherwise
+    paginate = shop_query.paginate(page=page, per_page=100)
+    urls = []
+    for article in paginate.items:
+        urls.append(
+            {
+                'loc': article.get_absolute_url(_external=True),
+                'lastmod': article.published_on
+            }
+        )
+
+    sitemap_xml = render_template('partials/sitemap.xml', urls=urls)
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+
+    return response
