@@ -58,7 +58,7 @@ class CountrySelectField(SelectField):
         super(CountrySelectField, self).__init__(*args, **kwargs)
 
     def get_choices(self):
-        return [
+        return [('', '')] + [
             (country.code, country.name)
             for country in Country.get_list()
         ]
@@ -96,18 +96,19 @@ class SubdivisionSelectField(SelectField):
             self.data = subdivision
 
     def pre_validate(self, form):
-        if form.country.data is None:
+        if form.country.data in { None, u'' }:
             return None
         country = Country.from_code(form.country.data)
         if not country:
             raise ValidationError(
                 "Country code is not valid."
             )
-        subdivision = country.get_subdivision(self.data)
-        if not subdivision:
-            raise ValidationError(
-                "Subdivision is not valid for the selected country."
-            )
+        if self.data:
+            subdivision = country.get_subdivision(self.data)
+            if not subdivision:
+                raise ValidationError(
+                    "Subdivision is not valid for the selected country."
+                )
 
 
 class RequiredIf(DataRequired):

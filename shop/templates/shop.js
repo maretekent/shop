@@ -221,7 +221,9 @@ $(function () {
     selectField.html('');
     return Fulfil.address.getCountries()
       .success(function (data) {
-        var optionsHtml = '';
+        if (!selectField.prop('required')){
+          var optionsHtml = '<option disabled selected value> -- Select a country -- </option>';
+        }
         $.each(data.result, function(i, country){
           optionsHtml +=
             '<option value="'+ country.code +'">' + country.name + '</option>';
